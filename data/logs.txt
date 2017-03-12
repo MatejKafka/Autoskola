@@ -1,0 +1,37 @@
+
+{"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":12}
+{"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":867}
+{"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"type":"error","path":"/webserver/error","message":"Error occurred in webserver!","msgData":{"stack":"TypeError: Cannot read property 'length' of null\n    at module.exports (D:\\matej\\nodeJS\\autoskolaTesty\\server\\webserver\\handleApiCall.js:53:12)\n    at D:\\matej\\nodeJS\\autoskolaTesty\\server\\webserver\\startWebserver.js:24:14\n    at Layer.handle [as handle_request] (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\route.js:137:13)\n    at Route.dispatch (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\route.js:112:3)\n    at Layer.handle [as handle_request] (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\index.js:281:22\n    at param (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\index.js:354:14)\n    at param (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\index.js:365:14)\n    at Function.process_params (D:\\matej\\nodeJS\\autoskolaTesty\\server\\node_modules\\express\\lib\\router\\index.js:410:3)","message":"Cannot read property 'length' of null"}}
+{"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":12}
+{"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":867}
+{"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 12 items","msgData":{"resultLength":12}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 12 items","msgData":{"resultLength":12}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[180]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[180,195]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[2137]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[2132]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[2142]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[180,195,479,1527,1650,2131]}}
+{"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 6 items","msgData":{"resultLength":6}}

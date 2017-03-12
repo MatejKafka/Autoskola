@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "urls.js",
+  "sourceRoot": "",
+  "sources": [
+    "urls.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,QAAA,GAAW;;EAEX,MAAM,CAAC,OAAP,GACC;IAAA,QAAA,EAAU,QAAV;IACA,WAAA,EAAa,QAAA,GAAW,cADxB;IAEA,OAAA,EAAS,QAAA,GAAW,yBAFpB;IAGA,QAAA,EAAU,QAAA,GAAW,uBAHrB;;AAHD"
+}

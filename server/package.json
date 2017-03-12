@@ -1,0 +1,16 @@
+{
+  "name": "autoskola-testy-server",
+  "version": "0.3.0",
+  "description": "Small server that provides questions for final exams in czech driving schools",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "updateTestData": "node updateTextData/index.js"
+  },
+  "author": "Anagmate",
+  "dependencies": {
+    "express": "4.15.2",
+    "jsdom": "9.11.0",
+    "request": "2.81.0"
+  }
+}

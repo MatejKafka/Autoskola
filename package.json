@@ -1,0 +1,9 @@
+{
+	"name": "autoskola-testy",
+	"version": "0.0.1",
+	"scripts": {
+		"start": "cd server && npm start",
+		"updateTestData": "cd server && npm run-script updateTestData"
+	},
+	"author": "Anagmate"
+}

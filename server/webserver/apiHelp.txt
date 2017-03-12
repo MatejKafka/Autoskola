@@ -1,0 +1,25 @@
+
+===========================
+         API DOCS:
+===========================
+
+
+/api/getSection[?id=5,7,...]
+    returns requested sections as JSON (id, name, questionIds)
+
+    possible formats:
+        no ID (/api/getSection)
+            => returns all sections
+
+        single ID (/api/getSection?id=5)
+            => returns single requested section
+
+        multiple comma-separated IDs (/api/getSection?id=5,7,59)
+            => returns array of requested sections
+
+
+
+/api/getQuestion[?id=5,7,...]
+    returns requested questions as JSON (id, question, options, correctAnswer)
+
+    same format as /api/getSection
