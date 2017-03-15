@@ -86,7 +86,7 @@
             answerText = answerElem.children[1].innerHTML.trim();
             isCorrectAnswer = correctAnswers.indexOf(answerId) > -1;
             return {
-              answerText: answerText,
+              text: answerText,
               letter: letter,
               correct: isCorrectAnswer
             };

@@ -29,6 +29,26 @@
       return null;
     };
 
+    ReadOnlyCollection.prototype.filter = function(fn) {
+      return new ReadOnlyCollection(this.getFiltered(fn));
+    };
+
+    ReadOnlyCollection.prototype.getFiltered = function(fn) {
+      return this.items.filter(fn);
+    };
+
+    ReadOnlyCollection.prototype.forEach = function(fn) {
+      this.items.forEach(fn);
+    };
+
+    ReadOnlyCollection.prototype.map = function(fn) {
+      return new ReadOnlyCollection(this.getMapped(fn));
+    };
+
+    ReadOnlyCollection.prototype.getMapped = function(fn) {
+      return this.items.map(fn);
+    };
+
     return ReadOnlyCollection;
 
   })();

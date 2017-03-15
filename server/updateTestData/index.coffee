@@ -36,6 +36,13 @@ fetchSectionList()
 	process.exit(1)
 
 .then (sections) ->
+	#/////////////
+	# remove last entry (section containing all questions)
+	last = sections[sections.length - 1]
+	if last.id == 15
+		sections.pop()
+	#/////////////
+
 	questionIds = {}
 	questions = []
 	for section in sections

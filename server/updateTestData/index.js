@@ -49,7 +49,11 @@
     console.error(err.stack);
     return process.exit(1);
   }).then(function(sections) {
-    var i, j, k, len, len1, question, questionIds, questionPromises, questions, ref, section, sectionQuestionIds;
+    var i, j, k, last, len, len1, question, questionIds, questionPromises, questions, ref, section, sectionQuestionIds;
+    last = sections[sections.length - 1];
+    if (last.id === 15) {
+      sections.pop();
+    }
     questionIds = {};
     questions = [];
     for (j = 0, len = sections.length; j < len; j++) {

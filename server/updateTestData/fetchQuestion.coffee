@@ -60,7 +60,7 @@ module.exports = ({id, correctAnswers}) ->
 					letter = String.fromCharCode(97 + i)
 					answerText = answerElem.children[1].innerHTML.trim()
 					isCorrectAnswer = correctAnswers.indexOf(answerId) > -1
-					return {answerText, letter, correct: isCorrectAnswer}
+					return {text: answerText, letter, correct: isCorrectAnswer}
 
 				console.log('fetched question ' + id)
 				resolve({

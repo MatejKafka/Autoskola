@@ -7,18 +7,28 @@ logger = global.logger.getChildLogger('testDataStore')
 
 module.exports = class TestDataStore
 	constructor: (dataStoreDir) ->
-		@_loadSections(path.resolve(dataStoreDir, 'sections.json'))
-		@_loadQuestions(path.resolve(dataStoreDir, 'questions.json'))
+		sectionFile = path.resolve(dataStoreDir, 'sections.json')
+		questionFile = path.resolve(dataStoreDir, 'questions.json')
+
+		@_loadSections(sectionFile)
+		@_loadQuestions(questionFile)
+		@_watchResource(sectionFile, @_loadSections)
+		@_watchResource(questionFile, @_loadQuestions)
 		logger.log('Test data loaded')
 
 
-	_loadSections: (sectionFilePath) ->
+	_loadSections: (sectionFilePath, reload = false) =>
 		@sections = @_loadTestDataPart(sectionFilePath)
-		logger.log('Sections loaded', @sections.length)
+		logger.log('Sections ' + (if reload then 're' else '') + 'loaded', @sections.length)
 
-	_loadQuestions: (questionFilePath) ->
+	_loadQuestions: (questionFilePath, reload = false) =>
 		@questions = @_loadTestDataPart(questionFilePath)
-		logger.log('Questions loaded', @questions.length)
+		logger.log('Questions ' + (if reload then 're' else '') + 'loaded', @questions.length)
+
+
+	_watchResource: (filePath, callback) ->
+		fs.watch filePath, ->
+			callback(filePath, true)
 
 
 	_loadTestDataPart: (filePath) ->

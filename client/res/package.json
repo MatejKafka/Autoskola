@@ -1,0 +1,9 @@
+{
+  "name": "autoskola-testy-client",
+  "version": "0.0.1",
+  "author": "Anagmate",
+  "dependencies": {
+    "coffeeify": "2.1.0",
+    "whatwg-fetch": "2.0.3"
+  }
+}

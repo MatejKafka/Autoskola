@@ -1,5 +1,6 @@
 path = require('path')
 express = require('express')
+cors = require('cors')
 handleApiCall = require('./handleApiCall')
 
 logger = global.logger.getChildLogger('webserver')
@@ -15,6 +16,7 @@ module.exports = (store, staticDirPath, port) ->
 	webserver = express()
 
 	# API
+	webserver.all('/api*', cors())
 	webserver.get('/api*', (req, res, next) ->
 		handleApiCall(req, res, next, store)
 	)
