@@ -1,5 +1,6 @@
 bindScreenManager = require('./bindScreenManager')
 getTestCollections = require('./getTestCollections')
+getQuestionHistoryCollection = require('./getQuestionHistoryCollection')
 
 screens = {
 	questionSelect: require('./screens/questionSelect')
@@ -12,4 +13,5 @@ screens = {
 getTestCollections()
 .then (testData) ->
 	window.testData = testData
+	window.questionHistory = {}
 	bindScreenManager(document.getElementById('container'), screens, 'questionSelect')

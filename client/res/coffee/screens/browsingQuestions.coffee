@@ -1,5 +1,14 @@
 MESSAGES = require('../MESSAGES').browsingQuestions
+CONFIG = require('../CONFIG')
 getQuestions = require('../getQuestionIds')
+
+
+renderQuestionImage =
+	image: (img, container) ->
+		container.innerHTML = '<img src="' + img.url + '">'
+
+	multiple: (img, container) ->
+	flash: (img, container) ->
 
 
 generateQuestionElem = (question) ->
@@ -16,11 +25,11 @@ generateQuestionElem = (question) ->
 		img = question.question.img
 		switch img.type
 			when 'img'
-				questionImage.innerHTML = '<img src="' + img.url + '">'
-			#when 'multiple'
-			#when 'flash'
-			else
-				questionImage.innerHTML = '<hr><b><|' + img.type + '|></b><hr>'
+				renderQuestionImage.image(img, questionImage)
+			when 'multiple'
+				renderQuestionImage.multiple(img, questionImage)
+			when 'flash'
+				renderQuestionImage.flash(img, questionImage)
 		questionContainer.appendChild(questionImage)
 
 	return questionContainer
@@ -41,8 +50,14 @@ generateAnswerList = (question) ->
 
 
 renderQuestion = (question, container) ->
-	container.appendChild(generateQuestionElem(question))
-	container.appendChild(generateAnswerList(question))
+	questionElem = generateQuestionElem(question)
+	answerElem = generateAnswerList(question)
+	container.appendChild(questionElem)
+	container.appendChild(answerElem)
+	return {
+		question: questionElem
+		answer: answerElem
+	}
 
 
 module.exports = (container, goto, params) ->
@@ -63,7 +78,8 @@ module.exports = (container, goto, params) ->
 		container.innerHTML = 'Ve vybraných oborech je jen ' + questionIds.length + ' otázek, zkuste nižší číslo otázky.'
 		throw new Error('Too high question number - you only have ' + questionIds.length + ' questions selected')
 
-	question = testData.questions.get(questionIds[questionNumber - 1])
+	questionId = questionIds[questionNumber - 1]
+	question = testData.questions.get(questionId)
 
 
 	container.innerHTML = '
@@ -85,11 +101,37 @@ module.exports = (container, goto, params) ->
 	if questionNumber == questionIds.length
 		nextQuestionButton.style.display = 'none'
 
-	toQuestionSelectButton.addEventListener 'click', ->
-		goto('questionSelect')
-	previousQuestionButton.addEventListener 'click', ->
+	gotoPreviousQuestion = ->
 		goto('browsing', {sections: params.sections, q: questionNumber - 1})
-	nextQuestionButton.addEventListener 'click', ->
+	gotoNextQuestion = ->
 		goto('browsing', {sections: params.sections, q: questionNumber + 1})
 
-	renderQuestion(question, container.getElementsByClassName('testContainer')[0])
+
+	toQuestionSelectButton.addEventListener 'click', ->
+		goto('questionSelect')
+	previousQuestionButton.addEventListener('click', gotoPreviousQuestion)
+	nextQuestionButton.addEventListener('click', gotoNextQuestion)
+
+	questionElems = renderQuestion(question, container.getElementsByClassName('testContainer')[0])
+
+	answerSubmitted = false
+	questionElems.answer.addEventListener 'click', (e) ->
+		if !(e.target instanceof HTMLLIElement)
+			return
+		if answerSubmitted
+			gotoNextQuestion()
+			return
+
+		if e.target.dataset.correct != 'true'
+			e.target.classList.add('incorrectAnswer')
+		for item, i in questionElems.answer.children
+			if item == e.target
+				selectedAnswerIndex = i
+			if item.dataset.correct == 'true'
+				item.classList.add('correctAnswer')
+
+		correctlyAnswered = e.target.dataset.correct == 'true'
+		#questionHistory.add({correctlyAnswered, selectedAnswer: selectedAnswerIndex, question: questionId})
+		if correctlyAnswered
+			setTimeout(gotoNextQuestion, CONFIG.answerClickTimeout)
+		answerSubmitted = true
