@@ -85,10 +85,12 @@ updateView = (container, screens, newHash) ->
 	{page, params} = parseHash(newHash)
 
 	if !screens[page]?
-		throw new Error('Tried to open unknown page: ' + page)
+		return null
 
+	window.scrollTo(0, 0)
 	container.innerHTML = ''
 	screens[page](container, gotoPage, params)
+	return true
 
 
 getHash = ->
@@ -103,9 +105,8 @@ module.exports = (container, screens, defaultScreen) ->
 			updateView(container, screens, defaultScreen)
 
 	if getHash() != ''
-		try
-			updateView(container, screens, getHash())
+		if updateView(container, screens, getHash())
 			return
-		catch
+
 	updateView(container, screens, defaultScreen)
 	return

@@ -1,35 +1,33 @@
-@mainColor: #03a9f4;
-@mainColorDarker: darken(#03a9f4, 10%);
-
-
-@font-face {
-	font-family: 'NotoMain';
-	src: url('../fonts/NotoSans-Regular.ttf');
-}
-
-@font-face {
-	font-family: 'NotoTitle';
-	src: url('../fonts/NotoSans-Regular.ttf');
-}
-
-@font-face {
-	font-family: 'NotoBold';
-	src: url('../fonts/NotoSans-Bold.ttf');
-}
+@import "./variables";
+@import "./fonts";
+@import "./sidebar";
+@import "./questionSelect";
+@import "./browsingQuestions";
 
 
 * {
 	box-sizing: border-box;
+	font-family: NotoMain, sans-serif;
+}
+
+a {
+	color: @mainColorDarker;
+	text-decoration: underline;
+}
+
+button {
+	font-size: 100%;
 }
 
 html, body {
-	position: relative;
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	margin: 0;
 	padding: 0;
 
 	font-family: NotoMain, sans-serif;
+	background-color: @backgroundColor;
 }
 
 hr {
@@ -47,117 +45,15 @@ h1 {
 	font-size: 250%;
 }
 
-#pageTitle {
-	a {
-		color: inherit;
-		text-decoration: none;
-	}
-}
-
-#sidebar {
-	position: fixed;
-	width: 300px;
-	height: 100%;
-	top: 0;
-	left: 0;
-
-	padding: 0 20px;
-
-	background-color: @mainColorDarker;
-	color: white;
-	border-right: 1px solid lightgrey;
-}
-
-#navList {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	li {
-		font-weight: 700;
-		padding: 5px;
-		a {
-			text-decoration: none;
-			color: lighten(@mainColor, 40%);
-		}
-		a:hover {
-			color: inherit;
-			cursor: pointer;
-		}
-	}
-}
 
 #container {
 	position: relative;
 	top: 50px;
 	left: 400px;
-	width: 600px;
+	// flash natural width + 2*2px border
+	width: 644px;
 
 	h1, h2, h3 {
 		color: @mainColorDarker;
 	}
-}
-
-.sectionTitle {
-	margin-bottom: 5px;
-}
-
-.checkboxList {
-	list-style-type: none;
-	padding: 0;
-	margin-left: 10px;
-	margin-top: 0;
-
-	li {
-		padding: 5px;
-		input {
-			vertical-align: -10%;
-			cursor: pointer;
-		}
-
-		label {
-			padding-left: 5px;
-			cursor: pointer;
-		}
-
-		input:hover + label {
-			text-decoration: underline;
-		}
-		label:hover {
-			text-decoration: underline;
-		}
-	}
-}
-
-#section-selectAll {
-	display: none;
-}
-
-label[for=section-selectAll] {
-	font-weight: bold;
-}
-
-.startBrowsingButton {
-	padding: 10px 12px;
-
-	cursor: pointer;
-	color: white;
-	font-family: NotoBold, sans-serif;
-	font-size: inherit;
-	background-color: @mainColorDarker;
-	border: none;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
-}
-
-.startBrowsingButton.disabled {
-	background-color: grey !important;
-}
-
-.correctAnswer {
-	background-color: lightgreen;
-}
-
-.incorrectAnswer {
-	background-color: lightcoral;
 }

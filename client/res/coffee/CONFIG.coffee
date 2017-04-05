@@ -1,2 +1,2 @@
 module.exports =
-	answerClickTimeout: 300
+	answerClickTimeout: 500
