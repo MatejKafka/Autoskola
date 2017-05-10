@@ -56,7 +56,7 @@ module.exports = class Logger
 		if @_parentLogger?
 			@_parentLogger._writeLog(type, path, message, msgData)
 			return
-		@_writeStream.write('\n' + JSON.stringify({type, path, message, msgData}))
+		@_writeStream.write('\n' + JSON.stringify({time: Date.now(), type, path, message, msgData}))
 		return
 
 

@@ -3,7 +3,7 @@ request = require('request')
 jsdom = require('jsdom')
 url = require('url')
 
-module.exports = ({id, correctAnswers}) ->
+module.exports = ({id, correctAnswers, value}) ->
 	console.log 'fetching question ' + id
 	return new Promise (resolve, reject) ->
 		request.post urls.question, {form: {id: id}}, (err, response, body) ->
@@ -65,6 +65,7 @@ module.exports = ({id, correctAnswers}) ->
 				console.log('fetched question ' + id)
 				resolve({
 					id: id
+					value: value
 					question:
 						text: questionText
 						img: img

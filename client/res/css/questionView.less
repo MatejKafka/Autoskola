@@ -1,0 +1,150 @@
+@import "./mixins";
+@import "./variables";
+
+.questionView {
+	.topbar {
+		.backButton {
+			font-weight: bold;
+			float: left;
+			line-height: @defaultLineHeight * 1.5;
+			vertical-align: middle;
+		}
+
+		.questionNavigation {
+			display: inline-block;
+			float: right;
+			a {
+				vertical-align: -8%;
+				font-size: 150%;
+				font-weight: bold;
+				text-decoration: none;
+			}
+		}
+	}
+	.questionNavigationLine {
+		clear: both;
+	}
+
+
+
+	.questionList {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		white-space: nowrap;
+		overflow-x: auto;
+		overflow-y: hidden;
+		// is adjusted by code in renderQuestion.coffee
+		// height of scrollbar is added
+		height: @defaultDistance + (1em * @defaultLineHeight);
+		li {
+			font-weight: bold;
+			display: inline-block;
+			padding: @defaultDistance / 2;
+			a {
+				cursor: pointer;
+			}
+		}
+
+		&::-webkit-scrollbar {
+			height: @defaultDistance;
+			background-color: lightgray;
+			border-radius: 1000px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: @mainColor;
+			border-radius: 1000px;
+		}
+	}
+
+
+
+	.questionContainer {
+		.questionValue {
+			font-weight: bold;
+			margin-bottom: @defaultDistance;
+		}
+		.questionValue::before {
+			content: '('
+		}
+		.questionValue::after {
+			content: ')'
+		}
+
+		.questionText {
+			margin-bottom: @defaultDistance;
+		}
+
+		.questionImage.singleImg, .questionImage.flashImg {
+			background-color: white;
+			border: @borderWidth solid gray;
+			text-align: center;
+			// apparently, having space after image creates a gap for some reason
+			line-height: 0;
+			img, object {
+				max-width: 100%;
+			}
+		}
+	}
+
+
+
+	.answerList {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		li {
+			cursor: pointer;
+			margin: @defaultDistance 0;
+			.borderBlock();
+
+			a {
+				cursor: inherit;
+				text-decoration: inherit;
+				font-weight: inherit;
+				color: inherit;
+			}
+		}
+
+		li:hover {
+			border-color: @mainColor;
+		}
+	}
+
+	.imgAnswerList {
+		display: flex;
+		margin: 0 (-@defaultDistance / 2);
+
+		li {
+			position: relative;
+			display: inline-block;
+			vertical-align: middle;
+			margin: @defaultDistance / 2;
+
+			width: ~"calc((100% / 3))";
+
+			img {
+				vertical-align: middle;
+				width: 100%;
+			}
+		}
+
+		li:before {
+			content: ' ';
+			display: inline-block;
+			vertical-align: middle;
+			height: 100%;
+		}
+
+		.answerImageCover {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			opacity: @imgAnswerCoverOpacity;
+			background-color: transparent;
+		}
+	}
+}

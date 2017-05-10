@@ -1,0 +1,28 @@
+@import "./variables";
+
+.borderBlock(@bgColor: white) {
+	padding: @defaultDistance;
+	background-color: @bgColor;
+	border: @borderWidth solid shade(@bgColor, 25.5%);
+	box-shadow: @borderWidth @borderWidth 5px lightgray;
+}
+
+
+.getDeopaquedColor(@opacity, @targetColor, @backgroundColor) {
+	@deopaquedColor: rgb(
+			(red(@targetColor) - red(@backgroundColor) * (1 - @opacity)) / @opacity,
+			(green(@targetColor) - green(@backgroundColor) * (1 - @opacity)) / @opacity,
+			(blue(@targetColor) - blue(@backgroundColor) * (1 - @opacity)) / @opacity
+	);
+}
+
+
+.setImgAnswerColor(@color) {
+	.borderBlock(@color);
+	background-color: white;
+	.answerImageCover {
+		.getDeopaquedColor(@imgAnswerCoverOpacity, @color, white);
+		//noinspection LessUnresolvedVariable
+		background-color: @deopaquedColor;
+	}
+}

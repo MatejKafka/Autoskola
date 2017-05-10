@@ -1,0 +1,89 @@
+@import "./mixins";
+@import "./variables";
+
+.questionView.testMode {
+	&.showTest {
+		.questionList {
+			li.markedQuestion {
+				color: gray;
+				a {
+					color: tint(@mainColor, 40%);
+				}
+			}
+		}
+
+
+		.textAnswerList {
+			.markedAnswer {
+				.borderBlock(@markedAnswerColor);
+			}
+		}
+
+		.imgAnswerList {
+			.markedAnswer {
+				.borderBlock(@markedAnswerColor);
+				background-color: white;
+				.answerImageCover {
+					.getDeopaquedColor(@imgAnswerCoverOpacity, @markedAnswerColor, white);
+					//noinspection LessUnresolvedVariable
+					background-color: @deopaquedColor;
+				}
+			}
+		}
+	}
+
+
+
+	&.showResults {
+		.questionList {
+			.processColor(@color) {
+				&.currentQuestion {
+					color: darken(@color, 45%);
+				}
+				a {
+					color: darken(@color, 25%);
+				}
+			}
+
+			.correctQuestion {
+				.processColor(darken(@correctAnswerColor, 5%));
+			}
+			.incorrectQuestion {
+				.processColor(@incorrectAnswerColor);
+			}
+			.unansweredQuestion {
+				.processColor(@unansweredColor);
+			}
+		}
+
+
+		.textAnswerList {
+			.correctAnswer {
+				.borderBlock(@correctAnswerColor);
+			}
+
+			.incorrectAnswer {
+				.borderBlock(@incorrectAnswerColor);
+			}
+
+			// highlight for correct answer of unanswered question
+			.correctUnansweredAnswer {
+				.borderBlock(@unansweredColor);
+			}
+		}
+
+		.imgAnswerList {
+			.correctAnswer {
+				.setImgAnswerColor(@correctAnswerColor);
+			}
+
+			.incorrectAnswer {
+				.setImgAnswerColor(@incorrectAnswerColor);
+			}
+
+			.correctUnansweredAnswer {
+				.setImgAnswerColor(@unansweredColor);
+			}
+		}
+	}
+}

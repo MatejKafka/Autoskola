@@ -1,41 +1,53 @@
 @import "./variables";
 
 
-#pageTitle {
-	a {
-		color: inherit;
-		text-decoration: none;
-	}
-}
-
 #sidebar {
 	position: fixed;
-	width: 300px;
+	width: @sidebarWidth;
 	height: 100%;
 	top: 0;
 	left: 0;
 
 	padding: 0 20px;
 
-	background-color: @mainColorDarker;
+	background-color: @mainColor;
 	color: white;
 	border-right: 1px solid lightgrey;
-}
 
-#navList {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	li {
-		font-weight: 700;
-		padding: 5px;
-		a {
-			//text-decoration: none;
-			color: lighten(@mainColor, 40%);
+
+	#pageTitle {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+
+		margin-bottom: 40px;
+
+		h1 {
+			color: lighten(@mainColor, 60%);
+			margin-bottom: 10px;
 		}
-		a:hover {
-			color: inherit;
+
+		h2 {
+			margin-top: 10px;
+			font-size: 140%;
+			color: lighten(@mainColor, 50%);
+		}
+	}
+
+	#navList {
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		li {
+			padding: 5px 5px 5px 0;
 			cursor: pointer;
+			a {
+				//text-decoration: none;
+				color: lighten(@mainColor, 50%);
+			}
+			a:hover {
+				color: inherit;
+			}
 		}
 	}
 }

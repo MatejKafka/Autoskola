@@ -1,146 +1,66 @@
+@import "./mixins";
 @import "./variables";
 
+.questionView.browsingMode {
+	@animationDuration: 0.5s;
 
-.topbar {
-	button {
-		background-color: transparent;
-		border: none;
-		cursor: pointer;
+	.questionList {
+		//.currentQuestion {
+		//	background-color: @mainColorDarker;
+		//	border-radius: 10px;
+		//	color: white;
+		//}
 	}
 
-	.toQuestionSelectButton {
-		color: @mainColorDarker;
-		font-weight: bold;
-		text-decoration: underline;
-		float: left;
-		height: 35px;
-	}
 
-	.questionNavigation {
-		display: inline-block;
-		float: right;
-		button {
-			vertical-align: -8%;
-			font-size: 150%;
-			color: @mainColorDarker;
-			font-weight: bold;
-			outline: none;
-		}
-		button:active {
-			color: spin(@mainColorDarker, 180);
-		}
-	}
-}
-.questionNavigationLine {
-	clear: both;
-}
-
-.questionList {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	white-space: nowrap;
-	overflow-x: scroll;
-	overflow-y: hidden;
-	// is adjusted by code in browsingQuestion.coffee
-	// height of scrollbar is added
-	height: 28px;
-	li {
-		font-weight: bold;
-		display: inline-block;
-		padding: 5px;
-		a {
-			cursor: pointer;
-		}
-	}
-}
-.questionList::-webkit-scrollbar {
-	height: 8px;
-	background-color: lightgray;
-	border-radius: 20px;
-}
-.questionList::-webkit-scrollbar-thumb {
-	background-color: @mainColorDarker;
-	border-radius: 20px;
-}
-
-
-.questionImage.singleImg, .questionImage.flashImg {
-	background-color: white;
-	text-align: center;
-	border: 2px solid gray;
-	// apparently, having space after image creates a gap for some reason
-	line-height: 0;
-	img, object {
-		max-width: 100%;
-	}
-}
-
-.questionText {
-	margin-bottom: 10px;
-}
-
-.answerList {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	li {
-		cursor: pointer;
-		margin: 10px 0;
-		padding: 5px;
-		background-color: white;
-		border: 1px solid lightgray;
-		box-shadow: 2px 2px 5px lightgray;
-	}
-}
-
-.textAnswerList {
-	.correctAnswer {
-		background-color: lightgreen;
-	}
-
-	.incorrectAnswer {
-		background-color: lightcoral;
-	}
-}
-
-.imgAnswerList {
-	display: flex;
-	li {
-		position: relative;
-		display: inline-block;
-		vertical-align: middle;
-		margin: 5px;
-
-		img {
-			vertical-align: middle;
+	.answerList {
+		.clickedAnswer {
+			cursor: default;
 		}
 	}
 
-	li:before {
-		content: ' ';
-		display: inline-block;
-		vertical-align: middle;
-		height: 100%;
+	.textAnswerList {
+		@keyframes incorrectAnswerAnimation {
+			0% {
+				background-color: @incorrectAnswerColor;
+			}
+			100% {
+				text-decoration: line-through;
+				color: grey;
+			}
+		}
+
+		.correctAnswer {
+			.borderBlock(@correctAnswerColor);
+		}
+
+		.incorrectAnswer {
+			animation: incorrectAnswerAnimation @animationDuration linear;
+			text-decoration: line-through;
+			color: grey;
+		}
 	}
 
-	.correctAnswer .answerImageCover {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background-color: limegreen;
-		opacity: 0.5;
-	}
+	.imgAnswerList {
+		@finalIncorrectBgColor: darken(lightgrey, 10%);
+		@keyframes incorrectAnswerAnimationForImg {
+			0% {
+				background-color: @incorrectAnswerColor;
+			}
+			100% {
+				background-color: @finalIncorrectBgColor;
+			}
+		}
 
-	.incorrectAnswer .answerImageCover {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: red;
-		opacity: 0.5;
+		.correctAnswer {
+			.setImgAnswerColor(@correctAnswerColor);
+		}
+
+		.incorrectAnswer {
+			.answerImageCover {
+				animation: incorrectAnswerAnimationForImg @animationDuration linear;
+				background-color: @finalIncorrectBgColor;
+			}
+		}
 	}
 }

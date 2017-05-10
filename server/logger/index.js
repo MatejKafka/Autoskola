@@ -82,6 +82,7 @@
         return;
       }
       this._writeStream.write('\n' + JSON.stringify({
+        time: Date.now(),
         type: type,
         path: path,
         message: message,

@@ -23,7 +23,7 @@ module.exports = (container, goto, params) ->
 				<hr>
 				<div class="questionCounter">Počet vybraných otázek: <span class="selectedQuestionCount">0</span></div>
 
-				<input class="startBrowsingButton" type="submit" value="ZAHÁJIT PROCVIČOVÁNÍ">
+				<input class="actionButton startBrowsingButton" type="submit" value="ZAHÁJIT PROCVIČOVÁNÍ">
 			</form>
 		</div>'
 

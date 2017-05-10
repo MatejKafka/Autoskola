@@ -2,24 +2,25 @@
 
 
 .sectionTitle {
-	margin-bottom: 5px;
+	margin-top: @defaultDistance;
+	margin-bottom: @defaultDistance / 2;
 }
 
 .checkboxList {
 	list-style-type: none;
 	padding: 0;
-	margin-left: 10px;
-	margin-top: 0;
+	margin: 0;
 
 	li {
-		padding: 5px;
+		padding: @defaultDistance / 2;
 		input {
+			height: 1em;
 			vertical-align: -10%;
 			cursor: pointer;
 		}
 
 		label {
-			padding-left: 5px;
+			padding-left: @defaultDistance / 2;
 			cursor: pointer;
 		}
 
@@ -51,24 +52,10 @@
 
 .questionCounter {
 	font-weight: bold;
-	margin: 16px 0;
+	margin: (@defaultDistance * 2) 0;
+	padding-left: @defaultDistance;
 }
-
 
 .startBrowsingButton {
-	padding: 10px 12px;
-
-	cursor: pointer;
-	color: white;
-	font-family: NotoBold, sans-serif;
-	font-size: inherit;
-	background-color: @mainColorDarker;
-	border: none;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
-}
-
-.startBrowsingButton.disabled {
-	background-color: grey !important;
+	margin-left: @defaultDistance;
 }

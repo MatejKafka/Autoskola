@@ -38,6 +38,7 @@
     return process.exit(1);
   }).then(function(sectionList) {
     var section, sectionPromises;
+    sectionList = sectionList.filter(sectionFilterFn);
     sectionPromises = (function() {
       var j, len, results;
       results = [];
@@ -54,7 +55,6 @@
     return process.exit(1);
   }).then(function(sections) {
     var i, j, k, len, len1, question, questionIds, questionPromises, questions, ref, section, sectionQuestionIds;
-    sections = sections.filter(sectionFilterFn);
     questionIds = {};
     questions = [];
     for (j = 0, len = sections.length; j < len; j++) {

@@ -11,8 +11,8 @@
   url = require('url');
 
   module.exports = function(arg) {
-    var correctAnswers, id;
-    id = arg.id, correctAnswers = arg.correctAnswers;
+    var correctAnswers, id, value;
+    id = arg.id, correctAnswers = arg.correctAnswers, value = arg.value;
     console.log('fetching question ' + id);
     return new Promise(function(resolve, reject) {
       return request.post(urls.question, {
@@ -94,6 +94,7 @@
           console.log('fetched question ' + id);
           return resolve({
             id: id,
+            value: value,
             question: {
               text: questionText,
               img: img

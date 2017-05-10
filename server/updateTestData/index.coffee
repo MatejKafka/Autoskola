@@ -30,6 +30,9 @@ fetchSectionList()
 	process.exit(1)
 
 .then (sectionList) ->
+	# filter sections not related to B license exams
+	sectionList = sectionList.filter(sectionFilterFn)
+
 	sectionPromises = for section in sectionList
 		fetchSection(section)
 	return Promise.all(sectionPromises)
@@ -40,9 +43,6 @@ fetchSectionList()
 	process.exit(1)
 
 .then (sections) ->
-	# filter sections not related to B license exams
-	sections = sections.filter(sectionFilterFn)
-
 	questionIds = {}
 	questions = []
 	for section in sections

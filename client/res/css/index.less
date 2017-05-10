@@ -1,18 +1,32 @@
+@import "./mixins";
 @import "./variables";
 @import "./fonts";
 @import "./sidebar";
 @import "./questionSelect";
 @import "./browsingQuestions";
+@import "./practiceTest";
+@import "./test";
+@import "./questionView";
+
+html {
+	//font-size: 25px;
+}
 
 
 * {
 	box-sizing: border-box;
 	font-family: NotoMain, sans-serif;
+	line-height: @defaultLineHeight;
 }
 
 a {
-	color: @mainColorDarker;
+	color: @mainColor;
 	text-decoration: underline;
+	font-weight: bold;
+
+	&:hover {
+		color: spin(@mainColor, 180);
+	}
 }
 
 button {
@@ -34,6 +48,7 @@ hr {
 	background-color: lightgray;
 	height: 1px;
 	border: none;
+	margin: @defaultDistance (-@defaultDistance * 2);
 }
 
 h1, h2, h3 {
@@ -48,12 +63,29 @@ h1 {
 
 #container {
 	position: relative;
-	top: 50px;
-	left: 400px;
-	// flash natural width + 2*2px border
-	width: 644px;
+	top: @containerMarginTop;
+	left: ~"calc(@{sidebarWidth} + @{containerMarginLeft})";
+	width: @containerWidth;
+	margin-bottom: 10px;
 
 	h1, h2, h3 {
-		color: @mainColorDarker;
+		color: @mainColor;
 	}
+}
+
+
+.actionButton {
+	padding: 10px 12px;
+
+	cursor: pointer;
+	color: white;
+	font-family: NotoBold, sans-serif;
+	font-size: inherit;
+	background-color: @mainColor;
+	border: none;
+	border-radius: 2px;
+}
+
+.actionButton.disabled {
+	background-color: grey !important;
 }
