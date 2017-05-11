@@ -1,0 +1,67 @@
+@import "./mixins";
+@import "./variables";
+
+.browsing {
+	.questionView.browsingMode {
+		@animationDuration: 0.5s;
+
+		.questionList {
+			//.currentQuestion {
+			//	background-color: @mainColorDarker;
+			//	border-radius: 10px;
+			//	color: white;
+			//}
+		}
+
+		.answerList {
+			.clickedAnswer {
+				cursor: default;
+			}
+		}
+
+		.textAnswerList {
+			@keyframes incorrectAnswerAnimation {
+				0% {
+					background-color: @incorrectAnswerColor;
+				}
+				100% {
+					text-decoration: line-through;
+					color: grey;
+				}
+			}
+
+			.correctAnswer {
+				.borderBlock(@correctAnswerColor);
+			}
+
+			.incorrectAnswer {
+				animation: incorrectAnswerAnimation @animationDuration linear;
+				text-decoration: line-through;
+				color: grey;
+			}
+		}
+
+		.imgAnswerList {
+			@finalIncorrectBgColor: darken(lightgrey, 10%);
+			@keyframes incorrectAnswerAnimationForImg {
+				0% {
+					background-color: @incorrectAnswerColor;
+				}
+				100% {
+					background-color: @finalIncorrectBgColor;
+				}
+			}
+
+			.correctAnswer {
+				.setImgAnswerColor(@correctAnswerColor);
+			}
+
+			.incorrectAnswer {
+				.answerImageCover {
+					animation: incorrectAnswerAnimationForImg @animationDuration linear;
+					background-color: @finalIncorrectBgColor;
+				}
+			}
+		}
+	}
+}

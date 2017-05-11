@@ -1,88 +1,86 @@
 @import "./mixins";
 @import "./variables";
 
-.questionView.testMode {
-	&.showTest {
-		.questionList {
-			li.markedQuestion {
-				color: gray;
-				a {
-					color: tint(@mainColor, 40%);
+.practiceTest {
+	.questionView.testMode {
+		&.showTest {
+			.questionList {
+				li.markedQuestion {
+					color: gray;
+					a {
+						color: tint(@mainColor, 40%);
+					}
+				}
+			}
+
+			.textAnswerList {
+				.markedAnswer {
+					.borderBlock(@markedAnswerColor);
+				}
+			}
+
+			.imgAnswerList {
+				.markedAnswer {
+					.borderBlock(@markedAnswerColor);
+					background-color: white;
+					.answerImageCover {
+						.getDeopaquedColor(@imgAnswerCoverOpacity, @markedAnswerColor, white);
+						//noinspection LessUnresolvedVariable
+						background-color: @deopaquedColor;
+					}
 				}
 			}
 		}
 
-
-		.textAnswerList {
-			.markedAnswer {
-				.borderBlock(@markedAnswerColor);
-			}
-		}
-
-		.imgAnswerList {
-			.markedAnswer {
-				.borderBlock(@markedAnswerColor);
-				background-color: white;
-				.answerImageCover {
-					.getDeopaquedColor(@imgAnswerCoverOpacity, @markedAnswerColor, white);
-					//noinspection LessUnresolvedVariable
-					background-color: @deopaquedColor;
+		&.showResults {
+			.questionList {
+				.processColor(@color) {
+					&.currentQuestion {
+						color: darken(@color, 45%);
+					}
+					a {
+						color: darken(@color, 25%);
+					}
 				}
-			}
-		}
-	}
 
-
-
-	&.showResults {
-		.questionList {
-			.processColor(@color) {
-				&.currentQuestion {
-					color: darken(@color, 45%);
+				.correctQuestion {
+					.processColor(darken(@correctAnswerColor, 5%));
 				}
-				a {
-					color: darken(@color, 25%);
+				.incorrectQuestion {
+					.processColor(@incorrectAnswerColor);
+				}
+				.unansweredQuestion {
+					.processColor(@unansweredColor);
 				}
 			}
 
-			.correctQuestion {
-				.processColor(darken(@correctAnswerColor, 5%));
-			}
-			.incorrectQuestion {
-				.processColor(@incorrectAnswerColor);
-			}
-			.unansweredQuestion {
-				.processColor(@unansweredColor);
-			}
-		}
+			.textAnswerList {
+				.correctAnswer {
+					.borderBlock(@correctAnswerColor);
+				}
 
+				.incorrectAnswer {
+					.borderBlock(@incorrectAnswerColor);
+				}
 
-		.textAnswerList {
-			.correctAnswer {
-				.borderBlock(@correctAnswerColor);
+				// highlight for correct answer of unanswered question
+				.correctUnansweredAnswer {
+					.borderBlock(@unansweredColor);
+				}
 			}
 
-			.incorrectAnswer {
-				.borderBlock(@incorrectAnswerColor);
-			}
+			.imgAnswerList {
+				.correctAnswer {
+					.setImgAnswerColor(@correctAnswerColor);
+				}
 
-			// highlight for correct answer of unanswered question
-			.correctUnansweredAnswer {
-				.borderBlock(@unansweredColor);
-			}
-		}
+				.incorrectAnswer {
+					.setImgAnswerColor(@incorrectAnswerColor);
+				}
 
-		.imgAnswerList {
-			.correctAnswer {
-				.setImgAnswerColor(@correctAnswerColor);
-			}
-
-			.incorrectAnswer {
-				.setImgAnswerColor(@incorrectAnswerColor);
-			}
-
-			.correctUnansweredAnswer {
-				.setImgAnswerColor(@unansweredColor);
+				.correctUnansweredAnswer {
+					.setImgAnswerColor(@unansweredColor);
+				}
 			}
 		}
 	}

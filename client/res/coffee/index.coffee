@@ -13,7 +13,7 @@ questionTypes = require('./questionTypes')
 screens = {
 	home: require('./screens/home')
 	questionSelect: require('./screens/questionSelect')
-	browsing: require('./screens/browsingQuestions')
+	browsing: require('./screens/browsing')
 	prepareTest: require('./screens/prepareTest')
 	practiceTest: require('./screens/practiceTest')
 	evaluateTest: require('./screens/evaluateTest')
@@ -56,13 +56,12 @@ getTestCollections()
 	window.db.currentTest = null
 
 	# TODO: remove
-	test = require('./screens/prepareTest/generateTest')()
-	test.questions[0] = db.questions.get(2079)
-	for question, i in test.questions
-		answerIndex = Math.floor(Math.random() * (question.answers.length + 1)) - 1
-		if answerIndex == -1
-			answerIndex = null
-		test.answers[i] = answerIndex
-	window.db.currentTest = test
+	#test = require('./screens/prepareTest/generateTest')()
+	#for question, i in test.questions
+	#	answerIndex = Math.floor(Math.random() * (question.answers.length + 1)) - 1
+	#	if answerIndex == -1
+	#		answerIndex = null
+	#	test.answers[i] = answerIndex
+	#window.db.currentTest = test
 
 	bindScreenManager(document.getElementById('container'), screens, 'home')

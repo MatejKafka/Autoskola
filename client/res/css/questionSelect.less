@@ -1,61 +1,62 @@
 @import "./variables";
 
+.questionSelect {
+	.sectionTitle {
+		margin-top: @defaultDistance;
+		margin-bottom: @defaultDistance / 2;
+	}
 
-.sectionTitle {
-	margin-top: @defaultDistance;
-	margin-bottom: @defaultDistance / 2;
-}
+	.checkboxList {
+		list-style-type: none;
+		padding: 0;
+		margin: 0;
 
-.checkboxList {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+		li {
+			padding: @defaultDistance / 2;
+			input {
+				height: 1em;
+				vertical-align: -10%;
+				cursor: pointer;
+			}
 
-	li {
-		padding: @defaultDistance / 2;
-		input {
-			height: 1em;
-			vertical-align: -10%;
-			cursor: pointer;
+			label {
+				padding-left: @defaultDistance / 2;
+				cursor: pointer;
+			}
+
+			input:hover + label {
+				text-decoration: underline;
+			}
+			label:hover {
+				text-decoration: underline;
+			}
+
+			.questionCountWrapper {
+				font-weight: bold;
+			}
 		}
 
-		label {
-			padding-left: @defaultDistance / 2;
-			cursor: pointer;
+		.emptyFilter {
+			opacity: 0.6;
 		}
 
-		input:hover + label {
-			text-decoration: underline;
-		}
-		label:hover {
-			text-decoration: underline;
-		}
-
-		.questionCountWrapper {
-			font-weight: bold;
+		li[data-filter-id=selectAll] {
+			input {
+				display: none;
+			}
+			label {
+				font-weight: bold;
+			}
 		}
 	}
 
-	.emptyFilter {
-		opacity: 0.6;
+	.questionCounter {
+		font-weight: bold;
+		margin: (@defaultDistance * 2) 0;
+		padding-left: @defaultDistance;
 	}
 
-	li[data-filter-id=selectAll] {
-		input {
-			display: none;
-		}
-		label {
-			font-weight: bold;
-		}
+	.startBrowsingButton {
+		margin-left: @defaultDistance;
 	}
-}
-
-.questionCounter {
-	font-weight: bold;
-	margin: (@defaultDistance * 2) 0;
-	padding-left: @defaultDistance;
-}
-
-.startBrowsingButton {
-	margin-left: @defaultDistance;
 }

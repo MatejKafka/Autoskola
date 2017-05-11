@@ -9,7 +9,7 @@ module.exports =
 		testMode: false
 
 	# TODO: change when finished
-	testSuccessThreshold: 12 # points
+	testSuccessThreshold: 20 # points
 
 	# pairs of [sectionId, questionCount]
 	testComposition: [
