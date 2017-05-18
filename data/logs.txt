@@ -425,3 +425,19 @@
 {"time":1494355982067,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
 {"time":1494355982067,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
 {"time":1494355982067,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 9 items","msgData":{"resultLength":9}}
+{"time":1494610120738,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1494610120759,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1494610120790,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
+{"time":1494610120791,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1494610120809,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1494799906083,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1494799906083,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1494799906083,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 739 items","msgData":{"resultLength":739}}
+{"time":1494799906128,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1494799906128,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1494799906128,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 9 items","msgData":{"resultLength":9}}
+{"time":1495104447283,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1495104447303,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1495104447334,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
+{"time":1495104447336,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1495104447354,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}

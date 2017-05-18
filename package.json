@@ -1,14 +1,14 @@
 {
-	"name": "autoskola-testy",
-	"version": "0.0.1",
-	"scripts": {
-		"preinstall": "npm install -g less-plugin-autoprefix",
-		"start": "cd server && npm start",
-		"updateTestData": "cd server && npm run-script updateTestData"
-	},
-	"author": "Anagmate",
-	"dependencies": {
-		"less-plugin-autoprefix": "1.5.1",
-		"highcharts": "5.0.11"
-	}
+  "name": "autoskola-testy",
+  "version": "0.0.1",
+  "scripts": {
+    "preinstall": "npm install -g less-plugin-autoprefix",
+    "start": "cd server && npm start",
+    "updateTestData": "cd server && npm run-script updateTestData"
+  },
+  "author": "Anagmate",
+  "dependencies": {
+    "coffeeify": "2.1.0",
+    "less-plugin-autoprefix": "1.5.1"
+  }
 }

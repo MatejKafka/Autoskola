@@ -21,6 +21,9 @@
   module.exports = function(arg) {
     var id, name;
     id = arg.id, name = arg.name;
+    if (QUESTION_VALUES[id] == null) {
+      throw new Error('Section doesn\'t have any value assigned: ' + id);
+    }
     return new Promise(function(resolve, reject) {
       return request.post(urls.section, {
         form: {
@@ -45,8 +48,8 @@
             rawQuestion = ref[i];
             results.push({
               id: rawQuestion.QuestionID,
-              correctAnswers: rawQuestion.CorrectAnswers,
-              value: QUESTION_VALUES[id] || 0
+              code: rawQuestion.Code,
+              value: QUESTION_VALUES[id]
             });
           }
           return results;

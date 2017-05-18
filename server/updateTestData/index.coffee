@@ -6,6 +6,9 @@ fetchSection = require('./fetchSection')
 fetchQuestion = require('./fetchQuestion')
 
 
+# TODO: redo from scratch using "Vestnik" section of source website
+# TODO: refactor into multiple parts
+
 sectionFilterFn = (section) ->
 	return [15, 18, 23].indexOf(section.id) < 0
 
@@ -70,6 +73,7 @@ fetchSectionList()
 	process.exit(1)
 
 .then (questions) ->
+	# TODO: check img type - conditionally download all images to local
 	fs.writeFileSync(questionFilePath, JSON.stringify(questions))
 	console.log('SAVED UPDATED QUESTIONS')
 	console.log('UPDATE FINISHED')

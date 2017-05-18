@@ -9,6 +9,7 @@
   },
   "author": "Anagmate",
   "dependencies": {
+    "asyncawait": "1.0.6",
     "cors": "2.8.1",
     "express": "4.15.2",
     "jsdom": "9.11.0",

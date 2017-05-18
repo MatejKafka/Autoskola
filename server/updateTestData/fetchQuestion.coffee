@@ -3,8 +3,7 @@ request = require('request')
 jsdom = require('jsdom')
 url = require('url')
 
-module.exports = ({id, correctAnswers, value}) ->
-	console.log 'fetching question ' + id
+module.exports = ({id, code, correctAnswers, value}) ->
 	return new Promise (resolve, reject) ->
 		request.post urls.question, {form: {id: id}}, (err, response, body) ->
 			if err?
@@ -62,9 +61,9 @@ module.exports = ({id, correctAnswers, value}) ->
 					isCorrectAnswer = correctAnswers.indexOf(answerId) > -1
 					return {text: answerText, letter, correct: isCorrectAnswer}
 
-				console.log('fetched question ' + id)
 				resolve({
 					id: id
+					code: code
 					value: value
 					question:
 						text: questionText

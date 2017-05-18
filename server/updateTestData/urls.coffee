@@ -5,3 +5,4 @@ module.exports =
 	sectionList: HOSTNAME + '/Home/Tests/'
 	section: HOSTNAME + '/Test/GeneratePractise/'
 	question: HOSTNAME + '/Test/RenderQuestion/'
+	questionPage: HOSTNAME + '/Vestnik/ShowPartial'

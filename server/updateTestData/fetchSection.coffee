@@ -15,6 +15,9 @@ QUESTION_VALUES =
 
 
 module.exports = ({id, name}) ->
+	if !QUESTION_VALUES[id]?
+		throw new Error('Section doesn\'t have any value assigned: ' + id)
+
 	return new Promise (resolve, reject) ->
 		request.post urls.section, {form: {lectureID: id}, json: true}, (err, response, rawSection) ->
 			if err?
@@ -26,7 +29,8 @@ module.exports = ({id, name}) ->
 				return
 
 			questions = for rawQuestion in rawSection.Questions
-				{id: rawQuestion.QuestionID, correctAnswers: rawQuestion.CorrectAnswers, value: QUESTION_VALUES[id] || 0}
+				{id: rawQuestion.QuestionID, code: rawQuestion.Code, value: QUESTION_VALUES[id]}
+
 			resolve({
 				id, name,
 				questions
