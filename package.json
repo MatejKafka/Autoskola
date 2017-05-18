@@ -2,7 +2,8 @@
   "name": "autoskola-testy",
   "version": "0.0.1",
   "scripts": {
-    "preinstall": "npm install -g less-plugin-autoprefix",
+    "preinstall": "npm install -g less && npm install -g less-plugin-autoprefix && npm install -g browserify",
+    "postinstall": "cd server && npm install && cd ../client/res && npm install",
     "start": "cd server && npm start",
     "updateTestData": "cd server && npm run-script updateTestData"
   },

@@ -441,3 +441,14 @@
 {"time":1495104447334,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
 {"time":1495104447336,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
 {"time":1495104447354,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1495110524523,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1495110524523,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1495110524538,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
+{"time":1495110524538,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1495110524554,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1495111652247,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1495111652247,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1495111652247,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 739 items","msgData":{"resultLength":739}}
+{"time":1495111652264,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1495111652264,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1495111652264,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 9 items","msgData":{"resultLength":9}}
