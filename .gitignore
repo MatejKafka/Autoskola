@@ -1,2 +1,4 @@
-server/node_modules/
-client/res/node_modules/
+node_modules/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
