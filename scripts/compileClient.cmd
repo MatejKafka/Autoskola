@@ -1,11 +1,13 @@
 @echo off
 setlocal
 cd %~dp0
-cd ../client/res
 
-if not exist .\js\NUL (
-    mkdir .\js
+if not exist ..\client\res\js\NUL (
+    mkdir ..\client\res\js
 )
-call browserify -t coffeeify --debug --extension=".coffee" ./coffee/index.coffee > ./js/bundle.js
+
+call "./node_modules/.bin/browserify.cmd" ^
+    -t coffeeify --debug --extension=".coffee" ^
+     "../client/res/coffee/index.coffee" > "../client/res/js/bundle.js"
 
 endlocal
