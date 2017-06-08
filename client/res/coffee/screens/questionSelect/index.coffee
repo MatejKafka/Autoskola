@@ -28,10 +28,10 @@ module.exports = (container, goto, params) ->
 		</div>'
 
 	sectionListElem = container.getElementsByClassName('sectionList')[0]
-	sectionList = new QuestionSelectList(sectionListElem, db.sections, 'sections', db.questions)
+	sectionList = new QuestionSelectList(sectionListElem, db.store.sections, 'sections', db.store.questions)
 
 	questionTypeListElem = container.getElementsByClassName('questionTypeList')[0]
-	questionTypeList = new QuestionSelectList(questionTypeListElem, db.questionTypes, 'questionTypes', sectionList)
+	questionTypeList = new QuestionSelectList(questionTypeListElem, db.store.questionTypes, 'questionTypes', sectionList)
 
 	questionNumberDisplayElem = container.getElementsByClassName('selectedQuestionCount')[0]
 	questionNumberDisplay = new QuestionNumberDisplay(questionNumberDisplayElem, questionTypeList)
@@ -59,9 +59,9 @@ module.exports = (container, goto, params) ->
 		selectedSections = sectionList.getSelectedFilterIds()
 		selectedQuestionTypes = questionTypeList.getSelectedFilterIds()
 
-		if selectedSections.length == db.sections.length
+		if selectedSections.length == db.store.sections.length
 			selectedSections = '*'
-		if selectedQuestionTypes.length == db.questionTypes.length
+		if selectedQuestionTypes.length == db.store.questionTypes.length
 			selectedQuestionTypes = '*'
 		goto('browsing', {
 			sections: selectedSections

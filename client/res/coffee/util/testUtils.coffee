@@ -9,7 +9,7 @@ window.util =
 		localStorage.removeItem('questionsSaveTime')
 
 
-	arrayStore: require('./store/arrayStore')
+	arrayStore: require('../store/arrayStore')
 
 
 	evaluateCurrentTest: ->

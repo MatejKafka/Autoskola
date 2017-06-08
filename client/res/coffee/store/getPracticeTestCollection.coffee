@@ -1,5 +1,5 @@
 arrayStore = require('./arrayStore')
-validateObjStructure = require('../validateObjStructure')
+validateObjStructure = require('../util/validateObjStructure')
 
 
 testObjTemplate = {

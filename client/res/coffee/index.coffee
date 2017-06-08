@@ -2,9 +2,9 @@ MESSAGES = require('./MESSAGES')
 CONFIG = require('./CONFIG')
 
 
-require('./testUtils')
+require('./util/testUtils')
 
-bindScreenManager = require('./bindScreenManager')
+bindScreenManager = require('./screenManager/bindScreenManager')
 getTestCollections = require('./store/getTestCollections')
 getAnswerHistoryCollection = require('./store/getAnswerHistoryCollection')
 getPracticeTestCollection = require('./store/getPracticeTestCollection')
@@ -49,11 +49,15 @@ window.onunhandledrejection = (event) ->
 # TODO: remove link from nav menu (signifies current section)
 getTestCollections()
 .then (testData) ->
-	window.db = testData
-	window.db.answers = getAnswerHistoryCollection('answerHistory')
-	window.db.questionTypes = questionTypes
-	window.db.finishedTests = getPracticeTestCollection('finishedTests')
-	window.db.currentTest = null
+	window.db = {}
+
+	db.store = testData
+	db.store.answers = getAnswerHistoryCollection('answerHistory')
+	db.store.questionTypes = questionTypes
+	db.store.finishedTests = getPracticeTestCollection('finishedTests')
+
+	db.state = {}
+	db.state.currentTest = null
 
 	# TODO: remove
 	#test = require('./screens/prepareTest/generateTest')()
@@ -62,6 +66,6 @@ getTestCollections()
 	#	if answerIndex == -1
 	#		answerIndex = null
 	#	test.answers[i] = answerIndex
-	#window.db.currentTest = test
+	#window.state.db.currentTest = test
 
 	bindScreenManager(document.getElementById('container'), screens, 'home')

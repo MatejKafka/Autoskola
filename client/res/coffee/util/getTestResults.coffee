@@ -1,4 +1,4 @@
-CONFIG = require('./CONFIG')
+CONFIG = require('../CONFIG')
 
 module.exports = (testObj) ->
 	maxScore = 0

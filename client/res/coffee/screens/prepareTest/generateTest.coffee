@@ -3,7 +3,7 @@ CONFIG = require('../../CONFIG')
 
 getRandomQuestions = (sections, count) ->
 	questionIds = []
-	for section in db.sections
+	for section in db.store.sections
 		if sections.indexOf(section.id) > -1
 			for questionId in section.questions
 				questionIds.push(questionId)
@@ -31,7 +31,7 @@ getTestQuestionIds = ->
 
 module.exports = ->
 	questionIds = getTestQuestionIds()
-	questions = questionIds.map(db.questions.get.bind(db.questions))
+	questions = questionIds.map(db.store.questions.get.bind(db.store.questions))
 
 	return {
 		#timer: timer

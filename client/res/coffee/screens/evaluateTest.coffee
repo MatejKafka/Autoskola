@@ -3,15 +3,15 @@ MESSAGES = require('../MESSAGES').evaluateTest
 PASS_SCORE = CONFIG.testSuccessThreshold
 
 
-e = require('../createElem')
-getTestResults = require('../getTestResults')
+e = require('../util/createElem')
+getTestResults = require('../util/getTestResults')
 
 
 saveTestResults = (test, results) ->
 	console.debug('Saving test results...')
 	endTime = Date.now()
 
-	testId = db.finishedTests.add({
+	testId = db.store.finishedTests.add({
 		startTime: test.startTime
 		endTime: endTime
 		passScore: PASS_SCORE
@@ -23,7 +23,7 @@ saveTestResults = (test, results) ->
 	console.debug('(testId = ' + testId + ')')
 
 	for isCorrect, i in results.answerResults
-		db.answers.add({
+		db.store.answers.add({
 			mode: 'practiceTest'
 			testId: testId
 			correctlyAnswered: isCorrect
@@ -90,16 +90,18 @@ renderQuestionList = (test, testResults, goto) ->
 
 
 module.exports = (container, goto) ->
-	if !db.currentTest?
+	currentTest = db.state.currentTest
+
+	if !currentTest?
 		goto('prepareTest')
 		return
 
-	testResults = getTestResults(db.currentTest)
+	testResults = getTestResults(currentTest)
 
-	if !db.currentTest.finished
-		saveTestResults(db.currentTest, testResults)
-		db.currentTest.results = testResults
-		db.currentTest.finished = true
+	if !currentTest.finished
+		saveTestResults(currentTest, testResults)
+		currentTest.results = testResults
+		currentTest.finished = true
 
 
 	resultContainer = e('div .testResults')
@@ -111,10 +113,10 @@ module.exports = (container, goto) ->
 		e('br')
 		renderSuccessBar(testResults.score, testResults.maxScore)
 		#e('hr')
-		renderQuestionList(db.currentTest, testResults, goto)
+		renderQuestionList(currentTest, testResults, goto)
 	]))
 
 	backToTestButton.addEventListener 'click', ->
-		db.currentTest = null
+		db.state.currentTest = null
 		goto('prepareTest')
 		return

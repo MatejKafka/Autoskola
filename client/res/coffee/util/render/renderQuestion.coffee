@@ -1,4 +1,4 @@
-MESSAGES = require('./MESSAGES').browsingQuestions
+MESSAGES = require('../../MESSAGES').browsingQuestions
 
 
 QuestionView = require('./QuestionView')

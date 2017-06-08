@@ -15,7 +15,7 @@ getCorrectRatio = (answers) ->
 
 
 getAnswers = (questionId) ->
-	db.answers.getAnswersByQuestionId(questionId).filter (a) ->
+	db.store.answers.getAnswersByQuestionId(questionId).filter (a) ->
 		# TODO: work with later attempts
 		return a.attemptNumber == 0
 

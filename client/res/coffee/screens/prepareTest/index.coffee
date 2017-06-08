@@ -56,11 +56,12 @@ renderFinishedTestChart = (container, testResults) ->
 
 
 module.exports = (container, goto) ->
-	if db.currentTest?
-		if db.currentTest.finished
-			db.currentTest = null
+	currentTest = db.state.currentTest
+	if currentTest?
+		if currentTest.finished
+			currentTest = null
 		else
-			goto('practiceTest', {q: db.currentTest.lastViewedIndex + 1})
+			goto('practiceTest', {q: currentTest.lastViewedIndex + 1})
 			return
 
 	container.innerHTML = '
@@ -71,10 +72,10 @@ module.exports = (container, goto) ->
 	'
 
 	testChartContainer = container.getElementsByClassName('finishedTestChart')[0]
-	renderFinishedTestChart(testChartContainer, db.finishedTests)
+	renderFinishedTestChart(testChartContainer, db.store.finishedTests)
 
 	startButton = container.getElementsByClassName('startTestButton')[0]
 	startButton.addEventListener 'click', ->
 		test = generateTest()
-		db.currentTest = test
+		db.state.currentTest = test
 		goto('practiceTest')

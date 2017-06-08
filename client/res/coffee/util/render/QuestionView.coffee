@@ -1,6 +1,6 @@
 EventEmitter = require('events')
-MESSAGES = require('./MESSAGES').browsingQuestions
-createElem = require('./createElem')
+MESSAGES = require('../../MESSAGES').browsingQuestions
+createElem = require('../createElem')
 
 # TODO: add links inside answer li - tabindex & cursor support
 

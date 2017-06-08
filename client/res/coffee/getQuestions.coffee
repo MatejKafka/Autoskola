@@ -1,7 +1,7 @@
 getSectionQuestions = (sectionIds) ->
 	questions = []
 	questionsBySection = []
-	db.sections.forEach (section) ->
+	db.store.sections.forEach (section) ->
 		if !sectionIds? || sectionIds.indexOf(section.id) > -1
 			sectionQuestions = []
 			questionsBySection.push(sectionQuestions)
@@ -17,7 +17,7 @@ getSectionQuestions = (sectionIds) ->
 		assignedThisRound = 0
 		for questions in questionsBySection
 			if questions[i]?
-				out.push(db.questions.get(questions[i]))
+				out.push(db.store.questions.get(questions[i]))
 				assignedThisRound++
 		i++
 
@@ -29,7 +29,7 @@ getQuestions = (sectionIds, questionTypeIds) ->
 	if !questionTypeIds?
 		return questionIds
 	out = []
-	for filter in db.questionTypes
+	for filter in db.store.questionTypes
 		if questionTypeIds.indexOf(filter.id) > -1
 			filteredQuestions = questionIds.filter(filter.filterFn)
 			for question in filteredQuestions

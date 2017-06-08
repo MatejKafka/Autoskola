@@ -1,8 +1,8 @@
 MESSAGES = require('../MESSAGES').browsingQuestions
 CONFIG = require('../CONFIG')
 getQuestions = require('../getQuestions')
-renderQuestion = require('../renderQuestion')
-createElem = require('../createElem')
+renderQuestion = require('../util/render/renderQuestion')
+createElem = require('../util/createElem')
 
 
 parseParams = (params) ->
@@ -75,7 +75,7 @@ module.exports = (container, goto, params) ->
 			answerSubmitCount++
 
 			saveAnswer = (attempt) ->
-				db.answers.add({
+				db.store.answers.add({
 					mode: 'browsing'
 					correctlyAnswered: answer.correct
 					selectedAnswerIndex: index

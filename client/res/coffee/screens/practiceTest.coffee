@@ -1,12 +1,14 @@
 MESSAGES = require('../MESSAGES').practiceTest
 CONFIG = require('../CONFIG')
 getQuestions = require('../getQuestions')
-renderQuestion = require('../renderQuestion')
-createElem = require('../createElem')
+renderQuestion = require('../util/render/renderQuestion')
+createElem = require('../util/createElem')
 
 
 module.exports = (container, goto, params) ->
-	if !db.currentTest?
+	currentTest = db.state.currentTest
+
+	if !currentTest?
 		goto('prepareTest')
 		return
 
@@ -19,12 +21,12 @@ module.exports = (container, goto, params) ->
 	gotoQuestion = (i) ->
 		goto('practiceTest', Object.assign({}, params, {q: i + 1}))
 
-	db.currentTest.lastViewedIndex = qIndex
-	questions = db.currentTest.questions
+	currentTest.lastViewedIndex = qIndex
+	questions = currentTest.questions
 	question = questions[qIndex]
 
 	questionContainer = createElem('div .questionView .testMode ' +
-			if db.currentTest.finished then '.showResults' else '.showTest')
+			if currentTest.finished then '.showResults' else '.showTest')
 	container.appendChild(questionContainer)
 
 	clicked = false
@@ -33,7 +35,7 @@ module.exports = (container, goto, params) ->
 		gotoQuestion: gotoQuestion
 
 		lastQuestionAnswer: ->
-			if db.currentTest.finished
+			if currentTest.finished
 				gotoQuestion(0)
 			else if confirm(MESSAGES.finishedPopup)
 				goto('evaluateTest')
@@ -42,16 +44,16 @@ module.exports = (container, goto, params) ->
 			return
 
 		backButtonClick: ->
-			if db.currentTest.finished || confirm(MESSAGES.evaluateTestPopup)
+			if currentTest.finished || confirm(MESSAGES.evaluateTestPopup)
 				goto('evaluateTest')
 			return
 
 
 		prepareView: (highlightAnswer, highlightQuestion) ->
-			if db.currentTest.finished
+			if currentTest.finished
 				container.getElementsByClassName('backButton')[0].innerHTML = MESSAGES.backToResults
 
-				for isCorrect, i in db.currentTest.results.answerResults
+				for isCorrect, i in currentTest.results.answerResults
 					switch isCorrect
 						when true
 							highlightQuestion(i, 'correct')
@@ -60,7 +62,7 @@ module.exports = (container, goto, params) ->
 						else
 							highlightQuestion(i, 'unanswered')
 
-				answerIndex = db.currentTest.answers[qIndex]
+				answerIndex = currentTest.answers[qIndex]
 				if !answerIndex?
 					# unanswered
 					for answer, i in question.answers
@@ -81,17 +83,17 @@ module.exports = (container, goto, params) ->
 
 				container.getElementsByClassName('backButton')[0].innerHTML = MESSAGES.evaluateTestButton
 
-				for answer, i in db.currentTest.answers
+				for answer, i in currentTest.answers
 					if answer?
 						highlightQuestion(i, 'marked')
 
-				answerIndex = db.currentTest.answers[qIndex]
+				answerIndex = currentTest.answers[qIndex]
 				if answerIndex?
 					highlightAnswer(answerIndex, 'marked')
 
 
 		answerClick: ({index}, highlightAnswer, highlightQuestion) ->
-			if db.currentTest.finished
+			if currentTest.finished
 				return true
 
 			if clicked
@@ -101,13 +103,13 @@ module.exports = (container, goto, params) ->
 				highlightAnswer(i, null)
 			highlightAnswer(index, 'marked')
 			highlightQuestion(qIndex, 'marked')
-			db.currentTest.answers[qIndex] = index
+			currentTest.answers[qIndex] = index
 
 			clicked = true
 			return new Promise (resolve) ->
 				setTimeout((-> resolve(true)), CONFIG.answerClickTimeout)
 
-			# TODO: change db to AutoStore - eg. db.currentTest will be kept saved
+			# TODO: change db to AutoStore - eg. db.state.currentTest will be kept saved
 			return
 	})
 	return
