@@ -1,0 +1,1 @@
+processFlashAnimation = require('../processFlashAnimation')

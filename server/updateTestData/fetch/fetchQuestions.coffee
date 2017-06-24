@@ -1,4 +1,4 @@
-urls = require('./urls')
+urls = require('./../urls')
 request = require('request')
 jsdom = require('jsdom')
 async = require('asyncawait').async
@@ -15,6 +15,7 @@ parseQuestionText = (textContainer) ->
 		code: textContainer.children[0].innerHTML.slice(1, -1)
 		lastChange: parseChangeDate(textContainer.children[1].innerHTML.slice(1, -1))
 		text: textContainer.children[1].nextSibling.textContent.trim()
+		img: null
 	}
 
 
@@ -27,8 +28,7 @@ parseQuestionImg = (imgContainer) ->
 		when 'img'
 			return {type: 'img', url: url.resolve(urls.hostname, childElem.src)}
 		when 'embed'
-			# TODO: update - change to 'animation'
-			return {type: 'flash', url: url.resolve(urls.hostname, childElem.src)}
+			return {type: 'animation', url: url.resolve(urls.hostname, childElem.src)}
 		else
 			options = []
 			# multiple
@@ -63,7 +63,7 @@ parseQuestion = (questionElem) ->
 			img = questionImg.options[i]
 			if answer.letter != img.letter
 				throw new Error('Letters not matching in multiple image question: ' + questionText.code)
-			answer.img = {url: img.url}
+			answer.img = {type: 'img', url: img.url}
 			answer.text = null
 		questionImg = null
 
@@ -100,7 +100,6 @@ loadQuestionPage = (pageIndex) ->
 
 		request.post urls.questionPage, {form: {page: pageNumber, order: 0}}, (err, response, body) ->
 			if err?
-				console.log 'err'
 				throw err
 
 			if response.statusCode != 200
@@ -117,6 +116,7 @@ module.exports = async ->
 	i = 0
 	loop
 		pageQuestions = await loadQuestionPage(i)
+		console.info('loaded question page: ' + i)
 		if pageQuestions?
 			for question in pageQuestions
 				questions.push(question)

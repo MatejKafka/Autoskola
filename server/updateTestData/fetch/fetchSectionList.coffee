@@ -1,4 +1,4 @@
-urls = require('./urls')
+urls = require('./../urls')
 jsdom = require('jsdom')
 
 module.exports = ->

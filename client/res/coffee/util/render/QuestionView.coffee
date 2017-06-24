@@ -18,8 +18,8 @@ renderQuestionImage =
 #		container.innerHTML = containerHtml
 
 
-	flash: (img, container) ->
-		container.classList.add('flashImg')
+	animation: (img, container) ->
+		container.classList.add('animationImg')
 		container.innerHTML = "
 			<object type='application/x-shockwave-flash' width='640' height='325' data='#{img.url}' style='vertical-align: top;'>
   				<param name='loop' value='true'>
@@ -54,8 +54,8 @@ generateQuestionElem = (question) ->
 				renderQuestionImage.image(img, questionImage)
 #			when 'multiple'
 #				renderQuestionImage.multiple(img, questionImage)
-			when 'flash'
-				renderQuestionImage.flash(img, questionImage)
+			when 'animation'
+				renderQuestionImage.animation(img, questionImage)
 		questionContainer.appendChild(questionImage)
 
 	return questionContainer

@@ -4,15 +4,14 @@
   "description": "Small server that provides questions for final exams in czech driving schools",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "updateTestData": "node updateTextData/index.js"
+    "start": "coffee index.coffee",
+    "updateTestData": "cd updateTestData && npm run-script updateTestData",
+    "postinstall": "cd updateTestData && npm install"
   },
   "author": "Anagmate",
   "dependencies": {
-    "asyncawait": "1.0.6",
+    "coffee-script": "1.12.6",
     "cors": "2.8.1",
-    "express": "4.15.2",
-    "jsdom": "9.11.0",
-    "request": "2.81.0"
+    "express": "4.15.2"
   }
 }
