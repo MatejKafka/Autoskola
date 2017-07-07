@@ -3,7 +3,8 @@ localStorageSupported = require('./localStorageSupported')
 isStorageQuotaExceededError = require('../isStorageQuotaExceededError')
 
 DAY_IN_MS = 3600 * 24 * 1000
-CACHE_TIMEOUT = 5 * DAY_IN_MS
+# TODO: revert
+CACHE_TIMEOUT = Infinity * 5 * DAY_IN_MS
 
 
 module.exports = (localStorageEntryName, apiMethod) ->

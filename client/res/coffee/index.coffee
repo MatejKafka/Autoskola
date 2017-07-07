@@ -8,6 +8,7 @@ bindScreenManager = require('./screenManager/bindScreenManager')
 getTestCollections = require('./store/getTestCollections')
 getAnswerHistoryCollection = require('./store/getAnswerHistoryCollection')
 getPracticeTestCollection = require('./store/getPracticeTestCollection')
+createEveStore = require('./eveStore')
 questionTypes = require('./questionTypes')
 
 screens = {
@@ -45,8 +46,10 @@ window.onunhandledrejection = (event) ->
 
 
 
+window.store = createEveStore('store')
+
 # TODO: add loader screen (overlay - spinner + message)
-# TODO: remove link from nav menu (signifies current section)
+# TODO: replace link in nav menu with bold text (signifies current section)
 getTestCollections()
 .then (testData) ->
 	window.db = {}
