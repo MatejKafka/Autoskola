@@ -546,3 +546,203 @@
 {"time":1498172571537,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
 {"time":1498172571538,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
 {"time":1498172571549,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1498430998628,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1498430998633,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1498430998648,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
+{"time":1498430998649,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1498430998659,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1498431000374,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1498431000374,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1498431000374,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 739 items","msgData":{"resultLength":739}}
+{"time":1498431000387,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1498431000387,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1498431000387,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 9 items","msgData":{"resultLength":9}}
+{"time":1499105315774,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499105315819,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499105315878,"type":"log","path":"/testDataStore","message":"Questions loaded","msgData":739}
+{"time":1499105315880,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499105315913,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499105318926,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1499105318926,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1499105318926,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 9 items","msgData":{"resultLength":9}}
+{"time":1499105318939,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1499105318939,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499105318939,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 739 items","msgData":{"resultLength":739}}
+{"time":1499123734760,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499123734761,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499123734774,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499123734845,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499123734845,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499123734862,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499123991390,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499123991392,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499123991404,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499123991416,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499123991417,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499123991493,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124261262,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124261264,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124261277,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124261290,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124261290,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124261381,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124310769,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124310771,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124310788,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124310806,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124310807,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124310888,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124380429,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124380431,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124380449,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124380462,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124380463,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124380515,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124404276,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124404278,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124404290,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124404302,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124404302,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124404366,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124744623,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124744625,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124744638,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124744651,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124744651,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124744706,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499124798153,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499124798155,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499124798167,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499124798179,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499124798179,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499124798191,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499125138298,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499125138300,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499125138313,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499125138325,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499125138326,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499125138338,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499125181938,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499125181940,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499125181953,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499125181966,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499125181966,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499125181979,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499125424429,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499125424431,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499125424443,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499125424458,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499125424458,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499125424468,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499125638557,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499125638559,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499125638572,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499125638587,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499125638587,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499125638597,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499125989023,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499125989024,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499125989038,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499125989052,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499125989052,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499125989065,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499127731623,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499127731663,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499127731714,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499127731753,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499127731753,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499127731772,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499127759111,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127759111,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127775135,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499127775137,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499127775149,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499127775162,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499127775163,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499127775178,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499127776873,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127776873,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127776873,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127790703,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127790703,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127790703,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127799796,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127799796,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127799796,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127803618,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127803618,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127803618,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127848215,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127848215,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127848216,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127852386,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127852386,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127852386,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127858483,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127858483,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127858483,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127906241,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127906242,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127906242,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499127927425,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127927425,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127941448,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127941448,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127944217,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499127944217,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499127944217,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499128515945,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499128515947,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499128515960,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499128515974,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499128515974,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499128515992,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1499128521641,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499128521641,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128523415,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499128523415,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128528091,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499128528091,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128528091,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499128574842,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499128574842,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128577609,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408]}}
+{"time":1499128577609,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128577609,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 1 items","msgData":{"resultLength":1}}
+{"time":1499128587633,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,102]}}
+{"time":1499128587633,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128587633,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"time":1499128595035,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,1022]}}
+{"time":1499128595035,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128595035,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"time":1499128915819,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1499128915819,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1499128915819,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1499128915819,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1499128915836,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128915836,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1499128915836,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1499128915837,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/d/matej/nodeJS/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1499128915837,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1499128915852,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128915863,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128915875,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128915887,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128915899,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":736}
+{"time":1499128934599,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,1022]}}
+{"time":1499128934599,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128934599,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"time":1499128977138,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,1022]}}
+{"time":1499128977138,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128985353,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,1022]}}
+{"time":1499128985353,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499128985353,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"time":1499129015176,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":[1408,1022]}}
+{"time":1499129015177,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1499129015177,"type":"log","path":"/webserver/api/resultRetrieved","message":"Retrieved result: 2 items","msgData":{"resultLength":2}}
+{"time":1499203658204,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1499203658222,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1499203658253,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1499203658293,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1499203658293,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1499203658311,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
