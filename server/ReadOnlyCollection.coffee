@@ -1,5 +1,5 @@
 module.exports = class ReadOnlyCollection
-	constructor: (@items) ->
+	constructor: (@items, @lastChange) ->
 		@__defineGetter__('length', => @items.length)
 		@_idCache = {}
 		for item in @items

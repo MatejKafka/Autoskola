@@ -3,6 +3,29 @@ fs = require('fs')
 logger = global.logger.getChildLogger('webserver/api')
 
 
+getWithRemoteImgParam = (req) ->
+	withRemoteImg = req.query.withRemoteImg
+	if withRemoteImg?
+		if withRemoteImg == 'true'
+			return true
+		else if withRemoteImg == 'false'
+			return false
+		else
+			return null
+	return false
+
+
+getSinceParam = (req) ->
+	sinceStr = req.query.since
+	if !sinceStr?
+		return -Infinity
+	since = parseInt(req.query.since)
+	if isNaN(since)
+		return null
+	else
+		return since
+
+
 module.exports = (req, res, next, store) ->
 	pathArr = req.path.split('/').slice(1)
 
@@ -27,7 +50,15 @@ module.exports = (req, res, next, store) ->
 			collection = store.sections
 
 		when 'getQuestion', 'getQuestion/'
-			collection = store.questions
+			withRemoteImg = getWithRemoteImgParam(req)
+			switch withRemoteImg
+				when true
+					collection = store.remoteImgQuestions
+				when false
+					collection = store.localImgQuestions
+				when null
+					res.status(400).send('Invalid value of "withRemoteImg" parameter - must be either "true" or "false"')
+					return
 		else
 			logger.log('endpointResolved', 'Invalid endpoint: `' + path + '`', {reqId: req.id, apiEndpoint: path, validEndpoint: false})
 			next()
@@ -38,6 +69,14 @@ module.exports = (req, res, next, store) ->
 	if ids? && ids.length == 0
 		logger.log('incorrectQueryFormat', 'Request had incorrect query ID format: `' + req.query.id + '`', {reqId: req.id, idQuery: req.query.id})
 		res.sendStatus(400)
+		return
+
+	since = getSinceParam(req)
+	if !since?
+		res.status(400).send('Invalid value of "since" parameter - must be integer timestamp')
+		return
+	if collection.lastChange <= since
+		res.json(null)
 		return
 
 	if !ids?

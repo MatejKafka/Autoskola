@@ -1,45 +1,37 @@
+fs = require('fs-extra')
+path = require('path')
+chalk = require('chalk')
 replaceImg = require('./replaceImg')
-getPath = require('./getPath')
+getPath = require('../util/getPath')
 writeFile = require('./writeFile')
-
-getFlashAnim = (imgObj) ->
-	if imgObj? && imgObj.type == 'animation'
-		return imgObj.path
-	else
-		return null
-
-getFlashImgStructure = (structure) ->
-	if structure.answers?
-		answers = structure.answers.map(getFlashAnim)
-	else
-		answers = null
-
-	out =
-		question: getFlashAnim(structure.question)
-		answers: answers
-
-	if !out.question? && out.answers.filter((a) -> a?).length == 0
-		return null
-	else
-		return Object.assign({}, structure, out)
+{async, await} = require('asyncawait')
 
 
-module.exports = (question, targetDir) ->
-	questionImgObj = replaceImg(question.question.img, question.id, null, targetDir)
-	answerImgObjs = question.answers.map((answer) -> replaceImg(answer.img, question.id, answer.letter, targetDir))
+module.exports = async (question, targetDir) ->
+	dirPath = path.resolve(targetDir, '.' + getPath.dir(question.id))
 
-	if answerImgObjs.filter((i) -> i?).length == 0
-		answerImgObjs = null
+	fs.removeSync(dirPath)
 
-	structure =
-		id: question.id
-		code: question.code
-		question: questionImgObj
-		answers: answerImgObjs
+	try
+		questionImgObj = await replaceImg(question.question.img, question.id, null, targetDir)
+		answerImgObjs = question.answers.map((answer) -> await replaceImg(answer.img, question.id, answer.letter, targetDir))
 
-	flashStructure = getFlashImgStructure(structure)
+		if answerImgObjs.filter((i) -> i?).length == 0
+			answerImgObjs = null
 
-	writeFile(targetDir, getPath.structureJson(question.id), JSON.stringify(structure))
-	if flashStructure?
-		writeFile(targetDir, getPath.flashStructureJson(question.id), JSON.stringify(flashStructure))
-	return structure
+		structure =
+			id: question.id
+			code: question.code
+			question: questionImgObj
+			answers: answerImgObjs
+
+		writeFile(targetDir, getPath.structureJson(question.id), JSON.stringify(structure))
+		return structure
+	catch err
+		console.error(chalk.red('ERROR OCCURRED - clearing question directory'))
+		console.info('')
+		console.info(chalk.magenta('use startIndex argument to continue from last question when re-running this script)'))
+		console.info('')
+
+		fs.removeSync(dirPath)
+		throw err

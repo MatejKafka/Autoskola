@@ -1,10 +1,9 @@
-fs = require('fs')
+fs = require('fs-extra')
 path = require('path')
 jpexs = require('jpexs-flash-decompiler')
 consoleLogBlocker = require('./consoleLogBlocker')
 getIdGenerator = require('./getIdGenerator')
 loadDecompiledFile = require('./loadDecompiledFile')
-rimraf = require('rimraf')
 
 
 TMP_DIR = path.resolve(__dirname, './flashTmp')
@@ -55,6 +54,6 @@ module.exports = (swfBuffer) ->
 			}
 
 	.then (staticImg) ->
-		fs.unlinkSync(swfFilePath)
-		rimraf.sync(outDirPath)
+		fs.removeSync(swfFilePath)
+		fs.removeSync(outDirPath)
 		return staticImg

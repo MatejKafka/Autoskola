@@ -4,10 +4,10 @@
 ===========================
 
 
-/api/getSection[?id=5,7,...]
+/api/getSection[?id=5,7,...&since=157818464984]
     returns requested sections as JSON (id, name, questionIds)
 
-    possible formats:
+    possible ID formats:
         no ID (/api/getSection)
             => returns all sections
 
@@ -17,9 +17,18 @@
         multiple comma-separated IDs (/api/getSection?id=5,7,59)
             => returns array of requested sections
 
+    since:
+        if set, server will compare passed timestamp with last change timestamp
+            if since is older than last change, it will send new version
+            else sends null
 
 
-/api/getQuestion[?id=5,7,...]
+
+/api/getQuestion[?id=5,7,...&since=157818464984]
     returns requested questions as JSON (id, question, options, correctAnswer)
 
-    same format as /api/getSection
+    same format as /api/getSection, with added "withRemoteImg" parameter
+
+    withRemoteImg:
+        default: false
+        if set to true, questions will be served with remote img URLs

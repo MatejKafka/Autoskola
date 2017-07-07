@@ -14,17 +14,16 @@ loadDir = (dir) ->
 		}
 	return imgs
 
-dirExists = (dir) ->
+isEmptyDir = (dir) ->
 	try
-		fs.lstatSync(dir)
-		return true
+		return fs.readdirSync(dir).length == 0
 	catch
-		return false
+		return true
 
 
 module.exports = (dirPath) ->
 	return {
 		images: loadDir(path.resolve(dirPath, 'images'))
-		spritesExist: dirExists(path.resolve(dirPath, 'sprites'))
-		morphshapesExist: dirExists(path.resolve(dirPath, 'morphshapes'))
+		spritesExist: !isEmptyDir(path.resolve(dirPath, 'sprites'))
+		morphshapesExist: !isEmptyDir(path.resolve(dirPath, 'morphshapes'))
 	}

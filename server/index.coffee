@@ -8,5 +8,5 @@ startWebserver = require('./webserver/startWebserver')
 
 global.logger.log('Starting new server instance')
 
-store = new TestDataStore(config.dataStoreDirPath)
-startWebserver(store, config.staticDir, process.env.PORT || config.port || 8080)
+store = new TestDataStore(config.testDataPaths)
+startWebserver(store, config.staticDir, config.testDataPaths.imgDir, process.env.PORT || config.port || 8080)

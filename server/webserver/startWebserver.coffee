@@ -7,7 +7,16 @@ logger = global.logger.getChildLogger('webserver')
 alreadyRunning = false
 
 
-module.exports = (store, staticDirPath, port) ->
+limitToGetMw = (req, res, next) ->
+	if req.method.toLowerCase() != 'get'
+		res.status(405)
+		res.setHeader('Allow', 'GET')
+		res.send('Only `GET` HTTP method is allowed!')
+	else
+		next()
+
+
+module.exports = (store, staticDirPath, testImgDirPath, port) ->
 	if alreadyRunning
 		logger.error('alreadyRunning', 'Webserver instance is already running!')
 		throw new Error('Webserver instance is already running!')
@@ -17,15 +26,15 @@ module.exports = (store, staticDirPath, port) ->
 
 	# API
 	webserver.all('/api*', cors())
+	webserver.all('/api*', limitToGetMw)
 	webserver.get('/api*', (req, res, next) ->
 		handleApiCall(req, res, next, store)
 	)
-	webserver.all('/api*', (req, res, next) ->
-		if req.method.toLowerCase() != 'get'
-			res.send('Only `GET` HTTP method is allowed!')
-		else
-			next()
-	)
+
+	# question img dir
+	webserver.all('/questionImg*', cors())
+	webserver.all('/questionImg*', limitToGetMw)
+	webserver.use('/questionImg', express.static(testImgDirPath))
 
 	# static server
 	webserver.use(express.static(staticDirPath))

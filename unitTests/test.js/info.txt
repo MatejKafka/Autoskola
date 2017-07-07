@@ -1,0 +1,71 @@
+===================
+TEST RUNNER
+===================
+
+HOW TO USE:
+    1. create directory which contains tester files
+        a) file structure should follow structure in the tested directory
+            e.g. if you want to create test for /lib/webserver.js, create test file in <pathToTestDir>/lib/webserver.js
+        b) test file format:
+            should export single function that receives 2 parameters:
+                targetPath = path to its corresponding tested file
+                testFn = fn that is called with 2 parameters:
+                    true/false - if true, test is passed
+                    testName - name of the test
+                    e.g. testFn(
+                             returnedValue == 'correct',
+                             'API returns correct value'
+                         )
+                    can be run multiple times in a single file
+
+    2. run the tester:
+        include the testing library ('./lib/index') & run the exported function:
+            runTests = require('./lib/index')
+            path = require('path')
+
+            DIR = __dirname
+            runTests(
+            	path.resolve(DIR, 'testers') # testerDirPath - directory where tester files (from point 1) are located
+            	path.resolve(DIR, '..') # targetDirPath - directory with tested files
+            	path.resolve(DIR, 'history.json') # path to a file where the library reads & writes test history
+            )
+
+
+
+===================
+tester example (ad 1):
+===================
+
+module.exports = (targetPath, test) ->
+	getTester = require(targetPath)
+	serverConfig = require(__dirname + '/../../data/serverConfig')
+
+	runTestRequest = getTester(serverConfig, false)
+
+	return runTestRequest('/users/', {id: 175}, {name: 'UserName'})
+	.then((success) ->
+		test(runTestRequest instanceof Function, 'exports function')
+		test(success, 'is able to properly forge request')
+		return
+	)
+
+
+
+===================
+test runner example (ad 2):
+===================
+
+path = require('path')
+runTests = require('./lib/index')
+
+DIR = __dirname
+
+runTests(
+	path.resolve(DIR, 'testers')
+	path.resolve(DIR, '..')
+	path.resolve(DIR, 'history.json')
+)
+.then (testOutput) ->
+	console.log(testOutput)
+.catch (err) ->
+	console.error(err.stack)

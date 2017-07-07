@@ -34,7 +34,7 @@
       <option name="fileExtension" value="coffee" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Browserify" />
-      <option name="output" value="$ProjectFileDir$\client\res\js\bundle.js" />
+      <option name="output" value="$ProjectFileDir$/client/res/js/bundle.js" />
       <option name="outputFilters">
         <array />
       </option>

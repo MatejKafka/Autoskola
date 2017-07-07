@@ -3,9 +3,10 @@
   var ReadOnlyCollection;
 
   module.exports = ReadOnlyCollection = (function() {
-    function ReadOnlyCollection(items) {
+    function ReadOnlyCollection(items, lastChange) {
       var i, item, len, ref;
       this.items = items;
+      this.lastChange = lastChange;
       this.__defineGetter__('length', (function(_this) {
         return function() {
           return _this.items.length;
