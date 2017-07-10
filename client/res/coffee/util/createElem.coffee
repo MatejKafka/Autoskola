@@ -62,13 +62,13 @@ parseIdentifierStr = (identifierStr) ->
 module.exports = (identifierStr, children) ->
 	# WARN: doesn't support escaping
 
+	if Array.isArray(identifierStr)
+		children = identifierStr
+		identifierStr = null
+
 	if !identifierStr? && children?
 		elem = document.createDocumentFragment()
 	else
-		if Array.isArray(identifierStr)
-			children = identifierStr
-			identifierStr = null
-
 		{tagName, id, classes, attributes} = parseIdentifierStr(identifierStr)
 
 

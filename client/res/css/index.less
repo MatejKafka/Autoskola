@@ -90,3 +90,34 @@ h1 {
 .actionButton.disabled {
 	background-color: grey !important;
 }
+
+
+#loaderCover {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(0, 0, 0, 0.3);
+
+	#loaderPopup {
+		.borderBlock();
+		position: relative;
+		width: 300px;
+		height: 200px;
+		top: 20%;
+		margin: auto;
+		padding: 60px;
+		box-shadow: none;
+
+		background-color: white;
+		text-align: center;
+
+		#loaderPopupInside {
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+}

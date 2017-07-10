@@ -9,13 +9,11 @@ window.util =
 		localStorage.removeItem('questionsSaveTime')
 
 
-	arrayStore: require('../store/arrayStore')
-
-
 	evaluateCurrentTest: ->
-		if !db.currentTest?
+		currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
+		if !currentTest?
 			throw new Error('No test active')
-		return getTestResults(db.currentTest)
+		return getTestResults(currentTest)
 
 
 	storage:
@@ -35,7 +33,8 @@ window.util =
 		clear: ->
 			backup = localStorage.getItem('backup')
 			localStorage.clear()
-			localStorage.setItem('backup', backup)
+			if backup? && backup != 'null'
+				localStorage.setItem('backup', backup)
 			return
 
 		setObj: (obj) ->

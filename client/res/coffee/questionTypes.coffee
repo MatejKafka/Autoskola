@@ -15,8 +15,8 @@ getCorrectRatio = (answers) ->
 
 
 getAnswers = (questionId) ->
-	db.store.answers.getAnswersByQuestionId(questionId).filter (a) ->
-		# TODO: work with later attempts
+	db.answers.getAnswersByQuestionId(questionId).filter (a) ->
+		# TODO: make this work with multiple attempts
 		return a.attemptNumber == 0
 
 
@@ -24,15 +24,19 @@ module.exports = [
 	{
 		id: 0
 		name: 'Neznámé otázky'
-		filterFn: (question) ->
-			answers = getAnswers(question.id)
+		filterFn: (questionId) ->
+			if typeof questionId == 'object'
+				questionId = questionId.id
+			answers = getAnswers(questionId)
 			return answers.length == 0
 	}
 	{
 		id: 1
 		name: 'Nesprávně zodpovězené otázky'
-		filterFn: (question) ->
-			answers = getAnswers(question.id)
+		filterFn: (questionId) ->
+			if typeof questionId == 'object'
+				questionId = questionId.id
+			answers = getAnswers(questionId)
 			if answers.length == 0
 				return false
 			ratio = getCorrectRatio(answers)
@@ -41,8 +45,10 @@ module.exports = [
 	{
 		id: 2
 		name: 'Správně zodpovězené otázky'
-		filterFn: (question) ->
-			answers = getAnswers(question.id)
+		filterFn: (questionId) ->
+			if typeof questionId == 'object'
+				questionId = questionId.id
+			answers = getAnswers(questionId)
 			if answers.length == 0
 				return false
 			ratio = getCorrectRatio(answers)

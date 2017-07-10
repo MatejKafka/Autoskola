@@ -36,14 +36,14 @@ parseParams = (params) ->
 module.exports = (container, goto, params) ->
 	{sections, questionTypes, questionIndex} = parseParams(params)
 
-	questions = getQuestions(sections, questionTypes)
+	questionIds = getQuestions(sections, questionTypes)
 
 
 	gotoQuestion = (i) ->
 		goto('browsing', Object.assign({}, params, {q: i + 1}))
 
 
-	question = questions[questionIndex]
+	question = db.questions.get(questionIds[questionIndex])
 
 
 	questionContainer = createElem('div .questionView .browsingMode')
@@ -53,7 +53,7 @@ module.exports = (container, goto, params) ->
 	answerSubmitCount = -1
 	correctAnswerClicked = false
 	clickedAnswerIndexes = []
-	renderQuestion(questions, questionIndex, questionContainer, CONFIG.shuffleAnswers.browsingMode, {
+	renderQuestion(questionIds, questionIndex, questionContainer, CONFIG.shuffleAnswers.browsingMode, {
 		gotoQuestion: gotoQuestion
 
 		lastQuestionAnswer: ->
@@ -75,7 +75,7 @@ module.exports = (container, goto, params) ->
 			answerSubmitCount++
 
 			saveAnswer = (attempt) ->
-				db.store.answers.add({
+				db.answers.add({
 					mode: 'browsing'
 					correctlyAnswered: answer.correct
 					selectedAnswerIndex: index

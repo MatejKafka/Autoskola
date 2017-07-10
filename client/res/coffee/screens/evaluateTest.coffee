@@ -11,7 +11,7 @@ saveTestResults = (test, results) ->
 	console.debug('Saving test results...')
 	endTime = Date.now()
 
-	testId = db.store.finishedTests.add({
+	testId = db.finishedTests.add({
 		startTime: test.startTime
 		endTime: endTime
 		passScore: PASS_SCORE
@@ -23,12 +23,12 @@ saveTestResults = (test, results) ->
 	console.debug('(testId = ' + testId + ')')
 
 	for isCorrect, i in results.answerResults
-		db.store.answers.add({
+		db.answers.add({
 			mode: 'practiceTest'
 			testId: testId
 			correctlyAnswered: isCorrect
 			selectedAnswerIndex: test.answers[i]
-			questionId: test.questions[i].id
+			questionId: test.questionIds[i]
 			questionIndex: i
 			attemptNumber: 0
 		})
@@ -63,7 +63,8 @@ renderSuccessBar = (score, maxScore) ->
 
 
 renderQuestionList = (test, testResults, goto) ->
-	items = for question, i in test.questions
+	items = for questionId, i in test.questionIds
+		question = db.questions.get(questionId)
 		do (question, i) ->
 			itemClass = ''
 			switch testResults.answerResults[i]
@@ -90,7 +91,7 @@ renderQuestionList = (test, testResults, goto) ->
 
 
 module.exports = (container, goto) ->
-	currentTest = db.state.currentTest
+	currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
 
 	if !currentTest?
 		goto('prepareTest')
@@ -102,6 +103,7 @@ module.exports = (container, goto) ->
 		saveTestResults(currentTest, testResults)
 		currentTest.results = testResults
 		currentTest.finished = true
+		store.update(currentTest)
 
 
 	resultContainer = e('div .testResults')
@@ -117,6 +119,6 @@ module.exports = (container, goto) ->
 	]))
 
 	backToTestButton.addEventListener 'click', ->
-		db.state.currentTest = null
+		store.removeByQuery(db.STORE_TAGS.CURRENT_TEST)
 		goto('prepareTest')
 		return

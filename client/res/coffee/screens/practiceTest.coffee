@@ -1,12 +1,11 @@
-MESSAGES = require('../MESSAGES').practiceTest
+MESSAGES = require('../MESSAGES').PRACTICE_TEST
 CONFIG = require('../CONFIG')
-getQuestions = require('../getQuestions')
 renderQuestion = require('../util/render/renderQuestion')
 createElem = require('../util/createElem')
 
 
 module.exports = (container, goto, params) ->
-	currentTest = db.state.currentTest
+	currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
 
 	if !currentTest?
 		goto('prepareTest')
@@ -22,8 +21,10 @@ module.exports = (container, goto, params) ->
 		goto('practiceTest', Object.assign({}, params, {q: i + 1}))
 
 	currentTest.lastViewedIndex = qIndex
-	questions = currentTest.questions
-	question = questions[qIndex]
+	store.update(currentTest)
+
+	questionIds = currentTest.questionIds
+	question = db.questions.get(questionIds[qIndex])
 
 	questionContainer = createElem('div .questionView .testMode ' +
 			if currentTest.finished then '.showResults' else '.showTest')
@@ -31,7 +32,7 @@ module.exports = (container, goto, params) ->
 
 	clicked = false
 
-	renderQuestion(questions, qIndex, questionContainer, CONFIG.shuffleAnswers.testMode, {
+	renderQuestion(questionIds, qIndex, questionContainer, CONFIG.shuffleAnswers.testMode, {
 		gotoQuestion: gotoQuestion
 
 		lastQuestionAnswer: ->
@@ -103,13 +104,12 @@ module.exports = (container, goto, params) ->
 				highlightAnswer(i, null)
 			highlightAnswer(index, 'marked')
 			highlightQuestion(qIndex, 'marked')
+
 			currentTest.answers[qIndex] = index
+			store.update(currentTest)
 
 			clicked = true
 			return new Promise (resolve) ->
 				setTimeout((-> resolve(true)), CONFIG.answerClickTimeout)
-
-			# TODO: change db to AutoStore - eg. db.state.currentTest will be kept saved
-			return
 	})
 	return

@@ -28,32 +28,30 @@ renderQuestionImage =
 			</object>"
 
 
-generateQuestionElem = (question) ->
+generateQuestionElem = (question, value) ->
 	questionContainer = document.createElement('div')
 	questionContainer.className = 'questionContainer'
 
 	questionValue = document.createElement('div')
 	questionValue.classList.add('questionValue')
-	if question.value == 1
-		questionValue.innerHTML = question.value + ' ' + MESSAGES.point
+	if value == 1
+		questionValue.innerHTML = value + ' ' + MESSAGES.point
 	else
-		questionValue.innerHTML = question.value + ' ' + MESSAGES.points
+		questionValue.innerHTML = value + ' ' + MESSAGES.points
 	questionContainer.appendChild(questionValue)
 
 	questionText = document.createElement('div')
 	questionText.classList.add('questionText')
-	questionText.innerHTML = question.question.text
+	questionText.innerHTML = question.text
 	questionContainer.appendChild(questionText)
 
-	if question.question.img? && question.question.img.type != 'multiple'
+	if question.img?
 		questionImage = document.createElement('div')
 		questionImage.className = 'questionImage'
-		img = question.question.img
+		img = question.img
 		switch img.type
 			when 'img'
 				renderQuestionImage.image(img, questionImage)
-#			when 'multiple'
-#				renderQuestionImage.multiple(img, questionImage)
 			when 'animation'
 				renderQuestionImage.animation(img, questionImage)
 		questionContainer.appendChild(questionImage)
@@ -61,27 +59,25 @@ generateQuestionElem = (question) ->
 	return questionContainer
 
 
-generateAnswerList = (question) ->
-	isMultiple = question.question.img? && question.question.img.type == 'multiple'
+generateAnswerList = (answers) ->
+	answersContainImg = answers[0].img?
 
 	list = document.createElement('ul')
 	list.classList.add('answerList')
-	if isMultiple
+	if answersContainImg
 		list.classList.add('imgAnswerList')
-		listItems = question.question.img.options
 	else
 		list.classList.add('textAnswerList')
-		listItems = question.answers
 
-	for listItem, i in listItems
-		if isMultiple
+	for answer, i in answers
+		if answersContainImg
 			content = [
-				createElem("img src='#{listItem.url}'")
+				createElem("img src='#{answer.img.url}'")
 				createElem('div .answerImageCover')
 			]
 		else
 			content = [
-				listItem.text
+				answer.text
 			]
 
 		item = createElem("li data-index='#{i}'", [
@@ -98,8 +94,8 @@ module.exports = class QuestionView extends EventEmitter
 	constructor: (question) ->
 		@_question = question
 		@_elems =
-			questionElem: generateQuestionElem(question)
-			answerList: generateAnswerList(question)
+			questionElem: generateQuestionElem(question.question, question.value)
+			answerList: generateAnswerList(question.answers)
 		@_bindEvents()
 
 

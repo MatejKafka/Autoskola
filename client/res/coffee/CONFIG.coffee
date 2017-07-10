@@ -3,6 +3,7 @@ module.exports =
 	verboseErrorMessages: true
 
 	answerClickTimeout: 500
+	loaderScreenTimeout: 500
 
 	shuffleAnswers:
 		browsingMode: true

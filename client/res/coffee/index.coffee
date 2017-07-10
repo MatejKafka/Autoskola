@@ -1,15 +1,23 @@
 MESSAGES = require('./MESSAGES')
 CONFIG = require('./CONFIG')
-
+STORE_TAGS = require('./STORE_TAGS')
 
 require('./util/testUtils')
 
 bindScreenManager = require('./screenManager/bindScreenManager')
-getTestCollections = require('./store/getTestCollections')
-getAnswerHistoryCollection = require('./store/getAnswerHistoryCollection')
-getPracticeTestCollection = require('./store/getPracticeTestCollection')
-createEveStore = require('./eveStore')
+bindSidemenuManager = require('./screenManager/bindSidemenuManager')
+getLoaderManager = require('./screenManager/getLoaderManager')
 questionTypes = require('./questionTypes')
+
+getCollection =
+	questions: require('./store/collections/getQuestionCollection')
+	sections: require('./store/collections/getSectionCollection')
+	answers: require('./store/collections/getAnswerHistoryCollection')
+	finishedTests: require('./store/collections/getPracticeTestCollection')
+
+
+createWrappedEveStore = require('./store/eveStoreWrapper')
+updateTestCollections = require('./store/updateTestCollections')
 
 screens = {
 	home: require('./screens/home')
@@ -34,41 +42,37 @@ handleUncaughtError = (err) ->
 		else
 			message += err
 	alert(message)
-	return
 
-
-window.onerror = (msg, url, line, column, err) ->
-	handleUncaughtError(err)
 	return false
 
-window.onunhandledrejection = (event) ->
-	handleUncaughtError(event.reason)
 
+window.addEventListener 'error', (msg, url, line, column, err) ->
+	if !err?
+		err = msg.message
+	return handleUncaughtError(err)
 
+window.addEventListener 'unhandledrejection', (event) ->
+	return handleUncaughtError(event.reason)
 
-window.store = createEveStore('store')
+window.store = createWrappedEveStore('store')
+window.db =
+	questionTypes: questionTypes
+	STORE_TAGS: STORE_TAGS
 
-# TODO: add loader screen (overlay - spinner + message)
-# TODO: replace link in nav menu with bold text (signifies current section)
-getTestCollections()
-.then (testData) ->
-	window.db = {}
+if !store.persistentStorageAvailable()
+	alert(MESSAGES.error.storageUnavailable)
 
-	db.store = testData
-	db.store.answers = getAnswerHistoryCollection('answerHistory')
-	db.store.questionTypes = questionTypes
-	db.store.finishedTests = getPracticeTestCollection('finishedTests')
+loaderManager = getLoaderManager(document.getElementById('loaderCover'))
+loaderManager.show(CONFIG.loaderScreenTimeout)
 
-	db.state = {}
-	db.state.currentTest = null
+updateTestCollections()
+.then ->
+	loaderManager.hide()
 
-	# TODO: remove
-	#test = require('./screens/prepareTest/generateTest')()
-	#for question, i in test.questions
-	#	answerIndex = Math.floor(Math.random() * (question.answers.length + 1)) - 1
-	#	if answerIndex == -1
-	#		answerIndex = null
-	#	test.answers[i] = answerIndex
-	#window.state.db.currentTest = test
+	db.questions = getCollection.questions()
+	db.sections = getCollection.sections()
+	db.answers = getCollection.answers()
+	db.finishedTests = getCollection.finishedTests()
 
-	bindScreenManager(document.getElementById('container'), screens, 'home')
+	bindScreenManager(document.getElementById('container'), screens, 'questionSelect')
+	bindSidemenuManager(document.getElementById('navList'))

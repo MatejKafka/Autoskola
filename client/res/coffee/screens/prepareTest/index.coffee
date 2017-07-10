@@ -56,7 +56,7 @@ renderFinishedTestChart = (container, testResults) ->
 
 
 module.exports = (container, goto) ->
-	currentTest = db.state.currentTest
+	currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
 	if currentTest?
 		if currentTest.finished
 			currentTest = null
@@ -72,10 +72,10 @@ module.exports = (container, goto) ->
 	'
 
 	testChartContainer = container.getElementsByClassName('finishedTestChart')[0]
-	renderFinishedTestChart(testChartContainer, db.store.finishedTests)
+	renderFinishedTestChart(testChartContainer, db.finishedTests)
 
 	startButton = container.getElementsByClassName('startTestButton')[0]
 	startButton.addEventListener 'click', ->
 		test = generateTest()
-		db.state.currentTest = test
+		store.add(db.STORE_TAGS.CURRENT_TEST, test)
 		goto('practiceTest')

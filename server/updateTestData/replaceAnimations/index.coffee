@@ -83,7 +83,7 @@ module.exports = async (targetDir, replaceDir, removeReplacedFiles = false) ->
 		{letter} = parseReplacedFileNameWithoutExt(name)
 		imgObj = {type: processedImg.type, path: targetRelPath}
 		if !letter?
-			structure.question = imgObj
+			structure.QUESTION = imgObj
 		else
 			found = false
 			for answer, i in structure.answers

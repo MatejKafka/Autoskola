@@ -8,6 +8,7 @@
     "coffeeify": "2.1.0",
     "fs-extra": "3.0.1",
     "less": "2.7.2",
-    "less-plugin-autoprefix": "1.5.1"
+    "less-plugin-autoprefix": "1.5.1",
+    "minifyify": "7.3.5"
   }
 }

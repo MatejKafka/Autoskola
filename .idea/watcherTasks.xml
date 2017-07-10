@@ -39,7 +39,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="$PROJECT_DIR$/scripts/compileClient.cmd" />
+      <option name="program" value="$PROJECT_DIR$/scripts/compileCoffee.cmd" />
       <option name="scopeName" value="coffee" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$ProjectFileDir$/scripts" />
@@ -64,7 +64,7 @@
         </array>
       </option>
       <option name="outputFromStdout" value="true" />
-      <option name="program" value="$PROJECT_DIR$/scripts/node_modules/.bin/lessc.cmd" />
+      <option name="program" value="$USER_HOME$/AppData/Roaming/npm/lessc.cmd" />
       <option name="scopeName" value="Project Files" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$FileDir$" />

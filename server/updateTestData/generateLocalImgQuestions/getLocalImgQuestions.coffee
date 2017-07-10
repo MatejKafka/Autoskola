@@ -29,10 +29,10 @@ module.exports = (remoteImgQuestions, imgStructure, imgDirWebPath) ->
 
 		qClone = cloneObj(question)
 
-		if question.question.img?
-			if !matchingFolder.question?
+		if question.QUESTION.img?
+			if !matchingFolder.QUESTION?
 				throw new Error("missing img: ##{question.id} (question)")
-			qClone.question.img = pathImgToUrlImg(matchingFolder.question, imgDirWebPath)
+			qClone.QUESTION.img = pathImgToUrlImg(matchingFolder.QUESTION, imgDirWebPath)
 
 		for answer, i in question.answers
 			if answer.img?

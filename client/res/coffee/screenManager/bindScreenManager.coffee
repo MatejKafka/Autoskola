@@ -27,7 +27,7 @@ getHash = ->
 module.exports = (container, screens, defaultScreen) ->
 	initialClasses = container.className
 
-	window.onhashchange = ->
+	window.addEventListener 'hashchange', ->
 		if getHash() != ''
 			result = updateView(container, screens, getHash(), initialClasses)
 		else

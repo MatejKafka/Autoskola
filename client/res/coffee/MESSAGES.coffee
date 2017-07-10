@@ -14,7 +14,7 @@ module.exports =
 		points: 'body'
 		finishedBrowsingPopup: 'Dokončili jste procházení vybraných otázek.'
 
-	practiceTest:
+	PRACTICE_TEST:
 		evaluateTestButton: 'Ukončit a vyhodnotit test'
 		evaluateTestPopup: 'Opravdu chcete ukončit a vyhodnotit test?'
 		finishedPopup: 'Došli jste k poslední otázce. Chcete ukončit a vyhodnotit test?'
@@ -35,3 +35,6 @@ module.exports =
 
 		storageFull: 'Zaplnil se úložný prostor, do kterého se ukládaly vaše odpovědi.
 					Aplikace začne přepisovat nejstarší zátnamy.'
+
+		storageUnavailable: 'Váš prohlížeč nepodporuje ukládání informací na váš počítač, vaše odpovědi se
+							po odchodu ze stránky smažou.'

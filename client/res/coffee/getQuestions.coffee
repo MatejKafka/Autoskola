@@ -1,7 +1,7 @@
-getSectionQuestions = (sectionIds) ->
+getSectionQuestionIds = (sectionIds) ->
 	questions = []
 	questionsBySection = []
-	db.store.sections.forEach (section) ->
+	db.sections.forEach (section) ->
 		if !sectionIds? || sectionIds.indexOf(section.id) > -1
 			sectionQuestions = []
 			questionsBySection.push(sectionQuestions)
@@ -17,23 +17,23 @@ getSectionQuestions = (sectionIds) ->
 		assignedThisRound = 0
 		for questions in questionsBySection
 			if questions[i]?
-				out.push(db.store.questions.get(questions[i]))
+				out.push(questions[i])
 				assignedThisRound++
 		i++
 
 	return out
 
 
-getQuestions = (sectionIds, questionTypeIds) ->
-	questionIds = getSectionQuestions(sectionIds)
+getQuestionIds = (sectionIds, questionTypeIds) ->
+	questionIds = getSectionQuestionIds(sectionIds)
 	if !questionTypeIds?
 		return questionIds
 	out = []
-	for filter in db.store.questionTypes
+	for filter in db.questionTypes
 		if questionTypeIds.indexOf(filter.id) > -1
 			filteredQuestions = questionIds.filter(filter.filterFn)
-			for question in filteredQuestions
-				out.push(question)
+			for questionId in filteredQuestions
+				out.push(questionId)
 	return out
 
 
@@ -45,7 +45,7 @@ module.exports = (sectionIds, questionTypeIds) ->
 
 	if cache[hash]?
 		return cache[hash]
-	result = getQuestions(sectionIds, questionTypeIds)
+	result = getQuestionIds(sectionIds, questionTypeIds)
 	cache[hash] = result
 	return result
 

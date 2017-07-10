@@ -57,7 +57,7 @@ renderQuestionList = (questionCount, index, containerList, gotoQuestionFn) ->
 
 
 
-module.exports = (questions, index, container, shuffleAnswers = false, handlers) ->
+module.exports = (questionIds, index, container, shuffleAnswers = false, handlers) ->
 	handlers = Object.assign({
 		prepareView: null
 		gotoQuestion: (newIndex) -> throw new Error('handlers.gotoQuestion is not defined!')
@@ -74,10 +74,10 @@ module.exports = (questions, index, container, shuffleAnswers = false, handlers)
 		if index > 0
 			handlers.gotoQuestion(index - 1)
 		else
-			handlers.gotoQuestion(questions.length - 1)
+			handlers.gotoQuestion(questionIds.length - 1)
 
 	gotoNextQuestion = (fromAnswerClick = false) ->
-		if index < questions.length - 1
+		if index < questionIds.length - 1
 			handlers.gotoQuestion(index + 1)
 		else if fromAnswerClick
 			handlers.lastQuestionAnswer()
@@ -85,9 +85,9 @@ module.exports = (questions, index, container, shuffleAnswers = false, handlers)
 			handlers.gotoQuestion(0)
 
 
-	if index > questions.length - 1
-		console.error('Question index is too high - you only have ' + questions.length + ' questions selected!')
-		handlers.gotoQuestion(questions.length - 1)
+	if index > questionIds.length - 1
+		console.error('Question index is too high - you only have ' + questionIds.length + ' questions selected!')
+		handlers.gotoQuestion(questionIds.length - 1)
 		return
 
 	if index < 0
@@ -95,7 +95,7 @@ module.exports = (questions, index, container, shuffleAnswers = false, handlers)
 		handlers.gotoQuestion(0)
 		return
 
-	question = questions[index]
+	question = db.questions.get(questionIds[index])
 
 
 	container.innerHTML = "
@@ -107,7 +107,7 @@ module.exports = (questions, index, container, shuffleAnswers = false, handlers)
 				<span class='questionNumber'>
 					<span class='questionIndex'>#{index + 1}</span>
 					#{MESSAGES.from}
-					<span class='questionCollectionLength'>#{questions.length}</span>
+					<span class='questionCollectionLength'>#{questionIds.length}</span>
 				</span>
 				<a href='javascript:void(0);' class='nextQuestionButton'>" + MESSAGES.nextQuestion + "</a>
 			</span>
@@ -129,9 +129,9 @@ module.exports = (questions, index, container, shuffleAnswers = false, handlers)
 		# must be delayed to work with overflow-y = auto
 		questionListElem.style.height = (2 * questionListElem.offsetHeight - questionListElem.clientHeight) + 'px'
 	, 0
-	highlightQuestionInList = renderQuestionList(questions.length, index, questionListElem, handlers.gotoQuestion)
+	highlightQuestionInList = renderQuestionList(questionIds.length, index, questionListElem, handlers.gotoQuestion)
 
-	bindNavigationButtons(container, questions.length, index, {
+	bindNavigationButtons(container, questionIds.length, index, {
 		back: handlers.backButtonClick
 		previousQuestion: gotoPreviousQuestion
 		nextQuestion: gotoNextQuestion

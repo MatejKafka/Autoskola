@@ -4,7 +4,8 @@ module.exports = (testObj) ->
 	maxScore = 0
 	score = 0
 	answerResults = []
-	for question, i in testObj.questions
+	for questionId, i in testObj.questionIds
+		question = db.questions.get(questionId)
 		answerIndex = testObj.answers[i]
 		maxScore += question.value
 		if !answerIndex?
