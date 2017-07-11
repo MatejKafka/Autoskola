@@ -1,4 +1,5 @@
 fs = require('fs')
+etag = require('etag')
 
 logger = global.logger.getChildLogger('webserver/api')
 
@@ -76,7 +77,7 @@ module.exports = (req, res, next, store) ->
 		res.status(400).send('Invalid value of "since" parameter - must be integer timestamp')
 		return
 	if collection.lastChange <= since
-		res.json(null)
+		res.sendStatus(304)
 		return
 
 	if !ids?
@@ -94,4 +95,10 @@ module.exports = (req, res, next, store) ->
 		resultLength = 1
 	logger.log('resultRetrieved', 'Retrieved result: ' + resultLength + ' items', {reqId: req.id, resultLength: resultLength})
 
-	res.json(result)
+
+	responseStr = JSON.stringify(result)
+
+	res.setHeader('Content-Type', 'application/json')
+	res.setHeader('Last-Modified', new Date(collection.lastChange * 1000).toUTCString())
+	res.setHeader('ETag', etag(responseStr))
+	res.send(responseStr)

@@ -14,7 +14,7 @@ module.exports = ({id, name}) ->
 		return Promise.resolve(null)
 
 	return new Promise (resolve, reject) ->
-		request.post urls.SECTION, {form: {lectureID: id}, json: true}, (err, response, rawSection) ->
+		request.post urls.section, {form: {lectureID: id}, json: true}, (err, response, rawSection) ->
 			if err?
 				reject(err)
 				return

@@ -40,7 +40,6 @@ module.exports = async (targetDir, replaceDir, removeReplacedFiles = false) ->
 
 	bunchedFiles = bunchByBasename(files)
 	remainingIndexArr = [0...replacedFiles.length]
-	# TODO: update replacedFiles.json - remove processed files
 
 	for file, i in replacedFiles
 		console.log 'STARTED PROCESSING ' + file.replacePath + " (originalPath: #{file.originalPath})"
@@ -83,7 +82,7 @@ module.exports = async (targetDir, replaceDir, removeReplacedFiles = false) ->
 		{letter} = parseReplacedFileNameWithoutExt(name)
 		imgObj = {type: processedImg.type, path: targetRelPath}
 		if !letter?
-			structure.QUESTION = imgObj
+			structure.question = imgObj
 		else
 			found = false
 			for answer, i in structure.answers

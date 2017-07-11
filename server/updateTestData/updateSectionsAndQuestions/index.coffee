@@ -14,7 +14,7 @@ module.exports = (sectionFilePath, questionFilePath) ->
 	.then (rawSections) ->
 		return Promise.all([rawSections, loadRawQuestions()])
 	.then ([rawSections, rawQuestions]) ->
-		sections = getProcessedSections(rawSections)
+		sections = getProcessedSections(rawQuestions, rawSections)
 		questions = getProcessedQuestions(rawQuestions, rawSections)
 
 		sectionsChanged = saveCollection(sectionFilePath, sections, 'sections')

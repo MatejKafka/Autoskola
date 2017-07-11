@@ -33,10 +33,10 @@ getFlashImgStructure = (structure) ->
 		answers = null
 
 	out =
-		question: getFlashAnim(structure.QUESTION)
+		question: getFlashAnim(structure.question)
 		answers: answers
 
-	if !out.QUESTION? && !out.answers?
+	if !out.question? && !out.answers?
 		return null
 	else
 		return Object.assign({}, structure, out)
@@ -54,11 +54,11 @@ module.exports = (sourceDir, targetDir) ->
 		if !flashStructure?
 			continue
 
-		if flashStructure.QUESTION?
+		if flashStructure.question?
 			filesForReplacement.push({
 				originalQuestionDir: dirPath
-				originalPath: flashStructure.QUESTION
-				replacePath: createFileName(flashStructure.code, flashStructure.QUESTION, false)
+				originalPath: flashStructure.question
+				replacePath: createFileName(flashStructure.code, flashStructure.question, false)
 			})
 
 		# TODO: test if it works with answers (just in case...)

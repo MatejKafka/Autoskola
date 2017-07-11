@@ -13,7 +13,7 @@ module.exports = async (question, targetDir) ->
 	fs.removeSync(dirPath)
 
 	try
-		questionImgObj = await replaceImg(question.QUESTION.img, question.id, null, targetDir)
+		questionImgObj = await replaceImg(question.question.img, question.id, null, targetDir)
 		answerImgObjs = question.answers.map((answer) -> await replaceImg(answer.img, question.id, answer.letter, targetDir))
 
 		if answerImgObjs.filter((i) -> i?).length == 0
@@ -22,7 +22,7 @@ module.exports = async (question, targetDir) ->
 		structure =
 			id: question.id
 			code: question.code
-			QUESTION: questionImgObj
+			question: questionImgObj
 			answers: answerImgObjs
 
 		writeFile(targetDir, getPath.structureJson(question.id), JSON.stringify(structure))

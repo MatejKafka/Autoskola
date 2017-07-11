@@ -24,7 +24,7 @@
     }).then(function(arg) {
       var questions, questionsChanged, rawQuestions, rawSections, sections, sectionsChanged;
       rawSections = arg[0], rawQuestions = arg[1];
-      sections = getProcessedSections(rawSections);
+      sections = getProcessedSections(rawQuestions, rawSections);
       questions = getProcessedQuestions(rawQuestions, rawSections);
       sectionsChanged = saveCollection(sectionFilePath, sections, 'sections');
       questionsChanged = saveCollection(questionFilePath, questions, 'remote image questions');
