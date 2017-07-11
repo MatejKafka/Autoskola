@@ -10,6 +10,7 @@
 
 	padding: 0 20px;
 
+	user-select: none;
 	overflow: hidden;
 	background-color: @mainColor;
 	color: white;
@@ -60,7 +61,7 @@
 	}
 }
 
-@media (max-width: 950px) {
+@media (max-width: @menuHideScreenWidth) {
 	#sidebar {
 		#pageTitle {
 			margin-top: 0;

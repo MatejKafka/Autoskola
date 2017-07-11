@@ -8,11 +8,13 @@
 			float: left;
 			line-height: @defaultLineHeight * 1.5;
 			vertical-align: middle;
+			user-select: none;
 		}
 
 		.questionNavigation {
 			display: inline-block;
 			float: right;
+			user-select: none;
 			a {
 				vertical-align: -8%;
 				font-size: 150%;
@@ -32,6 +34,7 @@
 		margin: 0;
 		padding: 0;
 		white-space: nowrap;
+		user-select: none;
 		overflow-x: auto;
 		overflow-y: hidden;
 		// is adjusted by code in renderQuestion.coffee
@@ -150,7 +153,7 @@
 }
 
 
-@media (max-width: 950px) {
+@media (max-width: @menuHideScreenWidth) {
 	.questionView .questionContainer .questionImage {
 		img {
 			max-height: 200px;

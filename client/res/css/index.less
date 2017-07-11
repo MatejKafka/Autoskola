@@ -142,7 +142,7 @@ h1 {
 	display: none;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: @smallLeftMarginScreenWidth) {
 	hr {
 		margin: @defaultDistance 0;
 	}
@@ -154,7 +154,14 @@ h1 {
 	}
 }
 
-@media (max-width: 950px) {
+@media (max-width: @dynamicContentWidthScreenWidth) {
+	#container {
+		width: 100%;
+		padding: 0 @defaultDistance;
+	}
+}
+
+@media (max-width: @menuHideScreenWidth) {
 	@-ms-viewport{
 		//noinspection CssInvalidPropertyValue
 		width: device-width;
@@ -166,8 +173,6 @@ h1 {
 
 	#container {
 		top: @mobileMenuToggleHeight;
-		width: 100%;
-		padding: 0 @defaultDistance;
 	}
 
 	#mobileMenuToggle {
