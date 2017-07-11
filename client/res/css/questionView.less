@@ -76,13 +76,13 @@
 			margin-bottom: @defaultDistance;
 		}
 
-		.questionImage.singleImg, .questionImage.animationImg {
+		.questionImage {
 			background-color: white;
 			border: @borderWidth solid gray;
 			text-align: center;
 			// apparently, having space after image creates a gap for some reason
 			line-height: 0;
-			img, object {
+			img {
 				max-width: 100%;
 			}
 		}
@@ -145,6 +145,15 @@
 			right: 0;
 			opacity: @imgAnswerCoverOpacity;
 			background-color: transparent;
+		}
+	}
+}
+
+
+@media (max-width: 950px) {
+	.questionView .questionContainer .questionImage {
+		img {
+			max-height: 200px;
 		}
 	}
 }

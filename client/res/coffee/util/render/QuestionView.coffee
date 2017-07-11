@@ -5,27 +5,9 @@ createElem = require('../createElem')
 # TODO: add links inside answer li - tabindex & cursor support
 
 
-renderQuestionImage =
-	image: (img, container) ->
+renderQuestionImage = (img, container) ->
 		container.classList.add('singleImg')
 		container.innerHTML = '<img src="' + img.url + '">'
-
-#	multiple: (img, container) ->
-#		container.classList.add('multipleImg')
-#		containerHtml = ''
-#		for option in img.options
-#			containerHtml += '<div class="option"><img src="' + option.url + '"><div class="optionLetter">' + option.letter.toUpperCase() + ')</div></div>'
-#		container.innerHTML = containerHtml
-
-
-	animation: (img, container) ->
-		container.classList.add('animationImg')
-		container.innerHTML = "
-			<object type='application/x-shockwave-flash' width='640' height='325' data='#{img.url}' style='vertical-align: top;'>
-  				<param name='loop' value='true'>
-  				<param name='menu' value='false'>
-  				<param name='wmode' value='transparent'>
-			</object>"
 
 
 generateQuestionElem = (question, value) ->
@@ -49,11 +31,7 @@ generateQuestionElem = (question, value) ->
 		questionImage = document.createElement('div')
 		questionImage.className = 'questionImage'
 		img = question.img
-		switch img.type
-			when 'img'
-				renderQuestionImage.image(img, questionImage)
-			when 'animation'
-				renderQuestionImage.animation(img, questionImage)
+		renderQuestionImage(img, questionImage)
 		questionContainer.appendChild(questionImage)
 
 	return questionContainer
