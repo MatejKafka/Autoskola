@@ -26,6 +26,7 @@ validateItemWithMeta = (item) ->
 ALREADY_LOADED_NAMESPACES = []
 metaSymbol = Symbol('eveStore metadata')
 
+# TODO: add customizable caching - method that accepts query without values and creates cache for it
 module.exports = (storeNamespace) ->
 	if ALREADY_LOADED_NAMESPACES.indexOf(storeNamespace) > -1
 		throw new Error('eveStore instance already loaded for this namespace - only one instance for each namespace is allowed')

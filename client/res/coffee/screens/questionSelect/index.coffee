@@ -1,12 +1,23 @@
 MESSAGES = require('../../MESSAGES').questionSelect
 QuestionSelectList = require('./QuestionSelectList')
 QuestionNumberDisplay = require('./QuestionNumberDisplay')
-getQuestions = require('../../getQuestions')
+getQuestionIds = require('../../getQuestionIds')
 
 
 module.exports = (container, goto, params) ->
-	# clear cache so questionType selectors update for next browsing session
-	getQuestions.clearCache()
+	session = store.findOne(db.STORE_TAGS.CURRENT_BROWSING_SESSION)
+
+	if session?
+		if session.finished
+			if session.lastViewedIndex?
+				return goto('browseEvaluatedSession', {q: session.lastViewedIndex + 1})
+			else
+				return goto('evaluateSession')
+		else
+			i = session.lastViewedIndex
+			if !i?
+				i = 0
+			return goto('browsing', {q: i + 1})
 
 	container.innerHTML = '
 		<div id="questionSelection">
@@ -27,8 +38,10 @@ module.exports = (container, goto, params) ->
 			</form>
 		</div>'
 
+	questionIds = db.questions.map (q) -> q.id
+
 	sectionListElem = container.getElementsByClassName('sectionList')[0]
-	sectionList = new QuestionSelectList(sectionListElem, db.sections, 'sections', db.questions)
+	sectionList = new QuestionSelectList(sectionListElem, db.sections, 'sections', questionIds)
 
 	questionTypeListElem = container.getElementsByClassName('questionTypeList')[0]
 	questionTypeList = new QuestionSelectList(questionTypeListElem, db.questionTypes, 'questionTypes', sectionList)
@@ -41,7 +54,7 @@ module.exports = (container, goto, params) ->
 	submitButton = document.getElementsByClassName('startBrowsingButton')[0]
 
 	disableSubmitButtonIfUnselected = ->
-		if questionNumberDisplay.getFilteredQuestions().length == 0
+		if questionNumberDisplay.getFilteredQuestionIds().length == 0
 			submitButton.classList.add('disabled')
 			submitButton.title = MESSAGES.noSectionChecked
 		else
@@ -52,19 +65,26 @@ module.exports = (container, goto, params) ->
 	disableSubmitButtonIfUnselected()
 
 	form.addEventListener 'submit', ->
-		if questionNumberDisplay.getFilteredQuestions().length == 0
+		questionIds = questionNumberDisplay.getFilteredQuestionIds()
+		if questionIds.length == 0
 			alert(MESSAGES.noSectionChecked)
 			return
 
 		selectedSections = sectionList.getSelectedFilterIds()
 		selectedQuestionTypes = questionTypeList.getSelectedFilterIds()
 
-		if selectedSections.length == db.sections.length
-			selectedSections = '*'
-		if selectedQuestionTypes.length == db.questionTypes.length
-			selectedQuestionTypes = '*'
+		# TODO: change order of composition in QuestionSelectList and remove this
+		questionIds = getQuestionIds(selectedSections, selectedQuestionTypes)
 
-		goto('browsing', {
+		store.add(db.STORE_TAGS.CURRENT_BROWSING_SESSION, {
+			id: db.finishedSessions.getNextId()
+			lastViewedIndex: null
+			startTime: Date.now()
 			sections: selectedSections
 			questionTypes: selectedQuestionTypes
+			questionIds: questionIds
+			finished: false
+			answers: Array(questionIds.length).fill(null)
 		})
+
+		goto('browsing')

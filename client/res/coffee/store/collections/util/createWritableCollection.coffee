@@ -16,8 +16,8 @@ module.exports = (collectionTag, itemTemplate, chunkSize = 10) ->
 	addToArr = (item) ->
 		validateObjStructure(item, itemTemplate)
 		record = Object.assign({}, item)
-		id = getNextId()
-		record.id = id
+		if !record.id?
+			record.id = getNextId()
 
 		item = store.add(collectionTag, record)
 		items.push(item)

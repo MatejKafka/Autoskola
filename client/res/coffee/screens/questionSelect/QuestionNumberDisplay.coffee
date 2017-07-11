@@ -8,22 +8,22 @@ module.exports = class QuestionNumberDisplay extends EventEmitter
 		@_container = container
 
 		if questionSource instanceof QuestionSelectList
-			@_questions = questionSource.getFilteredQuestions()
+			@_questionIds = questionSource.getFilteredQuestionIds()
 			questionSource.on 'change', =>
-				@_questions = questionSource.getFilteredQuestions()
+				@_questionIds = questionSource.getFilteredQuestionIds()
 				@_render()
 				@emit('change')
 				return
 		else
-			@_questions = questionSource
+			@_questionIds = questionSource
 
 		@_render()
 
 
 	_render: ->
-		@_container.innerHTML = @_questions.length
+		@_container.innerHTML = @_questionIds.length
 
 
-	getFilteredQuestions: ->
-		for question in @_questions
-			question
+	getFilteredQuestionIds: ->
+		for questionId in @_questionIds
+			questionId

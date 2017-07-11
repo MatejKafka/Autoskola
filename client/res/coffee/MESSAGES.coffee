@@ -4,17 +4,20 @@ module.exports =
 		deselectAll: 'Odvybrat vše'
 		noSectionChecked: 'Není vybrána žádná otázka!'
 
-	browsingQuestions:
+	questionView:
 		previousQuestion: '<'
 		nextQuestion: '>'
-		toQuestionSelect: 'Zpět k výběru otázek'
-		outOfBoundsQuestion: ['Ve vybraných oborech je jen ', ' otázek, zkuste nižší číslo otázky.']
 		from: 'z'
 		point: 'bod'
 		points: 'body'
-		finishedBrowsingPopup: 'Dokončili jste procházení vybraných otázek.'
 
-	PRACTICE_TEST:
+	browsingQuestions:
+		evaluateSessionButton: 'Vyhodnotit otázky'
+		backToEvaluating: 'Zpět k výsledkům'
+		outOfBoundsQuestion: ['Ve vybraných oborech je jen ', ' otázek, zkuste nižší číslo otázky.']
+		finishedBrowsingConfirm: 'Dokončili jste procházení vybraných otázek. Chete vyhodnotit projité otázky?'
+
+	practiceTest:
 		evaluateTestButton: 'Ukončit a vyhodnotit test'
 		evaluateTestPopup: 'Opravdu chcete ukončit a vyhodnotit test?'
 		finishedPopup: 'Došli jste k poslední otázce. Chcete ukončit a vyhodnotit test?'

@@ -1,17 +1,10 @@
 MESSAGES = require('../MESSAGES').browsingQuestions
 CONFIG = require('../CONFIG')
-getQuestions = require('../getQuestions')
 renderQuestion = require('../util/render/renderQuestion')
 createElem = require('../util/createElem')
 
 
-parseParams = (params) ->
-	sections = params.sections
-	questionTypes = params.questionTypes
-	if !sections? || (!Array.isArray(sections) && sections != '*') ||
-		!questionTypes? || (!Array.isArray(questionTypes) && questionTypes != '*')
-			throw new Error('Invalid params')
-
+qIndexFromParams = (params) ->
 	if !params.q?
 		index = 0
 	else
@@ -19,81 +12,121 @@ parseParams = (params) ->
 
 	if isNaN(index)
 		throw new Error('Invalid params')
-
-	if sections == '*'
-		sections = null
-	if questionTypes == '*'
-		questionTypes = null
-
-	return {
-		sections: sections
-		questionTypes: questionTypes
-		questionIndex: index
-	}
+	return index
 
 
 
 module.exports = (container, goto, params) ->
-	{sections, questionTypes, questionIndex} = parseParams(params)
+	sessionItem = store.findOne(db.STORE_TAGS.CURRENT_BROWSING_SESSION)
+	if !sessionItem?
+		return goto('questionSelect')
 
-	questionIds = getQuestions(sections, questionTypes)
+	if sessionItem.finished
+		return goto('browseEvaluatedSession', params)
+
+
+	qIndex = qIndexFromParams(params)
+
+	sessionItem.lastViewedIndex = qIndex
+	store.update(sessionItem)
 
 
 	gotoQuestion = (i) ->
 		goto('browsing', Object.assign({}, params, {q: i + 1}))
 
 
-	question = db.questions.get(questionIds[questionIndex])
+	question = db.questions.get(sessionItem.questionIds[qIndex])
+	alreadyAnswered = sessionItem.answers[qIndex]?
 
 
 	questionContainer = createElem('div .questionView .browsingMode')
 	container.appendChild(questionContainer)
 
 
+
 	answerSubmitCount = -1
 	correctAnswerClicked = false
 	clickedAnswerIndexes = []
-	renderQuestion(questionIds, questionIndex, questionContainer, CONFIG.shuffleAnswers.browsingMode, {
-		gotoQuestion: gotoQuestion
 
-		lastQuestionAnswer: ->
-			# TODO: add session tracking & statistics
-			alert(MESSAGES.finishedBrowsingPopup)
-			goto('questionSelect')
+	renderQuestion({
+		questionIds: sessionItem.questionIds
+		questionIndex: qIndex
 
-		backButtonClick: ->
-			goto('questionSelect')
+		container: questionContainer
+		shuffleAnswers: CONFIG.shuffleAnswers.browsingMode
+
+		messages:
+			backButton: MESSAGES.evaluateSessionButton
+
+		handlers:
+			gotoQuestion: gotoQuestion
+
+			lastQuestionAnswer: ->
+				goto('evaluateSession')
+
+			backButtonClick: ->
+				goto('evaluateSession')
 
 
-		answerClick: ({answer, index}, highlightAnswer) ->
-			if correctAnswerClicked
+			prepareView: (highlightAnswer, highlightQuestion) ->
+				for questionAnswers, i in sessionItem.answers
+					if !questionAnswers? || questionAnswers.length == 0
+						highlightQuestion(i, 'unanswered')
+					else if questionAnswers.length == 1
+						highlightQuestion(i, 'correct')
+					else
+						highlightQuestion(i, 'incorrect')
+
+				if alreadyAnswered
+					qAnswers = sessionItem.answers[qIndex]
+					for answer in qAnswers
+						highlightAnswer(
+							answer.selectedAnswerIndex,
+							if answer.correctlyAnswered then 'correct' else 'incorrectWithoutAnimation'
+						)
+					for answer, i in question.answers
+						highlightAnswer(i, '_')
 				return
 
-			if clickedAnswerIndexes.indexOf(index) > -1
+
+			answerClick: ({answer, index}, highlightAnswer) ->
+				if alreadyAnswered
+					return true
+
+				if correctAnswerClicked
+					return
+
+				if clickedAnswerIndexes.indexOf(index) > -1
+					return
+				clickedAnswerIndexes.push(index)
+				answerSubmitCount++
+
+				saveAnswer = (attempt) ->
+					answerObj = {
+						mode: 'browsing'
+						sessionId: sessionItem.id
+						correctlyAnswered: answer.correct
+						selectedAnswerIndex: index
+						questionId: question.id
+						sections: params.sections
+						questionTypes: params.questionTypes
+						questionIndex: qIndex
+						attemptNumber: attempt
+					}
+					db.answers.add(answerObj)
+					if !sessionItem.answers[qIndex]?
+						sessionItem.answers[qIndex] = []
+					sessionItem.answers[qIndex].push(answerObj)
+					store.update(sessionItem)
+
+				highlightType = if answer.correct then 'correct' else 'incorrect'
+				highlightAnswer(index, highlightType)
+				saveAnswer(answerSubmitCount)
+
+				if answer.correct
+					correctAnswerClicked = true
+					return new Promise (resolve) ->
+						setTimeout((-> resolve(true)), CONFIG.answerClickTimeout)
 				return
-			clickedAnswerIndexes.push(index)
-			answerSubmitCount++
-
-			saveAnswer = (attempt) ->
-				db.answers.add({
-					mode: 'browsing'
-					correctlyAnswered: answer.correct
-					selectedAnswerIndex: index
-					questionId: question.id
-					sections: params.sections
-					questionTypes: params.questionTypes
-					questionIndex: questionIndex
-					attemptNumber: attempt
-				})
-
-			highlightType = if answer.correct then 'correct' else 'incorrect'
-			highlightAnswer(index, highlightType)
-			saveAnswer(answerSubmitCount)
-
-			if answer.correct
-				correctAnswerClicked = true
-				return new Promise (resolve) ->
-					setTimeout((-> resolve(true)), CONFIG.answerClickTimeout)
-			return
 	})
 	return

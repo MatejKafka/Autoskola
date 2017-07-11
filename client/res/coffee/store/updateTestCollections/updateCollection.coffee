@@ -52,6 +52,7 @@ module.exports = (collectionTag, apiMethod) ->
 	.catch (err) ->
 		if since?
 			console.warn("Could not update `#{collectionTag}s` - server connection failed")
+			console.error(err)
 			return
 		else
 			console.error("Could not download `#{collectionTag}s` - no local version saved and server connection failed")

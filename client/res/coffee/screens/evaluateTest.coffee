@@ -83,7 +83,7 @@ renderQuestionList = (test, testResults, goto) ->
 			link.title = question.question.text
 			link.href = 'javascript:void(0);'
 			link.addEventListener 'click', ->
-				goto('practiceTest', {q: i + 1})
+				goto('browseEvaluatedTest', {q: i + 1})
 			return item
 
 	questionAnswerList = e('ul .questionAnswerList', items)
@@ -97,13 +97,18 @@ module.exports = (container, goto) ->
 		goto('prepareTest')
 		return
 
-	testResults = getTestResults(currentTest)
+	currentTest.lastViewedIndex = null
+	store.update(currentTest)
+
 
 	if !currentTest.finished
+		testResults = getTestResults(currentTest)
 		saveTestResults(currentTest, testResults)
 		currentTest.results = testResults
 		currentTest.finished = true
 		store.update(currentTest)
+	else
+		testResults = currentTest.results
 
 
 	resultContainer = e('div .testResults')

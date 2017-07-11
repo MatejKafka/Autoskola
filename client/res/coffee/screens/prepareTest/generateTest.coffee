@@ -35,7 +35,7 @@ module.exports = ->
 	return {
 		startTime: Date.now()
 		finished: false
-		lastViewedIndex: 0
+		lastViewedIndex: null
 		questionIds: questionIds
 		answers: Array(25).fill(null)
 		results: null

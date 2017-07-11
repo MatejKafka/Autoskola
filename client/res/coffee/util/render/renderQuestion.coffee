@@ -1,4 +1,4 @@
-MESSAGES = require('../../MESSAGES').browsingQuestions
+MESSAGES = require('../../MESSAGES').questionView
 
 
 QuestionView = require('./QuestionView')
@@ -57,7 +57,9 @@ renderQuestionList = (questionCount, index, containerList, gotoQuestionFn) ->
 
 
 
-module.exports = (questionIds, index, container, shuffleAnswers = false, handlers) ->
+module.exports = (options) ->
+	{questionIds, questionIndex: index, container, shuffleAnswers, handlers, messages} = options
+
 	handlers = Object.assign({
 		prepareView: null
 		gotoQuestion: (newIndex) -> throw new Error('handlers.gotoQuestion is not defined!')
@@ -98,9 +100,10 @@ module.exports = (questionIds, index, container, shuffleAnswers = false, handler
 	question = db.questions.get(questionIds[index])
 
 
+	# TODO: render speed could be much improved by reusing questionList
 	container.innerHTML = "
 		<div class='topbar'>
-			<a href='javascript:void(0);' class='backButton'>#{MESSAGES.toQuestionSelect}</a>
+			<a href='javascript:void(0);' class='backButton'>#{messages.backButton}</a>
 
 			<span class='questionNavigation'>
 				<a href='javascript:void(0);' class='previousQuestionButton'>#{MESSAGES.previousQuestion}</a>

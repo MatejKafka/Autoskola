@@ -1,21 +1,40 @@
 @import "./mixins";
 @import "./variables";
 
-.browsing {
+.browsing, .browseEvaluatedSession {
 	.questionView.browsingMode {
 		@animationDuration: 0.5s;
 
+		.processColor(@color) {
+			&.currentQuestion {
+				color: darken(@color, 45%);
+			}
+			a {
+				color: darken(@color, 25%);
+			}
+		}
+
 		.questionList {
-			//.currentQuestion {
-			//	background-color: @mainColorDarker;
-			//	border-radius: 10px;
-			//	color: white;
-			//}
+			.correctQuestion {
+				.processColor(darken(@correctAnswerColor, 5%));
+			}
+			.incorrectQuestion {
+				.processColor(@incorrectAnswerColor);
+			}
+		}
+
+		&.showResults {
+			.questionList {
+				.unansweredQuestion {
+					.processColor(@unansweredColor);
+				}
+			}
 		}
 
 		.answerList {
 			.clickedAnswer {
 				cursor: default;
+				.borderBlock()
 			}
 		}
 
@@ -39,6 +58,16 @@
 				text-decoration: line-through;
 				color: grey;
 			}
+
+			.incorrectWithoutAnimationAnswer {
+				text-decoration: line-through;
+				color: grey;
+			}
+
+			// highlight for correct answer of unanswered question
+			.correctUnansweredAnswer {
+				.borderBlock(@unansweredColor);
+			}
 		}
 
 		.imgAnswerList {
@@ -61,6 +90,16 @@
 					animation: incorrectAnswerAnimationForImg @animationDuration linear;
 					background-color: @finalIncorrectBgColor;
 				}
+			}
+
+			.incorrectWithoutAnimationAnswer {
+				.answerImageCover {
+					background-color: @finalIncorrectBgColor;
+				}
+			}
+
+			.correctUnansweredAnswer {
+				.setImgAnswerColor(@unansweredColor);
 			}
 		}
 	}

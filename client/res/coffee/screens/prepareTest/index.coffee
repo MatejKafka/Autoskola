@@ -57,12 +57,18 @@ renderFinishedTestChart = (container, testResults) ->
 
 module.exports = (container, goto) ->
 	currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
+
 	if currentTest?
 		if currentTest.finished
-			currentTest = null
+			if currentTest.lastViewedIndex?
+				return goto('browseEvaluatedTest', {q: currentTest.lastViewedIndex + 1})
+			else
+				return goto('evaluateTest')
 		else
-			goto('practiceTest', {q: currentTest.lastViewedIndex + 1})
-			return
+			i = currentTest.lastViewedIndex
+			if !i?
+				i = 0
+			return goto('practiceTest', {q: i + 1})
 
 	container.innerHTML = '
 		<h1>Cvičný test</h1>

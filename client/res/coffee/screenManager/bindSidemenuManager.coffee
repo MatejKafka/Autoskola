@@ -4,10 +4,10 @@ createElem = require('../util/createElem')
 SCREENS =
 	questionSelect:
 		name: 'Procházení'
-		subpages: ['', 'questionSelect', 'browsing', 'evaluateSession']
+		subpages: ['', 'questionSelect', 'browsing', 'evaluateSession', 'browseEvaluatedSession']
 	prepareTest:
 		name: 'Cvičný test'
-		subpages: ['prepareTest', 'practiceTest', 'evaluateTest']
+		subpages: ['prepareTest', 'practiceTest', 'evaluateTest', 'browseEvaluatedTest']
 
 
 getHash = ->

@@ -15,7 +15,13 @@ getCorrectRatio = (answers) ->
 
 
 getAnswers = (questionId) ->
-	db.answers.getAnswersByQuestionId(questionId).filter (a) ->
+	# TODO: enable after caching is implemented
+#	return store.find({
+#		$tag: db.STORE_TAGS.ANSWER
+#		questionId: questionId
+#		attemptNumber: 0
+#	})
+	return db.answers.getAnswersByQuestionId(questionId).filter (a) ->
 		# TODO: make this work with multiple attempts
 		return a.attemptNumber == 0
 

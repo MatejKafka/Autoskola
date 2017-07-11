@@ -14,6 +14,7 @@ getCollection =
 	sections: require('./store/collections/getSectionCollection')
 	answers: require('./store/collections/getAnswerHistoryCollection')
 	finishedTests: require('./store/collections/getPracticeTestCollection')
+	finishedSessions: require('./store/collections/getSessionCollection')
 
 
 createWrappedEveStore = require('./store/eveStoreWrapper')
@@ -21,11 +22,16 @@ updateTestCollections = require('./store/updateTestCollections')
 
 screens = {
 	home: require('./screens/home')
+
 	questionSelect: require('./screens/questionSelect')
 	browsing: require('./screens/browsing')
+	evaluateSession: require('./screens/evaluateSession')
+	browseEvaluatedSession: require('./screens/browseEvaluatedSession')
+
 	prepareTest: require('./screens/prepareTest')
 	practiceTest: require('./screens/practiceTest')
 	evaluateTest: require('./screens/evaluateTest')
+	browseEvaluatedTest: require('./screens/browseEvaluatedTest')
 }
 
 
@@ -65,6 +71,8 @@ if !store.persistentStorageAvailable()
 loaderManager = getLoaderManager(document.getElementById('loaderCover'))
 loaderManager.show(CONFIG.loaderScreenTimeout)
 
+# TODO: add migration script - arrayStore & collections to store
+#		after finishing transition to store
 updateTestCollections()
 .then ->
 	loaderManager.hide()
@@ -73,6 +81,7 @@ updateTestCollections()
 	db.sections = getCollection.sections()
 	db.answers = getCollection.answers()
 	db.finishedTests = getCollection.finishedTests()
+	db.finishedSessions = getCollection.finishedSessions()
 
 	bindScreenManager(document.getElementById('container'), screens, 'questionSelect')
 	bindSidemenuManager(document.getElementById('navList'))

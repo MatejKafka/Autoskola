@@ -18,21 +18,21 @@ getListItemHtml = (filter, i, listName) ->
 module.exports = class QuestionSelectList extends EventEmitter
 	# filterArr: array of filters - each must have id, name, filterFn
 	# source: either static array or another instance of QuestionSelectList
-	constructor: (containerList, filterArr, listName, questionSource) ->
+	constructor: (containerList, filterArr, listName, questionIdSource) ->
 		@_containerList = containerList
 		@_filters = filterArr
 		@_listName = listName
-		@_source = questionSource
+		@_source = questionIdSource
 
-		if questionSource instanceof QuestionSelectList
-			@_questions = questionSource.getFilteredQuestions()
-			questionSource.on 'change', =>
-				@_questions = questionSource.getFilteredQuestions()
+		if questionIdSource instanceof QuestionSelectList
+			@_questionIds = questionIdSource.getFilteredQuestionIds()
+			questionIdSource.on 'change', =>
+				@_questionIds = questionIdSource.getFilteredQuestionIds()
 				@_updateHtml()
 				@emit('change')
 				return
 		else
-			@_questions = questionSource
+			@_questionIds = questionIdSource
 
 		@_render()
 
@@ -94,12 +94,12 @@ module.exports = class QuestionSelectList extends EventEmitter
 			index = parseInt(item.dataset.index)
 			length = 0
 			if idStr == SELECT_ALL_ID
-				questionCountElem.innerHTML = @_questions.length
-				length = @_questions.length
+				questionCountElem.innerHTML = @_questionIds.length
+				length = @_questionIds.length
 			else if !idStr? || isNaN(index)
 				continue
 			else
-				length = @_questions.filter(@_filters[index].filterFn).length
+				length = @_questionIds.filter(@_filters[index].filterFn).length
 				questionCountElem.innerHTML = length
 			if length == 0
 				item.classList.add('emptyFilter')
@@ -108,17 +108,17 @@ module.exports = class QuestionSelectList extends EventEmitter
 		return
 
 
-	getFilteredQuestions: ->
-		questionOut = []
+	getFilteredQuestionIds: ->
+		questionIdOut = []
 		for item in @_containerList.children
 			index = parseInt(item.dataset.index)
 			if !item.children[0].checked || isNaN(index)
 				continue
 			filter = @_filters[index]
-			for question in @_questions
-				if filter.filterFn(question)
-					questionOut.push(question)
-		return questionOut
+			for questionId in @_questionIds
+				if filter.filterFn(questionId)
+					questionIdOut.push(questionId)
+		return questionIdOut
 
 
 	getSelectedFilterIds: ->

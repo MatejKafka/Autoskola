@@ -4,6 +4,17 @@ require('whatwg-fetch')
 qs = require('querystring')
 
 
+getOptions = (since) ->
+	return {
+		method: 'GET'
+		cache: 'no-cache'
+		cors: 'cors'
+		headers: new Headers({
+			#'If-None-Match': ''
+		})
+	}
+
+
 getQuery = (id, since, queryBase = null) ->
 	queryObj = Object.assign({}, queryBase)
 
@@ -21,12 +32,24 @@ getQuery = (id, since, queryBase = null) ->
 	return queryStr
 
 
+getHeaders = (headerObj) ->
+	iterator = headerObj.entries()
+	headers = {}
+	loop
+		header = iterator.next()
+		if header.done
+			return headers
+		headers[header.value[0]] = header.value[1]
+
+
 getResource = (id = null, resourceName = '', sinceInMs) ->
 	queryStr = getQuery(id, sinceInMs)
 	url = BASE_API_URL + resourceName + queryStr
 
-	fetch(url)
+	fetch(url, getOptions(sinceInMs))
 	.then (response) ->
+		if response.status == 304
+			return null
 		if !response.ok
 			throw new Error('Invalid status code returned from API: ' + response.status)
 		return response.json()
