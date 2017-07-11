@@ -88,7 +88,7 @@
 			position: relative;
 			.borderBlock;
 			padding: 0;
-			width: ~"calc((100% / 5) - 6px)";
+			width: ~"calc((100% / @{testEvaluationRowQuestionCount}) - 6px)";
 			margin: 3px;
 
 			&.correct {
@@ -151,6 +151,14 @@
 		}
 		.unanswered {
 			background-color: lightgray;
+		}
+	}
+}
+
+@media (max-width: 950px) {
+	.evaluateTest, .evaluateSession {
+		.questionAnswerList li {
+			width: ~"calc((100% / @{mobileTestEvaluationRowQuestionCount}) - 6px)";
 		}
 	}
 }
