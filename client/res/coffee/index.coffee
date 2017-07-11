@@ -7,6 +7,7 @@ require('./util/testUtils')
 bindScreenManager = require('./screenManager/bindScreenManager')
 bindSidemenuManager = require('./screenManager/bindSidemenuManager')
 getLoaderManager = require('./screenManager/getLoaderManager')
+bindMobileMenuToggle = require('./screenManager/bindMobileMenuToggle')
 questionTypes = require('./questionTypes')
 
 getCollection =
@@ -68,6 +69,11 @@ window.db =
 if !store.persistentStorageAvailable()
 	alert(MESSAGES.error.storageUnavailable)
 
+bindMobileMenuToggle(
+	document.getElementById('mobileMenuToggle'),
+	document.getElementById('sidebar'),
+	document.getElementById('content')
+)
 loaderManager = getLoaderManager(document.getElementById('loaderCover'))
 loaderManager.show(CONFIG.loaderScreenTimeout)
 

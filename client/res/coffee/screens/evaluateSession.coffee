@@ -31,11 +31,16 @@ saveResults = (session, results) ->
 
 renderSuccessBar = (score, maxScore) ->
 	percentage = Math.round(score / maxScore * 100)
+	if isNaN(percentage)
+		percentage = 0
+		percentageStr = '-'
+	else
+		percentageStr = percentage
 
 	container = e('div .scoreBarContainer .succeeded', [
 		e('div .scoreBarLabels', [
 			e('div .scoreBarPoints', [score + ' / ' + maxScore + ' ' + MESSAGES.ofNPoints])
-			e('div .scoreBarPercentage', [percentage + ' %'])
+			e('div .scoreBarPercentage', [percentageStr + ' %'])
 		])
 		e('div .scoreBar', [
 			scoreLine = e('div .scoreBarLine')

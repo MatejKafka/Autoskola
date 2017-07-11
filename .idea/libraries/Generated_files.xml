@@ -45,6 +45,7 @@
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/getProcessedQuestions.js" />
         <item url="file://$PROJECT_DIR$/scripts/compileCoffee.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/getProcessedSections.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/screenManager/bindMobileMenuToggle.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/loadRawQuestions.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/action.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/evaluateSession.js" />
@@ -419,6 +420,7 @@
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/getProcessedQuestions.js" />
       <root url="file://$PROJECT_DIR$/scripts/compileCoffee.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/getProcessedSections.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/screenManager/bindMobileMenuToggle.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/loadRawQuestions.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/action.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/evaluateSession.js" />

@@ -62,14 +62,19 @@ module.exports = (container, goto, params) ->
 				for questionAnswers, i in session.answers
 					if !questionAnswers? || questionAnswers.length == 0
 						highlightQuestion(i, 'unanswered')
-					else if questionAnswers.length == 1
+					else if questionAnswers.length == 1 && questionAnswers[0].correctlyAnswered
 						highlightQuestion(i, 'correct')
 					else
 						highlightQuestion(i, 'incorrect')
 
+
 				qAnswers = session.answers[qIndex]
+				if !qAnswers?
+					correctAnswerClicked = false
+				else
+					correctAnswerClicked = qAnswers.filter((a) -> a.correctlyAnswered).length > 0
+
 				if qAnswers?
-					console.log qAnswers
 					for answer in qAnswers
 						highlightAnswer(
 							answer.selectedAnswerIndex,
@@ -78,7 +83,8 @@ module.exports = (container, goto, params) ->
 					for answer, i in question.answers
 						# block hover effects by adding clickedAnswer className
 						highlightAnswer(i, '_')
-				else
+
+				if !correctAnswerClicked
 					for answer, i in question.answers
 						if answer.correct
 							highlightAnswer(i, 'correctUnanswered')
