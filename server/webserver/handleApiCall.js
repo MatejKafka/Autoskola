@@ -106,6 +106,9 @@
       return;
     }
     if (collection.lastChange <= since) {
+      logger.log('resultRetrieved', 'No changes in resource', {
+        reqId: req.id
+      });
       res.sendStatus(304);
       return;
     }

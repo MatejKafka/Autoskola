@@ -77,6 +77,7 @@ module.exports = (req, res, next, store) ->
 		res.status(400).send('Invalid value of "since" parameter - must be integer timestamp')
 		return
 	if collection.lastChange <= since
+		logger.log('resultRetrieved', 'No changes in resource', {reqId: req.id})
 		res.sendStatus(304)
 		return
 
