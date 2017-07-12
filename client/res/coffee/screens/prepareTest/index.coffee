@@ -81,8 +81,9 @@ module.exports = (container, goto) ->
 	'
 
 	testChartContainer = container.getElementsByClassName('finishedTestChart')[0]
-	if db.finishedTests.length > 0
-		renderFinishedTestChart(testChartContainer, db.finishedTests)
+
+	if store.count(db.STORE_TAGS.PRACTICE_TEST) > 0
+		renderFinishedTestChart(testChartContainer, store.find(db.STORE_TAGS.PRACTICE_TEST))
 	else
 		testChartLabel = container.getElementsByClassName('finishedTestLabel')[0]
 		testChartLabel.style.display = 'none'

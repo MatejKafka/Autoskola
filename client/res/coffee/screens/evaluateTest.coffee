@@ -11,7 +11,7 @@ saveTestResults = (test, results) ->
 	console.debug('Saving test results...')
 	endTime = Date.now()
 
-	testId = db.finishedTests.add({
+	testItem = store.add(db.STORE_TAGS.PRACTICE_TEST, {
 		startTime: test.startTime
 		endTime: endTime
 		passScore: PASS_SCORE
@@ -19,12 +19,14 @@ saveTestResults = (test, results) ->
 		score: results.score
 		maxScore: results.maxScore
 	})
+	testId = testItem.$id
 
 	console.debug('(testId = ' + testId + ')')
 
 	for isCorrect, i in results.answerResults
-		db.answers.add({
+		store.add(db.STORE_TAGS.ANSWER, {
 			mode: 'practiceTest'
+			time: endTime
 			testId: testId
 			correctlyAnswered: isCorrect
 			selectedAnswerIndex: test.answers[i]
@@ -64,7 +66,10 @@ renderSuccessBar = (score, maxScore) ->
 
 renderQuestionList = (test, testResults, goto) ->
 	items = for questionId, i in test.questionIds
-		question = db.questions.get(questionId)
+		question = store.findOne({
+			$tag: db.STORE_TAGS.QUESTION
+			id: questionId
+		})
 		do (question, i) ->
 			itemClass = ''
 			switch testResults.answerResults[i]

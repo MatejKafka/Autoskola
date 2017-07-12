@@ -1,25 +1,6 @@
 getItem = require('./getItem')
-
-
-testObj = (meta, query) ->
-	if typeof meta != 'object'
-		return false
-
-	for key, value of query
-		if typeof value == 'function'
-			if !value(meta[key])
-				return false
-		else if typeof value == 'object'
-			if !testObj(meta[key], value)
-				return false
-		else
-			if meta[key] != value
-				return false
-	return true
-
-matchesQuery = (item, itemQuery, metaQuery) ->
-	return testObj(item.item, itemQuery) &&
-		testObj(item.meta, metaQuery)
+matchesQuery = require('../util/matchesQuery')
+separateItemQuery = require('../util/separateItemQuery')
 
 
 handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
@@ -46,7 +27,7 @@ handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
 	return null
 
 
-module.exports = (query, store, structure, singleRecord = false) ->
+findUnsortedItems = (query, store, structure, singleRecord = false) ->
 	if !query?
 		if singleRecord
 			record = store.db.readFirstItem()
@@ -68,14 +49,23 @@ module.exports = (query, store, structure, singleRecord = false) ->
 		throw new Error("findItem only accepts query object, id or tag, not #{typeof query}")
 
 
-	metaQuery = {}
-	itemQuery = {}
-	for own key, value of query
-		if key[0] == '$'
-			metaQuery[key.slice(1)] = value
-		else
-			itemQuery[key] = value
+	# TODO: rewrite, currently needs exactly same query to use cache
+	findQueryStr = Object.keys(query).sort().join(',')
+	for cachedQuery in structure.byQuery
+		cachedQueryStr = Object.keys(cachedQuery.fullQuery).sort().join(',')
+		if findQueryStr == cachedQueryStr
+			# matches
+			key = cachedQuery.cachedKey
+			if cachedQuery.isMetaKey
+				key = '$' + key
+			value = query[key]
+			itemIds = cachedQuery.values[value]
+			if Array.isArray(itemIds)
+				return itemIds.map((id) -> getItem(id, store, structure))
+			return []
 
+
+	{item: itemQuery, meta: metaQuery} = separateItemQuery(query)
 
 	if Object.keys(itemQuery).length == 0 && Object.keys(metaQuery).length == 1
 		result = handleSingleMetaParamQuery(metaQuery, store, structure, singleRecord)
@@ -109,3 +99,14 @@ module.exports = (query, store, structure, singleRecord = false) ->
 			matches.push(item)
 
 	return matches
+
+
+
+module.exports = (query, store, structure, singleRecord) ->
+	unsortedResult = findUnsortedItems(query, store, structure, singleRecord)
+
+	if unsortedResult.length > 1
+		unsortedResult.sort (a, b) ->
+			return a.meta.id - b.meta.id
+
+	return unsortedResult

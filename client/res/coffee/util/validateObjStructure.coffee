@@ -23,14 +23,9 @@ module.exports = (obj, template) ->
 
 		matches = false
 		for type in expectedTypes
-			if type == 'optimizedArray'
-				if obj[name] == '*' || Array.isArray(obj[name])
-					matches = true
-					break
-			else
-				if realType == type
-					matches = true
-					break
+			if realType == type
+				matches = true
+				break
 
 		if !matches
 			throw new Error('Invalid property type: ' + name + ' should be (' + renderOrArray(expectedTypes) + '), not (' + realType + ')')

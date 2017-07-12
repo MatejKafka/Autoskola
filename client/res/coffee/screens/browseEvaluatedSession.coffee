@@ -33,7 +33,10 @@ module.exports = (container, goto, params) ->
 	session.lastViewedIndex = qIndex
 	store.update(session)
 
-	question = db.questions.get(session.questionIds[qIndex])
+	question = store.findOne({
+		$tag: db.STORE_TAGS.QUESTION
+		id: session.questionIds[qIndex]
+	})
 
 	questionContainer = createElem('div .questionView .browsingMode .showResults')
 	container.appendChild(questionContainer)

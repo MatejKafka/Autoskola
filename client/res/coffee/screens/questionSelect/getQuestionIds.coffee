@@ -1,7 +1,8 @@
 getSectionQuestionIds = (sectionIds) ->
+	sections = store.find(db.STORE_TAGS.SECTION)
 	questions = []
 	questionsBySection = []
-	db.sections.forEach (section) ->
+	sections.forEach (section) ->
 		if !sectionIds? || sectionIds.indexOf(section.id) > -1
 			sectionQuestions = []
 			questionsBySection.push(sectionQuestions)

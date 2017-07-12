@@ -5,7 +5,10 @@ module.exports = (testObj) ->
 	score = 0
 	answerResults = []
 	for questionId, i in testObj.questionIds
-		question = db.questions.get(questionId)
+		question = store.findOne({
+			$tag: db.STORE_TAGS.QUESTION
+			id: questionId
+		})
 		answerIndex = testObj.answers[i]
 		maxScore += question.value
 		if !answerIndex?

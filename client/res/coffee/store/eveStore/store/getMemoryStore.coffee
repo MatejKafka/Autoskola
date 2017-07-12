@@ -1,9 +1,5 @@
 cloneValue = require('./cloneValue')
-
-isEmptyObj = (obj) ->
-	for own key of obj
-		return false
-	return true
+isEmptyObj = require('../util/isEmptyObj')
 
 
 module.exports = ->

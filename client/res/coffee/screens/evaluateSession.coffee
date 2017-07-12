@@ -35,7 +35,10 @@ renderSuccessBar = (score, maxScore) ->
 
 renderQuestionList = (session, goto) ->
 	items = for questionId, i in session.questionIds
-		question = db.questions.get(questionId)
+		question = store.findOne({
+			$tag: db.STORE_TAGS.QUESTION
+			id: questionId
+		})
 		itemClass = ''
 		qAnswers = session.answers[i]
 		if !qAnswers? || qAnswers.length == 0

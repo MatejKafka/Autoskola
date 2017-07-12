@@ -9,6 +9,9 @@ startWebserver = require('./webserver/startWebserver')
 global.logger.log('Starting new server instance')
 
 # TODO: add logging for static servers
+# TODO: add lot more logging - currently, it's completely useless
+
+PORT = process.env.PORT || config.port
 
 store = new TestDataStore(config.testDataPaths)
-startWebserver(store, config.staticDir, config.testDataPaths.imgDir, process.env.PORT || config.port || 8080)
+startWebserver(store, config.staticDir, config.testDataPaths.imgDir, PORT)

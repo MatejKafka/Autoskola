@@ -2,8 +2,9 @@ CONFIG = require('../../CONFIG')
 
 
 getRandomQuestions = (sections, count) ->
+	sections = store.find(db.STORE_TAGS.SECTION)
 	questionIds = []
-	for section in db.sections
+	for section in sections
 		if sections.indexOf(section.id) > -1
 			for questionId in section.questions
 				questionIds.push(questionId)

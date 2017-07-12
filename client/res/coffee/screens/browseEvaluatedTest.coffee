@@ -33,7 +33,10 @@ module.exports = (container, goto, params) ->
 	currentTest.lastViewedIndex = qIndex
 	store.update(currentTest)
 
-	question = db.questions.get(currentTest.questionIds[qIndex])
+	question = store.findOne({
+		$tag: db.STORE_TAGS.QUESTION
+		id: currentTest.questionIds[qIndex]
+	})
 
 	questionContainer = createElem('div .questionView .testMode .showResults')
 	container.appendChild(questionContainer)

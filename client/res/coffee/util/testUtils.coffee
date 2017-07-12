@@ -2,13 +2,6 @@ getTestResults = require('./getTestResults')
 
 
 window.util =
-	invalidateApiCache: ->
-		localStorage.removeItem('sections')
-		localStorage.removeItem('sectionsSaveTime')
-		localStorage.removeItem('questions')
-		localStorage.removeItem('questionsSaveTime')
-
-
 	evaluateCurrentTest: ->
 		currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
 		if !currentTest?
@@ -22,7 +15,7 @@ window.util =
 
 			sizes = {byKey: {}}
 			for key of localStorage
-				keyValueSize = ((localStorage[key].length + key.length)* 2)
+				keyValueSize = (localStorage[key].length + key.length) * 2 # UTF-16 - 2 bytes per char
 				totalSize += keyValueSize
 				sizes.byKey[key] = keyValueSize
 

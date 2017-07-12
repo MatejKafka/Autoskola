@@ -97,7 +97,10 @@ module.exports = (options) ->
 		handlers.gotoQuestion(0)
 		return
 
-	question = db.questions.get(questionIds[index])
+	question = store.findOne({
+		$tag: db.STORE_TAGS.QUESTION
+		id: questionIds[index]
+	})
 
 
 	# TODO: render speed could be much improved by reusing questionList

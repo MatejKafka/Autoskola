@@ -2,12 +2,7 @@ localStorageSupported = require('./localStorageSupported')
 isQuotaExceededError = require('./isQuotaExceededError')
 cloneValue = require('./cloneValue')
 StorageFullError = require('./StorageFullError')
-
-
-isEmptyObj = (obj) ->
-	for own key of obj
-		return false
-	return true
+isEmptyObj = require('../util/isEmptyObj')
 
 
 module.exports = (storageNamespace) ->

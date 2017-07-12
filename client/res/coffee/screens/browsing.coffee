@@ -24,6 +24,10 @@ module.exports = (container, goto, params) ->
 	if sessionItem.finished
 		return goto('browseEvaluatedSession', params)
 
+	if sessionItem.questionIds.length == 0
+		store.removeByQuery(db.STORE_TAGS.CURRENT_BROWSING_SESSION)
+		return goto('questionSelect')
+
 
 	qIndex = qIndexFromParams(params)
 
@@ -35,7 +39,10 @@ module.exports = (container, goto, params) ->
 		goto('browsing', Object.assign({}, params, {q: i + 1}))
 
 
-	question = db.questions.get(sessionItem.questionIds[qIndex])
+	question = store.findOne({
+		$tag: db.STORE_TAGS.QUESTION
+		id: sessionItem.questionIds[qIndex]
+	})
 	alreadyAnswered = sessionItem.answers[qIndex]?
 
 
@@ -104,6 +111,7 @@ module.exports = (container, goto, params) ->
 				saveAnswer = (attempt) ->
 					answerObj = {
 						mode: 'browsing'
+						time: Date.now()
 						correctlyAnswered: answer.correct
 						selectedAnswerIndex: index
 						questionId: question.id
@@ -112,7 +120,7 @@ module.exports = (container, goto, params) ->
 						questionIndex: qIndex
 						attemptNumber: attempt
 					}
-					db.answers.add(answerObj)
+					store.add(db.STORE_TAGS.ANSWER, answerObj)
 					if !sessionItem.answers[qIndex]?
 						sessionItem.answers[qIndex] = []
 					sessionItem.answers[qIndex].push(answerObj)

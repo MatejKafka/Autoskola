@@ -38,10 +38,10 @@ module.exports = (container, goto, params) ->
 			</form>
 		</div>'
 
-	questionIds = db.questions.map (q) -> q.id
+	questionIds = store.find(db.STORE_TAGS.QUESTION).map((q) -> q.id)
 
 	sectionListElem = container.getElementsByClassName('sectionList')[0]
-	sectionList = new QuestionSelectList(sectionListElem, db.sections, 'sections', questionIds)
+	sectionList = new QuestionSelectList(sectionListElem, store.find(db.STORE_TAGS.SECTION), 'sections', questionIds)
 
 	questionTypeListElem = container.getElementsByClassName('questionTypeList')[0]
 	questionTypeList = new QuestionSelectList(questionTypeListElem, db.questionTypes, 'questionTypes', sectionList)
