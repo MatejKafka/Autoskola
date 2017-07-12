@@ -104,7 +104,6 @@ module.exports = (container, goto, params) ->
 				saveAnswer = (attempt) ->
 					answerObj = {
 						mode: 'browsing'
-						sessionId: sessionItem.id
 						correctlyAnswered: answer.correct
 						selectedAnswerIndex: index
 						questionId: question.id

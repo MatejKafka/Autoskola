@@ -5,6 +5,8 @@ module.exports = (itemWithMeta, metaSymbol) ->
 
 	item = {}
 	for key, value of itemWithMeta
+		if key[0] == '$' && meta.hasOwnProperty(key.slice(1))
+			continue
 		item[key] = value
 
 	return {

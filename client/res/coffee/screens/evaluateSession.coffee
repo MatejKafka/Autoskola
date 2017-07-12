@@ -11,24 +11,6 @@ getResults = (sessionObj) ->
 	}
 
 
-saveResults = (session, results) ->
-	console.debug('Saving session...')
-
-	db.finishedSessions.add({
-		id: session.id
-		startTime: session.startTime
-		endTime: Date.now()
-		filters:
-			sections: session.sections
-			questionTypes: session.questionTypes
-		score: results.score
-		maxScore: results.maxScore
-	})
-
-	console.debug('(sessionId = ' + session.id + ')')
-	return session.id
-
-
 renderSuccessBar = (score, maxScore) ->
 	percentage = Math.round(score / maxScore * 100)
 	if isNaN(percentage)
@@ -91,7 +73,6 @@ module.exports = (container, goto) ->
 
 	if !currentSession.finished
 		sessionResults = getResults(currentSession)
-		saveResults(currentSession, sessionResults)
 		currentSession.results = sessionResults
 		currentSession.finished = true
 		store.update(currentSession)

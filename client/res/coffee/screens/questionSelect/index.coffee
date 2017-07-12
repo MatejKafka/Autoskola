@@ -1,7 +1,7 @@
 MESSAGES = require('../../MESSAGES').questionSelect
 QuestionSelectList = require('./QuestionSelectList')
 QuestionNumberDisplay = require('./QuestionNumberDisplay')
-getQuestionIds = require('../../getQuestionIds')
+getQuestionIds = require('./getQuestionIds')
 
 
 module.exports = (container, goto, params) ->
@@ -77,7 +77,6 @@ module.exports = (container, goto, params) ->
 		questionIds = getQuestionIds(selectedSections, selectedQuestionTypes)
 
 		store.add(db.STORE_TAGS.CURRENT_BROWSING_SESSION, {
-			id: db.finishedSessions.getNextId()
 			lastViewedIndex: null
 			startTime: Date.now()
 			sections: selectedSections

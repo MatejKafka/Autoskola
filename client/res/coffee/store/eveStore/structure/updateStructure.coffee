@@ -1,5 +1,5 @@
-# BOTH FUNCTIONS ARE IMPURE - to purify, they should copy structure before altering
-module.exports =
+# ALL FUNCTIONS ARE IMPURE - to purify, they should copy structure before altering
+module.exports = updateStructure =
 	add: (structure, item) ->
 		structure.location[item.meta.id] = if item.meta.persistent
 				structure.LOCATIONS.DB
@@ -24,3 +24,10 @@ module.exports =
 				delete structure.byTag[item.meta.tag]
 
 		return structure
+
+
+	change: (structure, item) ->
+		if structure.location[item.meta.id]?
+			# already written, only changes were applied
+			return structure
+		return updateStructure.add(structure, item)

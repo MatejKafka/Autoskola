@@ -74,15 +74,15 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getSectionCollection.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/prepareTest/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/CONFIG.js" />
-        <item url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getQuestionCollection.js" />
+        <item url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/MESSAGES.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getPracticeTestCollection.js" />
         <item url="file://$PROJECT_DIR$/server/webserver/startWebserver.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/urls.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getAnswerHistoryCollection.js" />
-        <item url="file://$PROJECT_DIR$/client/res/coffee/getQuestionIds.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/screens/questionSelect/getQuestionIds.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchSectionList.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest.js" />
@@ -95,12 +95,17 @@
         <item url="file://$PROJECT_DIR$/server/TestDataStore.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/fetchImg.js" />
         <item url="file://$PROJECT_DIR$/server/ReadOnlyCollection.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/countItems.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/questionSelect/QuestionSelectList.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/cachedQueries.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/SKIPPED_SECTIONS.js" />
+        <item url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/index.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchQuestions.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestCollections/updateCollection.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchSection.js" />
+        <item url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/loadArrayStore.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/SECTION_VALUES.js" />
+        <item url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/updateDataFormat.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -382,7 +387,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/structure/updateStructure.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/getItem.js" />
       <root url="file://$PROJECT_DIR$/unitTests/index.js" />
-      <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/findItem.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/findItems.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/consolidateReplacedImages.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/removeItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/store/isQuotaExceededError.js" />
@@ -451,15 +456,15 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getSectionCollection.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/prepareTest/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/CONFIG.js" />
-      <root url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getQuestionCollection.js" />
+      <root url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/MESSAGES.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getPracticeTestCollection.js" />
       <root url="file://$PROJECT_DIR$/server/webserver/startWebserver.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/urls.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/collections/getAnswerHistoryCollection.js" />
-      <root url="file://$PROJECT_DIR$/client/res/coffee/getQuestionIds.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/screens/questionSelect/getQuestionIds.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchSectionList.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest.js" />
@@ -472,12 +477,17 @@
       <root url="file://$PROJECT_DIR$/server/TestDataStore.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/fetchImg.js" />
       <root url="file://$PROJECT_DIR$/server/ReadOnlyCollection.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/operations/countItems.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/questionSelect/QuestionSelectList.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/cachedQueries.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/SKIPPED_SECTIONS.js" />
+      <root url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/index.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchQuestions.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestCollections/updateCollection.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/updateSectionsAndQuestions/fetch/fetchSection.js" />
+      <root url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/loadArrayStore.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/SECTION_VALUES.js" />
+      <root url="file://$PROJECT_DIR$/client/updateClientDataFormat/coffee/updateDataFormat.js" />
     </CLASSES>
     <SOURCES />
   </library>

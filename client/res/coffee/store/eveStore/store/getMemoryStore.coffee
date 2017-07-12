@@ -1,5 +1,11 @@
 cloneValue = require('./cloneValue')
 
+isEmptyObj = (obj) ->
+	for own key of obj
+		return false
+	return true
+
+
 module.exports = ->
 	store = {
 		values: {}
@@ -23,6 +29,9 @@ module.exports = ->
 
 
 	return {
+		isEmpty: ->
+			return isEmptyObj(store.values) && isEmptyObj(store.items)
+
 		clear: ->
 			store.values = {}
 			store.items = {}

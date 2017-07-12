@@ -21,3 +21,5 @@ module.exports =
 		[22, 2] # podminky provozu
 		[20, 1] # zdravotnicka priprava
 	]
+
+	storeNamespace: 'store'

@@ -88,7 +88,7 @@ module.exports = (storeNamespace) ->
 			separatedItem.isExisting = true
 
 			returnedItem = itemOperations.add(separatedItem, store, structure)
-			# TODO: if structure will be extended to cache other values, add updateStructure.change call here
+			structure = updateStructure.change(structure, returnedItem, store)
 			rewrittenItem = rewriteMetaToSymbol(returnedItem, metaSymbol)
 
 			emit('update', "Updated item (id: #{returnedItem.meta.id})", rewrittenItem)
@@ -158,12 +158,20 @@ module.exports = (storeNamespace) ->
 			return result
 
 
+		count: (query) ->
+			return itemOperations.count(query, store, structure)
+
+
 		forEach: (fn) ->
 			cb = (item) ->
 				fn(rewriteMetaToSymbol(item, metaSymbol))
 			store.db.forEachItem(cb)
 			store.memory.forEachItem(cb)
 			return
+
+
+		isEmpty: ->
+			return store.db.isEmpty() && store.memory.isEmpty()
 
 
 		clear: ->
@@ -180,6 +188,9 @@ module.exports = (storeNamespace) ->
 		persistentStorageAvailable: ->
 			return store.db.isAvailable()
 
+
+		getRawItem: (storeItem) ->
+			return separateItemWithMeta(storeItem, metaSymbol).item
 
 		getMetadata: (item) ->
 			validateItemWithMeta(item)

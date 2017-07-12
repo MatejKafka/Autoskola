@@ -15,7 +15,6 @@ getCollection =
 	sections: require('./store/collections/getSectionCollection')
 	answers: require('./store/collections/getAnswerHistoryCollection')
 	finishedTests: require('./store/collections/getPracticeTestCollection')
-	finishedSessions: require('./store/collections/getSessionCollection')
 
 
 createWrappedEveStore = require('./store/eveStoreWrapper')
@@ -61,13 +60,25 @@ window.addEventListener 'error', (msg, url, line, column, err) ->
 window.addEventListener 'unhandledrejection', (event) ->
 	return handleUncaughtError(event.reason)
 
-window.store = createWrappedEveStore('store')
+
+
+window.store = createWrappedEveStore(CONFIG.storeNamespace)
+
+if store.isEmpty() && localStorage.length != 0
+	# user already used previous version of app (where arrayStore was used)
+	location.href = '/updateClientDataFormat'
+	return
+
+# TODO: caching, validation when adding/updating
+store
+
 window.db =
 	questionTypes: questionTypes
 	STORE_TAGS: STORE_TAGS
 
 if !store.persistentStorageAvailable()
 	alert(MESSAGES.error.storageUnavailable)
+
 
 bindMobileMenuToggle(
 	document.getElementById('mobileMenuToggle'),
@@ -77,8 +88,7 @@ bindMobileMenuToggle(
 loaderManager = getLoaderManager(document.getElementById('loaderCover'))
 loaderManager.show(CONFIG.loaderScreenTimeout)
 
-# TODO: add migration script - arrayStore & collections to store
-#		after finishing transition to store
+
 updateTestCollections()
 .then ->
 	loaderManager.hide()
@@ -87,7 +97,6 @@ updateTestCollections()
 	db.sections = getCollection.sections()
 	db.answers = getCollection.answers()
 	db.finishedTests = getCollection.finishedTests()
-	db.finishedSessions = getCollection.finishedSessions()
 
 	bindScreenManager(document.getElementById('container'), screens, 'questionSelect')
 	bindSidemenuManager(document.getElementById('navList'))

@@ -4,6 +4,12 @@ cloneValue = require('./cloneValue')
 StorageFullError = require('./StorageFullError')
 
 
+isEmptyObj = (obj) ->
+	for own key of obj
+		return false
+	return true
+
+
 module.exports = (storageNamespace) ->
 	getKey = (key, isItem) ->
 		prefix = if isItem == true then 'items/' else if isItem == false then 'values/' else ''
@@ -29,6 +35,9 @@ module.exports = (storageNamespace) ->
 
 	return {
 		isAvailable: -> isAvailable
+
+		isEmpty: ->
+			return isEmptyObj(recordCache)
 
 		clear: ->
 			validateLocalStorage()
