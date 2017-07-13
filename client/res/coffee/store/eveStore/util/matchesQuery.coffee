@@ -1,16 +1,16 @@
-testObj = (meta, query) ->
-	if typeof meta != 'object'
+testObj = (obj, template) ->
+	if typeof obj != 'object'
 		return false
 
-	for key, value of query
+	for key, value of template
 		if typeof value == 'function'
-			if !value(meta[key])
+			if !value(obj[key])
 				return false
 		else if typeof value == 'object'
-			if !testObj(meta[key], value)
+			if !testObj(obj[key], value)
 				return false
 		else
-			if meta[key] != value
+			if obj[key] != value
 				return false
 	return true
 
@@ -18,3 +18,6 @@ testObj = (meta, query) ->
 module.exports = (item, itemQuery, metaQuery) ->
 	return testObj(item.item, itemQuery) &&
 		testObj(item.meta, metaQuery)
+
+
+module.exports.testObj = testObj

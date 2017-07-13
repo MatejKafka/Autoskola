@@ -41,10 +41,10 @@ module.exports = (container, goto, params) ->
 	questionIds = store.find(db.STORE_TAGS.QUESTION).map((q) -> q.id)
 
 	sectionListElem = container.getElementsByClassName('sectionList')[0]
-	sectionList = new QuestionSelectList(sectionListElem, store.find(db.STORE_TAGS.SECTION), 'sections', questionIds)
+	sectionList = new QuestionSelectList(sectionListElem, store.find(db.STORE_TAGS.SECTION), 'sections', questionIds, true)
 
 	questionTypeListElem = container.getElementsByClassName('questionTypeList')[0]
-	questionTypeList = new QuestionSelectList(questionTypeListElem, db.questionTypes, 'questionTypes', sectionList)
+	questionTypeList = new QuestionSelectList(questionTypeListElem, db.questionTypes, 'questionTypes', sectionList, false)
 
 	questionNumberDisplayElem = container.getElementsByClassName('selectedQuestionCount')[0]
 	questionNumberDisplay = new QuestionNumberDisplay(questionNumberDisplayElem, questionTypeList)
@@ -72,9 +72,6 @@ module.exports = (container, goto, params) ->
 
 		selectedSections = sectionList.getSelectedFilterIds()
 		selectedQuestionTypes = questionTypeList.getSelectedFilterIds()
-
-		# TODO: change order of composition in QuestionSelectList and remove this
-		questionIds = getQuestionIds(selectedSections, selectedQuestionTypes)
 
 		store.add(db.STORE_TAGS.CURRENT_BROWSING_SESSION, {
 			lastViewedIndex: null

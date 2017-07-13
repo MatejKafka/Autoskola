@@ -1,13 +1,18 @@
 CONFIG = require('../../CONFIG')
 
 
-getRandomQuestions = (sections, count) ->
-	sections = store.find(db.STORE_TAGS.SECTION)
+getRandomQuestions = (sectionIds, count) ->
 	questionIds = []
-	for section in sections
-		if sections.indexOf(section.id) > -1
+	for sectionId in sectionIds
+		section = store.findOne({$tag: db.STORE_TAGS.SECTION, id: sectionId})
+		if section?
 			for questionId in section.questions
 				questionIds.push(questionId)
+		else
+			throw new Error('Missing section: ' + sectionId)
+
+	if questionIds.length < count
+		throw new Error("Too few questions for sections: #{sectionIds.join(', ')}")
 
 	selectedQuestions = []
 	while selectedQuestions.length < count
@@ -22,10 +27,10 @@ getTestQuestionIds = ->
 	questions = []
 	for section in CONFIG.testComposition
 		if typeof section[0] == 'number'
-			sections = [section[0]]
+			sectionIds = [section[0]]
 		else
-			sections = section[0]
-		questions.push.apply(questions, getRandomQuestions(sections, section[1]))
+			sectionIds = section[0]
+		questions.push.apply(questions, getRandomQuestions(sectionIds, section[1]))
 
 	return questions
 

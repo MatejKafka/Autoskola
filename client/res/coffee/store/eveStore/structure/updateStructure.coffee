@@ -117,6 +117,7 @@ module.exports = updateStructure =
 		structure.byQuery.push({
 			fullQuery: query
 			findQuery: separateItemQuery(findQuery)
+			rawFindQuery: findQuery
 			cachedKey: propKey
 			isMetaKey: isMeta
 			values: propMap

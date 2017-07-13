@@ -1,0 +1,11 @@
+{
+	"name": "npm-recursive-installer",
+	"author": "Anagmate",
+	"description": "simple module to run npm install for all subdirectories of the specified root",
+	"license": "MIT",
+	"version": "1.0.0",
+	"main": "./index.js",
+	"dependencies": {
+		"chalk": "2.0.1"
+	}
+}

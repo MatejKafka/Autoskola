@@ -27,6 +27,7 @@ handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
 	return null
 
 
+# TODO: add support for queries against arrays (something like $contains operator)
 findUnsortedItems = (query, store, structure, singleRecord = false) ->
 	if !query?
 		if singleRecord
@@ -53,7 +54,7 @@ findUnsortedItems = (query, store, structure, singleRecord = false) ->
 	findQueryStr = Object.keys(query).sort().join(',')
 	for cachedQuery in structure.byQuery
 		cachedQueryStr = Object.keys(cachedQuery.fullQuery).sort().join(',')
-		if findQueryStr == cachedQueryStr
+		if findQueryStr == cachedQueryStr && matchesQuery.testObj(query, cachedQuery.rawFindQuery)
 			# matches
 			key = cachedQuery.cachedKey
 			if cachedQuery.isMetaKey

@@ -1,14 +1,13 @@
 {
-  "name": "autoskola-testy-scripts",
-  "version": "0.0.1",
-  "author": "Anagmate",
-  "dependencies": {
-    "browserify": "14.3.0",
-    "coffee-script": "1.12.6",
-    "coffeeify": "2.1.0",
-    "fs-extra": "3.0.1",
-    "less": "2.7.2",
-    "less-plugin-autoprefix": "1.5.1",
-    "minifyify": "7.3.5"
-  }
+	"name": "autoskola-testy-scripts",
+	"version": "0.0.1",
+	"author": "Anagmate",
+	"private": true,
+	"devDependencies": {
+		"chalk": "2.0.1",
+		"coffee-loader": "0.7.3",
+		"webpack": "3.2.0",
+		"less": "2.7.2",
+		"less-plugin-autoprefix": "1.5.1"
+	}
 }

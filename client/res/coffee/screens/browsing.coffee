@@ -38,7 +38,6 @@ module.exports = (container, goto, params) ->
 	gotoQuestion = (i) ->
 		goto('browsing', Object.assign({}, params, {q: i + 1}))
 
-
 	question = store.findOne({
 		$tag: db.STORE_TAGS.QUESTION
 		id: sessionItem.questionIds[qIndex]

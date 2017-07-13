@@ -18,23 +18,47 @@ getListItemHtml = (filter, i, listName) ->
 module.exports = class QuestionSelectList extends EventEmitter
 	# filterArr: array of filters - each must have id, name, filterFn
 	# source: either static array or another instance of QuestionSelectList
-	constructor: (containerList, filterArr, listName, questionIdSource) ->
+	# shuffleOutput - if true, `getFilteredQuestionIds` method shuffles the questions - one from each section, then again,... until it uses up all questions
+	constructor: (containerList, filterArr, listName, questionIdSource, shuffleOutput) ->
 		@_containerList = containerList
 		@_filters = filterArr
 		@_listName = listName
 		@_source = questionIdSource
+		@_shuffleOutput = shuffleOutput
 
 		if questionIdSource instanceof QuestionSelectList
 			@_questionIds = questionIdSource.getFilteredQuestionIds()
 			questionIdSource.on 'change', =>
 				@_questionIds = questionIdSource.getFilteredQuestionIds()
+				@_updateCurrentQuestionIdsByFilter()
 				@_updateHtml()
 				@emit('change')
 				return
 		else
 			@_questionIds = questionIdSource
 
+		# relies on all filters in previous QuestionSelectList instances being selected
+		@_questionIdsByFilter = []
+		for filter, i in @_filters
+			matchingQuestionIds = []
+			for questionId in @_questionIds
+				if filter.filterFn(questionId)
+					matchingQuestionIds.push(questionId)
+			@_questionIdsByFilter[i] = matchingQuestionIds
+		@_currentQuestionIdsByFilter = @_questionIdsByFilter
+
 		@_render()
+
+
+	_updateCurrentQuestionIdsByFilter: ->
+		@_currentQuestionIdsByFilter = []
+		for filterQuestionIds, i in @_questionIdsByFilter
+			currentFilterQuestionIds = []
+			for qId in @_questionIds
+				if filterQuestionIds.indexOf(qId) >= 0
+					currentFilterQuestionIds.push(qId)
+			@_currentQuestionIdsByFilter[i] = currentFilterQuestionIds
+		return
 
 
 	_render: ->
@@ -92,40 +116,51 @@ module.exports = class QuestionSelectList extends EventEmitter
 			questionCountElem = item.getElementsByClassName('questionCount')[0]
 			idStr = item.dataset.filterId
 			index = parseInt(item.dataset.index)
-			length = 0
 			if idStr == SELECT_ALL_ID
 				questionCountElem.innerHTML = @_questionIds.length
-				length = @_questionIds.length
+				count = @_questionIds.length
 			else if !idStr? || isNaN(index)
 				continue
 			else
-				length = @_questionIds.filter(@_filters[index].filterFn).length
-				questionCountElem.innerHTML = length
-			if length == 0
+				count = @_currentQuestionIdsByFilter[index].length
+				questionCountElem.innerHTML = count
+			if count == 0
 				item.classList.add('emptyFilter')
 			else
 				item.classList.remove('emptyFilter')
 		return
 
 
-	getFilteredQuestionIds: ->
-		questionIdOut = []
+	_getSelectedFilterIndexes: ->
+		selectedFilterIndexes = []
 		for item in @_containerList.children
 			index = parseInt(item.dataset.index)
 			if !item.children[0].checked || isNaN(index)
 				continue
-			filter = @_filters[index]
-			for questionId in @_questionIds
-				if filter.filterFn(questionId)
-					questionIdOut.push(questionId)
+			selectedFilterIndexes.push(index)
+		return selectedFilterIndexes
+
+
+	getFilteredQuestionIds: ->
+		selectedFilterIndexes = @_getSelectedFilterIndexes()
+		questionIdOut = []
+		if @_shuffleOutput
+			i = 0
+			loop
+				copiedCount = 0
+				for index in selectedFilterIndexes
+					if @_currentQuestionIdsByFilter[index][i]?
+						questionIdOut.push(@_currentQuestionIdsByFilter[index][i])
+						copiedCount++
+				i++
+				if copiedCount == 0
+					break
+		else
+			for index in selectedFilterIndexes
+				for qId in @_currentQuestionIdsByFilter[index]
+					questionIdOut.push(qId)
 		return questionIdOut
 
 
 	getSelectedFilterIds: ->
-		ids = []
-		for item in @_containerList.children
-			id = parseInt(item.dataset.filterId)
-			if !item.children[0].checked || isNaN(id)
-				continue
-			ids.push(id)
-		return ids
+		return @_getSelectedFilterIndexes().map (i) => return @_filters[i].id

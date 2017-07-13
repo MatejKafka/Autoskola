@@ -9,6 +9,10 @@ module.exports =
 			id: null
 		}
 		{
+			$tag: TAGS.SECTION
+			id: null
+		}
+		{
 			$tag: TAGS.ANSWER
 			questionId: null
 			attemptNumber: 0

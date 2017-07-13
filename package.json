@@ -1,12 +1,13 @@
 {
-  "//": "TEST DATA UPDATER REQUIRES JAVA TO BE INSTALLED!",
-  "name": "autoskola-testy",
-  "version": "0.0.1",
-  "author": "Anagmate",
-  "scripts": {
-    "preinstall": "cd scripts && npm install",
-    "postinstall": "cd server && npm install && cd ../client/res && npm install",
-    "start": "cd server && npm start",
-    "updateTestData": "cd server && npm run-script updateTestData"
-  }
+	"//": "TEST DATA UPDATER REQUIRES JAVA TO BE INSTALLED!",
+	"///": "RUN INSTALL WITH --unsafe-perm",
+	"name": "autoskola-testy",
+	"version": "0.0.1",
+	"author": "Anagmate",
+	"private": true,
+	"scripts": {
+		"postinstall": "node ./scripts/installFull.js",
+		"start": "cd server && npm start",
+		"updateTestData": "cd server && npm run-script updateTestData"
+	}
 }
