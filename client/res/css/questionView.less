@@ -2,6 +2,8 @@
 @import "./variables";
 
 .questionView {
+	position: relative;
+
 	.topbar {
 		.backButton {
 			font-weight: bold;
@@ -154,9 +156,13 @@
 
 
 @media (max-width: @menuHideScreenWidth) {
-	.questionView .questionContainer .questionImage {
-		img {
-			max-height: 200px;
+	.questionView {
+		top: -@mobileMenuToggleHeight + @mobileQuestionViewTop;
+
+		.questionContainer .questionImage {
+			img {
+				max-height: 200px;
+			}
 		}
 	}
 }
