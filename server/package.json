@@ -1,6 +1,6 @@
 {
 	"name": "autoskola-testy-server",
-	"version": "0.3.0",
+	"version": "0.9.0",
 	"description": "Small server that provides questions for final exams in czech driving schools",
 	"private": true,
 	"main": "index.js",

@@ -1,33 +1,29 @@
-module.exports = (buttonElem, sidebarElem, contentElem) ->
+CLASSES =
+	MENU_HIDDEN: 'mobileMenuHidden'
+	MENU_VISIBLE: 'mobileMenuOpen'
+
+
+module.exports = (buttonElem, sidebarElem, coverElem) ->
 	isHidden = true
-	sidebarElem.classList.add('hiddenOnMobile')
-	buttonElem.classList.add('aboveContent')
+	document.body.classList.add(CLASSES.MENU_HIDDEN)
 
 	toggleMenu = ->
 		if isHidden
-			sidebarElem.classList.remove('hiddenOnMobile')
-			sidebarElem.classList.add('visibleOnMobile')
-			buttonElem.classList.remove('aboveContent')
-			buttonElem.classList.add('aboveMenu')
+			document.body.classList.remove(CLASSES.MENU_HIDDEN)
+			document.body.classList.add(CLASSES.MENU_VISIBLE)
 			isHidden = false
 		else
-			sidebarElem.classList.remove('visibleOnMobile')
-			sidebarElem.classList.add('hiddenOnMobile')
-			buttonElem.classList.remove('aboveMenu')
-			buttonElem.classList.add('aboveContent')
+			document.body.classList.remove(CLASSES.MENU_VISIBLE)
+			document.body.classList.add(CLASSES.MENU_HIDDEN)
 			isHidden = true
 		return
 
+	hideMenu = ->
+		if !isHidden
+			toggleMenu()
+		return
+
 	buttonElem.addEventListener('click', toggleMenu)
-
-	contentElem.addEventListener 'click', ->
-		if !isHidden
-			toggleMenu()
-		return
-
-	window.addEventListener 'hashchange', ->
-		if !isHidden
-			toggleMenu()
-		return
-
+	coverElem.addEventListener('click', hideMenu)
+	window.addEventListener('hashchange', hideMenu)
 	return

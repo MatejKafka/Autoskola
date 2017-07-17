@@ -2,7 +2,7 @@
 	"//": "TEST DATA UPDATER REQUIRES JAVA TO BE INSTALLED!",
 	"///": "RUN INSTALL WITH --unsafe-perm",
 	"name": "autoskola-testy",
-	"version": "0.0.1",
+	"version": "0.9.0",
 	"author": "Anagmate",
 	"private": true,
 	"scripts": {

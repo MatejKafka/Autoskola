@@ -25,7 +25,7 @@ window.db =
 bindMobileMenuToggle(
 	document.getElementById('mobileMenuToggle'),
 	document.getElementById('sidebar'),
-	document.getElementById('content')
+	document.getElementById('mobilePageCover')
 )
 loaderManager = getLoaderManager(document.getElementById('loaderCover'))
 loaderManager.show(CONFIG.loaderScreenTimeout)

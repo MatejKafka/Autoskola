@@ -1,6 +1,6 @@
 {
 	"name": "autoskola-testy-data-updater",
-	"version": "0.1.0",
+	"version": "0.5.0",
 	"description": "Data updater for autoskola-testy package",
 	"private": true,
 	"main": "index.js",

@@ -138,7 +138,7 @@ h1 {
 	}
 }
 
-#mobileMenuToggle {
+#mobileMenuToggle, #mobilePageCover {
 	display: none;
 }
 
@@ -186,14 +186,26 @@ h1 {
 		background-color: transparent;
 		outline: none;
 		font-size: 200%;
-		z-index: 2;
+		z-index: 3;
 		user-select: none;
 
 		color: gray;
 		transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+	}
 
-		&.aboveMenu {
+	.mobileMenuOpen {
+		#mobileMenuToggle {
 			color: white;
+		}
+
+		#mobilePageCover {
+			display: block;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 1;
 		}
 	}
 
