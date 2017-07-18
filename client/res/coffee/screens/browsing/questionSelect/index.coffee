@@ -1,7 +1,6 @@
-MESSAGES = require('../../MESSAGES').questionSelect
+MESSAGES = require('../../../MESSAGES').questionSelect
 QuestionSelectList = require('./QuestionSelectList')
 QuestionNumberDisplay = require('./QuestionNumberDisplay')
-getQuestionIds = require('./getQuestionIds')
 
 
 module.exports = (container, goto, params) ->
@@ -65,6 +64,7 @@ module.exports = (container, goto, params) ->
 	disableSubmitButtonIfUnselected()
 
 	form.addEventListener 'submit', ->
+		# TODO: update to always keep same order if same questions are selected
 		questionIds = questionNumberDisplay.getFilteredQuestionIds()
 		if questionIds.length == 0
 			alert(MESSAGES.noSectionChecked)

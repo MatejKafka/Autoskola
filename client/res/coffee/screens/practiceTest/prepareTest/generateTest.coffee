@@ -1,4 +1,4 @@
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../../CONFIG')
 
 
 getRandomQuestions = (sectionIds, count) ->

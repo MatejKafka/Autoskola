@@ -1,10 +1,10 @@
-CONFIG = require('../CONFIG')
-MESSAGES = require('../MESSAGES').evaluateTest
+CONFIG = require('../../CONFIG')
+MESSAGES = require('../../MESSAGES').evaluateTest
 PASS_SCORE = CONFIG.testSuccessThreshold
 
 
-e = require('../util/createElem')
-getTestResults = require('../util/getTestResults')
+e = require('../../util/createElem')
+getTestResults = require('../../util/getTestResults')
 
 
 saveTestResults = (test, results) ->

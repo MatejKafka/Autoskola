@@ -2,7 +2,7 @@ SELECT_ALL_ID = 'selectAll'
 
 
 EventEmitter = require('events')
-MESSAGES = require('../../MESSAGES').questionSelect
+MESSAGES = require('../../../MESSAGES').questionSelect
 
 getListItemHtml = (filter, i, listName) ->
 	return "<li data-filter-id='#{filter.id}' #{if i? then "data-index='#{i}'" else ''}>" +

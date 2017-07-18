@@ -22,22 +22,29 @@ scrollToCenter = (elem, container) ->
 	return
 
 
+# performance critical code - potentially renders hundreds of list items
+# 2017-07-18 - extremely slow in Edge
+# TODO: cache between renders, only change diff (cache fixed number of elements;
+# TODO: 										when used, remove highlights, replace currentQuestionItem)
 renderQuestionList = (questionCount, index, containerList, gotoQuestionFn) ->
-	currentQuestionItem = null
+	fragment = document.createDocumentFragment()
 	for i in [0...questionCount]
 		do (i) ->
 			li = document.createElement('li')
 			link = document.createElement('a')
-			link.innerHTML = i + 1
+			link.appendChild(document.createTextNode(i + 1))
+
 			link.addEventListener 'click', ->
 				gotoQuestionFn(i)
-			li.appendChild(link)
-			containerList.appendChild(li)
-			if i == index
-				currentQuestionItem = li
 
+			li.appendChild(link)
+			fragment.appendChild(li)
+
+	currentQuestionItem = fragment.children[index]
 	currentQuestionItem.classList.add('currentQuestion')
 	currentQuestionItem.innerHTML = index + 1
+
+	containerList.appendChild(fragment)
 	scrollToCenter(currentQuestionItem, containerList)
 
 	return (index, highlightClass) ->

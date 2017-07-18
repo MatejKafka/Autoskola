@@ -1,7 +1,7 @@
-MESSAGES = require('../MESSAGES').browsingQuestions
-CONFIG = require('../CONFIG')
-renderQuestion = require('../util/render/renderQuestion')
-createElem = require('../util/createElem')
+MESSAGES = require('../../MESSAGES').browsingQuestions
+CONFIG = require('../../CONFIG')
+renderQuestion = require('../../util/render/renderQuestion')
+createElem = require('../../util/createElem')
 
 
 qIndexFromParams = (params) ->
@@ -42,7 +42,9 @@ module.exports = (container, goto, params) ->
 		$tag: db.STORE_TAGS.QUESTION
 		id: sessionItem.questionIds[qIndex]
 	})
-	alreadyAnswered = sessionItem.answers[qIndex]?
+
+	qAnswers = sessionItem.answers[qIndex]
+	alreadyCorrectlyAnswered = qAnswers? && qAnswers.filter((a) -> a.correctlyAnswered).length == 1
 
 
 	questionContainer = createElem('div .questionView .browsingMode')
@@ -77,26 +79,26 @@ module.exports = (container, goto, params) ->
 			prepareView: (highlightAnswer, highlightQuestion) ->
 				for questionAnswers, i in sessionItem.answers
 					if !questionAnswers? || questionAnswers.length == 0
-						highlightQuestion(i, 'unanswered')
-					else if questionAnswers.length == 1
+						continue
+					if questionAnswers.length == 1 && questionAnswers[0].correctlyAnswered
 						highlightQuestion(i, 'correct')
 					else
 						highlightQuestion(i, 'incorrect')
 
-				if alreadyAnswered
-					qAnswers = sessionItem.answers[qIndex]
+				if qAnswers?
 					for answer in qAnswers
 						highlightAnswer(
 							answer.selectedAnswerIndex,
 							if answer.correctlyAnswered then 'correct' else 'incorrectWithoutAnimation'
 						)
+				if alreadyCorrectlyAnswered
 					for answer, i in question.answers
 						highlightAnswer(i, '_')
 				return
 
 
 			answerClick: ({answer, index}, highlightAnswer) ->
-				if alreadyAnswered
+				if alreadyCorrectlyAnswered
 					return true
 
 				if correctAnswerClicked

@@ -1,7 +1,7 @@
-MESSAGES = require('../MESSAGES').practiceTest
-CONFIG = require('../CONFIG')
-renderQuestion = require('../util/render/renderQuestion')
-createElem = require('../util/createElem')
+MESSAGES = require('../../MESSAGES').practiceTest
+CONFIG = require('../../CONFIG')
+renderQuestion = require('../../util/render/renderQuestion')
+createElem = require('../../util/createElem')
 
 
 qIndexFromParams = (params) ->

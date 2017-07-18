@@ -1,8 +1,8 @@
-CONFIG = require('../CONFIG')
-MESSAGES = require('../MESSAGES').evaluateTest
+CONFIG = require('../../CONFIG')
+MESSAGES = require('../../MESSAGES').evaluateTest
 
 
-e = require('../util/createElem')
+e = require('../../util/createElem')
 getResults = (sessionObj) ->
 	existingAnswers = sessionObj.answers.filter((answerArr) -> answerArr? && answerArr.length > 0)
 	return {

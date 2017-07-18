@@ -1,3 +1,6 @@
+require('./polyfills')
+
+
 CONFIG = require('./CONFIG')
 STORE_TAGS = require('./STORE_TAGS')
 
