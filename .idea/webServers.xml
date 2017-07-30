@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="a88681f4-2fd4-496b-9d93-0c2f645e9941" name="rostiNew" url="http://alpha-node-6.rosti.cz">
+      <webServer id="a88681f4-2fd4-496b-9d93-0c2f645e9941" name="rostiNew" url="http://autoskola2-2375.rostiapp.cz">
         <fileTransfer host="alpha-node-6.rosti.cz" port="21" rootFolder="/app">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
