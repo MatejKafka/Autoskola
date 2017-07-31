@@ -7,5 +7,7 @@ module.exports = (itemAndMeta, metaSymbol) ->
 	for key of meta
 		do (key) ->
 			item.__defineGetter__('$' + key, -> meta[key])
+			# TODO: probably add some validation
+			item.__defineSetter__('$' + key, (newValue) -> meta[key] = newValue)
 
 	return item

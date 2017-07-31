@@ -53,6 +53,8 @@ module.exports = updateStructure =
 
 
 	remove: (structure, item) ->
+		if !structure.location[item.meta.id]?
+			return
 		delete structure.location[item.meta.id]
 
 		if item.meta.tag?
@@ -75,24 +77,7 @@ module.exports = updateStructure =
 
 
 	change: (structure, item) ->
-		if structure.location[item.meta.id]?
-			for query in structure.byQuery
-				key = getValueFromItem(item, query.cachedKey, query.isMetaKey)
-				if !query.values[key]?
-					continue
-				index = query.values[key].indexOf(item.meta.id)
-				if index >= 0
-					query.values[key].splice(index, 1)
-					if query.values[key].length == 0
-						delete query.values[key]
-
-				if matchesQuery(item, query.findQuery.item, query.findQuery.meta)
-					key = getValueFromItem(item, query.cachedKey, query.isMetaKey)
-					if !query.values[key]?
-						query.values[key] = []
-					query.values[key].push(item.meta.id)
-
-			return structure
+		updateStructure.remove(structure, item)
 		return updateStructure.add(structure, item)
 
 

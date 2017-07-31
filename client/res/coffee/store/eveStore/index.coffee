@@ -116,6 +116,7 @@ module.exports = (storeNamespace) ->
 			separatedItem = separateStoreItem(item)
 			separatedItem.isExisting = true
 
+			itemOperations.remove(separatedItem, store, structure)
 			returnedItem = itemOperations.add(separatedItem, store, structure)
 			structure = updateStructure.change(structure, returnedItem, store)
 			rewrittenItem = rewriteInternalItem(returnedItem)
@@ -268,12 +269,13 @@ module.exports = (storeNamespace) ->
 			return store.db.isAvailable()
 
 
-		getRawItem: (storeItem) ->
-			return separateStoreItem(storeItem).item
+		getRawItem: (item) ->
+			validateItemWithMeta(item)
+			return separateStoreItem(item).item
 
 		getMetadata: (item) ->
 			validateItemWithMeta(item)
-			return Object.assign({}, separateStoreItem(item).meta)
+			return separateStoreItem(item).meta
 
 
 		__on: (operationType, cb) ->
@@ -303,3 +305,6 @@ module.exports = (storeNamespace) ->
 			console.log(str, item.item)
 			return str
 	}
+
+
+module.exports.StorageFullError = StorageFullError

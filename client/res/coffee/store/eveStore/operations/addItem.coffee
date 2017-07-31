@@ -1,4 +1,5 @@
 getNextId = require('../getNextId')
+cloneValue = require('../store/cloneValue')
 
 
 module.exports = ({item, meta, isExisting}, store) ->
@@ -19,7 +20,7 @@ module.exports = ({item, meta, isExisting}, store) ->
 			persistent: persistent
 			writeTime: Date.now()
 
-	metaItem = {item, meta: newMeta}
+	metaItem = {item: cloneValue(item), meta: newMeta}
 
 	if newMeta.persistent
 		store.db.writeItem(newMeta.id, metaItem)

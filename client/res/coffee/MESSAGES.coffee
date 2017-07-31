@@ -37,7 +37,7 @@ module.exports =
 			errorMessageBelow: 'Níže je uvedený důvod chyby:'
 
 		storageFull: 'Zaplnil se úložný prostor, do kterého se ukládaly vaše odpovědi.
-					Aplikace začne přepisovat nejstarší zátnamy.'
+					Nové odpovědi nebudou uloženy.'
 
-		storageUnavailable: 'Váš prohlížeč nepodporuje ukládání informací na váš počítač, vaše odpovědi se
+		storageUnavailable: 'Váš prohlížeč nepodporuje ukládání informací na váš počítač, všechny odpovědi se
 							po odchodu ze stránky smažou.'

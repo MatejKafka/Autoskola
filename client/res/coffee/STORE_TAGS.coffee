@@ -5,3 +5,5 @@ module.exports =
 	PRACTICE_TEST: 'practiceTest'
 	CURRENT_TEST: 'currentTest'
 	CURRENT_BROWSING_SESSION: 'currentBrowsingSession'
+
+	LAST_CHECK_TIME: 'lastUpdateCheckTime'
