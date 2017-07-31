@@ -97,7 +97,11 @@ module.exports = (storeNamespace) ->
 			rewrittenItem = rewriteInternalItem(returnedItem)
 			if returnedItem.meta.tag?
 				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
-			emit('add', "Added new item to `#{storeNamespace}` (id: #{returnedItem.meta.id})", rewrittenItem)
+				tagStr = ", tag: #{returnedItem.meta.tag}"
+			else
+				tagStr = ''
+			# TODO: add more complex logging (in `add`, add cache hit info)
+			emit('add', "Added new item to `#{storeNamespace}` (id: #{returnedItem.meta.id}#{tagStr})", rewrittenItem)
 			return rewrittenItem
 
 

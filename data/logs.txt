@@ -551,3 +551,51 @@
 {"time":1501379627114,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
 {"time":1501379627114,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
 {"time":1501379627114,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543136340,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1501543136344,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1501543136380,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1501543136412,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1501543136412,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1501543136453,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1501543290617,"type":"log","path":"","message":"Starting new server instance","msgData":null}
+{"time":1501543290620,"type":"log","path":"/testDataStore","message":"Sections loaded","msgData":9}
+{"time":1501543290636,"type":"log","path":"/testDataStore","message":"Local img questions loaded","msgData":736}
+{"time":1501543290654,"type":"log","path":"/testDataStore","message":"Remote img questions loaded","msgData":736}
+{"time":1501543290654,"type":"log","path":"/testDataStore","message":"Test data loaded","msgData":null}
+{"time":1501543290674,"type":"log","path":"/webserver/start","message":"Webserver started!","msgData":{"port":8080}}
+{"time":1501543298970,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543298971,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543298971,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543298977,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543298979,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543298979,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543454128,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543454128,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543454128,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543454129,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543454129,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543454129,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543622682,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543622682,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543622682,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543622686,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543622686,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543622686,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543632219,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543632219,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543632219,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543632221,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543632221,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543632221,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543670877,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543670877,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543670877,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543670878,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543670878,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543670878,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543698299,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543698299,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getSection`","msgData":{"apiEndpoint":"getSection","validEndpoint":true}}
+{"time":1501543698299,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1501543698301,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
+{"time":1501543698301,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
+{"time":1501543698301,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
