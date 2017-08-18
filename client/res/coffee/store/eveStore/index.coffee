@@ -1,3 +1,4 @@
+getArgumentValidator = require('../../validateArguments').getScope
 StorageFullError = require('./store/StorageFullError')
 
 getDb = require('./store/getDb')
@@ -27,6 +28,9 @@ raw_validateStoreItem = require('./validateStoreItem')
 validateItemWithMeta = (item) ->
 	return raw_validateStoreItem(item, metaSymbol)
 
+validateArguments = getArgumentValidator()
+validateArguments.addType('id', (arg) -> @int(arg) && arg >= 0)
+
 
 ALREADY_LOADED_NAMESPACES = []
 metaSymbol = Symbol('eveStore metadata')
@@ -48,13 +52,15 @@ module.exports = (storeNamespace) ->
 	undecorators = {}
 
 	listeners = {}
-	emit = (opType, message, data) ->
+	emit = (opType, message, strData, data) ->
+		throw err if (err = validateArguments(arguments, ['string', 'string', 'string', 'object']))?
+
 		if listeners[opType]?
 			for cb in listeners[opType]
-				cb(message, data, opType)
+				cb(message, strData, data, opType)
 		if listeners['*']?
 			for cb in listeners['*']
-				cb(message, data, opType)
+				cb(message, strData, data, opType)
 		return
 
 	# TODO: rewrite, big mess
@@ -73,8 +79,7 @@ module.exports = (storeNamespace) ->
 				else
 					persist = null
 
-			if typeof item != 'object'
-				throw new Error('item must be object, not ' + typeof item)
+			throw err if (err = validateArguments([tag, persist, item], ['string?', 'true?', 'object']))?
 
 			if isItemWithMeta(item)
 				console.warn('to update item, use store.update, not store.add')
@@ -100,8 +105,11 @@ module.exports = (storeNamespace) ->
 				tagStr = ", tag: #{returnedItem.meta.tag}"
 			else
 				tagStr = ''
-			# TODO: add more complex logging (in `add`, add cache hit info)
-			emit('add', "Added new item to `#{storeNamespace}` (id: #{returnedItem.meta.id}#{tagStr})", rewrittenItem)
+			# TODO: add more complex logging (add cache hit info,...)
+			emit('add', "Added new item to `#{storeNamespace}`",
+				"(id: #{returnedItem.meta.id}#{tagStr}, persist: #{returnedItem.meta.persistent})",
+				rewrittenItem
+			)
 			return rewrittenItem
 
 
@@ -128,7 +136,7 @@ module.exports = (storeNamespace) ->
 			if returnedItem.meta.tag?
 				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
 
-			emit('update', "Updated item (id: #{returnedItem.meta.id})", rewrittenItem)
+			emit('update', "Updated item", "(id: #{returnedItem.meta.id})", rewrittenItem)
 			return rewrittenItem
 
 
@@ -138,7 +146,7 @@ module.exports = (storeNamespace) ->
 					eve.remove(item, __isInternal)
 				return removedItems
 
-			if typeof itemOrId != 'number' && !__isInternal
+			if !validateArguments.matches([itemOrId], ['id'])
 				validateItemWithMeta(itemOrId)
 				itemOrId = separateStoreItem(itemOrId)
 
@@ -153,12 +161,12 @@ module.exports = (storeNamespace) ->
 			if !__isInternal
 				if removedItem?
 					emit('remove',
-						"Removed item from `#{storeNamespace}` (id: #{removedItem.meta.id},
+						"Removed item from `#{storeNamespace}`", "(id: #{removedItem.meta.id},
 							added #{Math.floor((Date.now() - removedItem.meta.writeTime) / 1000)} seconds ago)",
 						rewrittenItem)
 				else
-					emit('remove', "Attempted to remove missing item
-							(id: #{if typeof itemOrId == 'number' then itemOrId else itemOrId.meta.id})",
+					emit('remove', "Attempted to remove missing item",
+						"(id: #{if typeof itemOrId == 'number' then itemOrId else itemOrId.meta.id})",
 						null)
 
 			return rewrittenItem
@@ -169,23 +177,27 @@ module.exports = (storeNamespace) ->
 				.map((item) => eve.remove(item, true))
 			result = unfilteredResult.filter((item) -> item?)
 
-			emit('removeByQuery', "Removed items by query
-					(removedItemCount: #{result.length}, foundItemCount: #{unfilteredResult.length})",
+			emit('removeByQuery', 'Removed items by query',
+				"(removedItemCount: #{result.length}, foundItemCount: #{unfilteredResult.length})",
 				{query: query, foundItemCount: unfilteredResult.length, removedItemCount: result.length})
 
 			return result
 
 
 		get: (id) ->
+			throw err if (err = validateArguments(arguments, ['int']))?
+
 			returnedItem = itemOperations.get(id, store, structure)
 			rewrittenItem = rewriteInternalItem(returnedItem)
 			if returnedItem.meta.tag?
 				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
-			emit('get', "Looked up item by ID (id: #{id})", rewrittenItem)
+			emit('get', 'Looked up item by ID', "(id: #{id})", rewrittenItem)
 			return rewrittenItem
 
 
 		find: (query, __isInternal = false, __singleRecord = false) ->
+			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
+
 			rawItems = itemOperations.find(query, store, structure, __singleRecord)
 				.filter((i) -> i?)
 
@@ -200,12 +212,24 @@ module.exports = (storeNamespace) ->
 						rewrittenItem
 
 			if !__isInternal
-				emit('find', "Querying store to find items (itemCount: #{rawItems.length})", {query: query, itemCount: rawItems.length})
+				if typeof query == 'string'
+					queryStr = "($tag: #{query})"
+				else if typeof query == 'number'
+					queryStr = '#' + query
+				else
+					qParts = []
+					for key, value of query
+						qParts.push("#{key}: #{value}")
+					queryStr = qParts.join(', ')
+
+				emit('find', 'Querying store to find items', "(itemCount: #{rawItems.length}, query: (#{queryStr}))", {query: query, itemCount: rawItems.length})
 
 			return items
 
 
 		findOne: (query) ->
+			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
+
 			result = eve.find(query, null, true)[0]
 			if !result?
 				result = null
@@ -213,10 +237,13 @@ module.exports = (storeNamespace) ->
 
 
 		count: (query) ->
+			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
 			return itemOperations.count(query, store, structure)
 
 
 		forEach: (fn) ->
+			throw err if (err = validateArguments(arguments, ['function']))?
+
 			cb = (item) ->
 				if item.meta.tag?
 					fn(applyFnArray(rewriteInternalItem(item), decorators[item.meta.tag], null, true))
@@ -241,14 +268,12 @@ module.exports = (storeNamespace) ->
 
 
 		setCacheFor: (query) ->
-			if typeof query != 'object'
-				throw new Error('Invalid parameters')
+			throw err if (err = validateArguments(arguments, ['object']))?
 			structure = updateStructure.cacheQuery(structure, query, store)
 			return
 
 		setValidatorFor: (tag, fn) ->
-			if typeof tag != 'string' || typeof fn != 'function'
-				throw new Error('Invalid parameters')
+			throw err if (err = validateArguments(arguments, ['string', 'function']))?
 			if !validators[tag]?
 				validators[tag] = []
 			validators[tag].push(fn)
@@ -256,7 +281,8 @@ module.exports = (storeNamespace) ->
 
 		setDecoratorFor: (tag, decoratorObj) ->
 			{decorate, undecorate} = decoratorObj
-			if typeof tag != 'string' || typeof decorate != 'function' || typeof undecorate != 'function'
+			throw err if (err = validateArguments(arguments, ['string', 'object']))?
+			if typeof decorate != 'function' || typeof undecorate != 'function'
 				throw new Error('Invalid parameters')
 
 			if !decorators[tag]?
@@ -283,6 +309,7 @@ module.exports = (storeNamespace) ->
 
 
 		__on: (operationType, cb) ->
+			throw err if (err = validateArguments(arguments, ['string', 'function']))?
 			if !listeners[operationType]?
 				listeners[operationType] = []
 			listeners[operationType].push(cb)

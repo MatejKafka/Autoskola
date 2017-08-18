@@ -81,4 +81,8 @@ module.exports = ->
 
 	out.StorageFullError = eve.StorageFullError
 	out.rawStore = eve
+
+	# TODO: remove when finished
+	require('./bindStoreLogger')(out)
+
 	return out

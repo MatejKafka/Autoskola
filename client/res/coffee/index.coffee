@@ -7,6 +7,7 @@ STORE_TAGS = require('./STORE_TAGS')
 require('./util/testUtils')
 
 
+validateArguments = require('./validateArguments')
 bindErrorListeners = require('./bindErrorListeners')
 setupScreenManager = require('./setupScreenManager')
 prepareStore = require('./prepareStore')
@@ -21,6 +22,7 @@ questionTypes = require('./questionTypes')
 
 bindErrorListeners()
 
+window.validateArguments = validateArguments
 window.db =
 	questionTypes: questionTypes
 	STORE_TAGS: STORE_TAGS
