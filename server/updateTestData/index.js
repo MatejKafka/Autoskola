@@ -29,7 +29,7 @@
       if (endIndexStr == null) {
         endIndexStr = null;
       }
-      return [getRemoteImgQuestions(paths.remoteImgQuestions), paths.imgDir, parseInt(startIndexStr), endIndexStr == null ? null : parseInt(endIndexStr)];
+      return [getRemoteImgQuestions(paths.remoteImgQuestions), paths.imgDir, path.oldImgDir, parseInt(startIndexStr), endIndexStr == null ? null : parseInt(endIndexStr)];
     },
     updateStructureFile: function() {
       return [paths.imgDir];
@@ -68,7 +68,7 @@
     console.log('AVAILABLE COMMANDS: ');
     for (cmdName in cliArguments) {
       fn = cliArguments[cmdName];
-      console.log('\t' + cmdName + (" (" + fn.length + " arguments)"));
+      console.log('\t' + cmdName + (" (" + fn.length + " " + (fn.length > 0 ? "optional " : "") + "arguments)"));
     }
     console.log('');
     return;

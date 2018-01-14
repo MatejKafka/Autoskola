@@ -773,3 +773,25 @@
 {"time":1515888681240,"type":"log","path":"/webserver/api/idParsed","message":"ID query parsed","msgData":{"parsedIds":null}}
 {"time":1515888681240,"type":"log","path":"/webserver/api/endpointResolved","message":"Requesting `getQuestion`","msgData":{"apiEndpoint":"getQuestion","validEndpoint":true}}
 {"time":1515888681240,"type":"log","path":"/webserver/api/resultRetrieved","message":"No changes in resource","msgData":{}}
+{"time":1515896636448,"type":"log","path":"/testDataStore","message":"Sections reloaded","msgData":9}
+{"time":1515896636448,"type":"log","path":"/testDataStore","message":"Sections reloaded","msgData":9}
+{"time":1515896636449,"type":"log","path":"/testDataStore","message":"Sections reloaded","msgData":9}
+{"time":1515896636449,"type":"log","path":"/testDataStore","message":"Sections reloaded","msgData":9}
+{"time":1515896636509,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.remoteImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.remoteImg.json"}}
+{"time":1515896636509,"type":"log","path":"/testDataStore","message":"Remote img questions reloaded","msgData":0}
+{"time":1515896636509,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.remoteImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.remoteImg.json"}}
+{"time":1515896636510,"type":"log","path":"/testDataStore","message":"Remote img questions reloaded","msgData":0}
+{"time":1515896636535,"type":"log","path":"/testDataStore","message":"Remote img questions reloaded","msgData":733}
+{"time":1515896636549,"type":"log","path":"/testDataStore","message":"Remote img questions reloaded","msgData":733}
+{"time":1515898490762,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1515898490762,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1515898490762,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1515898490762,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1515898490788,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":733}
+{"time":1515898490806,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":733}
+{"time":1515898490820,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1515898490820,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1515898490820,"type":"log","path":"/testDataStore","message":"No valid file found at /mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json","msgData":{"filePath":"/mnt/q/nodejs/autoskolaTesty/data/testData/questions.localImg.json"}}
+{"time":1515898490820,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":0}
+{"time":1515898490841,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":733}
+{"time":1515898490854,"type":"log","path":"/testDataStore","message":"Local img questions reloaded","msgData":733}

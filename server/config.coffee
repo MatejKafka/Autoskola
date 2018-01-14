@@ -18,5 +18,6 @@ module.exports =
 		localImgQuestions: path.resolve(testDataDir, 'questions.localImg.json')
 		sections: path.resolve(testDataDir, 'sections.json')
 		imgDir: path.resolve(testDataDir, 'img')
+		oldImgDir: path.resolve(testDataDir, 'imgOld')
 		flashReplaceDir: path.resolve(testDataDir, 'flashReplace')
 		imgDirUrl: '/questionImg/'

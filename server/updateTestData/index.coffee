@@ -20,6 +20,7 @@ cliArguments =
 	downloadImages: (startIndexStr = 0, endIndexStr = null) -> [
 		getRemoteImgQuestions(paths.remoteImgQuestions)
 		paths.imgDir
+		path.oldImgDir
 		parseInt(startIndexStr)
 		if !endIndexStr? then null else parseInt(endIndexStr)
 	]
@@ -64,7 +65,7 @@ params = arg.slice(1)
 if !commandName?
 	console.log('AVAILABLE COMMANDS: ')
 	for cmdName, fn of cliArguments
-		console.log('\t' + cmdName + " (#{fn.length} arguments)")
+		console.log('\t' + cmdName + " (#{fn.length} #{if fn.length > 0 then "optional " else ""}arguments)")
 	console.log('')
 	return
 
