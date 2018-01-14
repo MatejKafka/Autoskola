@@ -12,6 +12,7 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/backendOperations/countItems.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/structure/updateStructure.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
+        <item url="file://$PROJECT_DIR$/server/updateTestData/processImg/processStaticImg.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/rewriteInternalItem.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/bindStoreLogger.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/storeOperations/forEach.js" />
@@ -39,6 +40,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/backendOperations/countItems.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/structure/updateStructure.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
+      <root url="file://$PROJECT_DIR$/server/updateTestData/processImg/processStaticImg.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/rewriteInternalItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/bindStoreLogger.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/storeOperations/forEach.js" />
