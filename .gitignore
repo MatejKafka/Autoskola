@@ -3,5 +3,25 @@ node_modules/
 .idea/tasks.xml
 .idea/dictionaries/
 
-data/logs.txt
+/data/logs.txt
 out/
+
+
+# IGNORE GENERATED .JS FILES
+*.js
+*.js.map
+!*.js/
+!*.js.map/
+
+# COMMIT OUTPUT JS DIR
+!/client/res/js/*
+
+
+# IGNORE GENERATED .CSS FILES
+*.css
+*.css.map
+!*.css/
+!*.css.map/
+
+# COMMIT OUTPUT CSS DIR
+!/client/res/css/*
