@@ -1,4 +1,4 @@
-findItems = require('../operations/findItems')
+findItems = require('../backendOperations/findItems')
 matchesQuery = require('../util/matchesQuery')
 separateItemQuery = require('../util/separateItemQuery')
 isEmptyObj = require('../util/isEmptyObj')
@@ -81,6 +81,10 @@ module.exports = updateStructure =
 		return updateStructure.add(structure, item)
 
 
+	# TODO: add support for multiple cached parameters
+	# TODO: add support for nested cached parameters
+
+	# TODO: dissolve into multiple functions
 	cacheQuery: (structure, query, store) ->
 		{find: findQuery, cache: cacheQuery} = separateQuery(query)
 		keys = Object.keys(cacheQuery)

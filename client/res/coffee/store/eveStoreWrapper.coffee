@@ -2,6 +2,7 @@ KEYS =
 	storageFull: 'persistentStorageFull'
 	placeholder: 'persistentStorageFullPlaceholder'
 
+CONFIG = require('../CONFIG')
 MESSAGES = require('../MESSAGES')
 createEveStore = require('./eveStore')
 
@@ -21,6 +22,7 @@ moveCollectionToMemory = (tag, eve) ->
 
 
 
+# TODO: figure out a way to reduce old answer size when storage gets filled - should be pretty compressible
 module.exports = ->
 	eve = createEveStore.apply(null, arguments)
 	persistentStorageAvailable = eve.persistentStorageAvailable()
@@ -32,6 +34,7 @@ module.exports = ->
 	else
 		try
 			if eve.count(KEYS.placeholder) == 0
+				# create place to guarantee enough space for the real record
 				eve.add(KEYS.placeholder, true, {time: 1000000000000000000000000})
 
 	out = {}
@@ -82,7 +85,7 @@ module.exports = ->
 	out.StorageFullError = eve.StorageFullError
 	out.rawStore = eve
 
-	# TODO: remove when finished
-	require('./bindStoreLogger')(out)
+	if CONFIG.logStoreOperations
+		require('./bindStoreLogger')(out)
 
 	return out

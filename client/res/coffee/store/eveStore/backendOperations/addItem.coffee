@@ -1,5 +1,5 @@
 getNextId = require('../getNextId')
-cloneValue = require('../store/cloneValue')
+cloneValue = require('../util/cloneValue')
 
 
 module.exports = ({item, meta, isExisting}, store) ->

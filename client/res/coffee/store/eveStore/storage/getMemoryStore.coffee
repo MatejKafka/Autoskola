@@ -1,4 +1,4 @@
-cloneValue = require('./cloneValue')
+cloneValue = require('../util/cloneValue')
 isEmptyObj = require('../util/isEmptyObj')
 
 

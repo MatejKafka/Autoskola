@@ -1,10 +1,11 @@
+# matchTypeFn returns either true/false or error (if used type checker function returned an error)
 module.exports =
 	array: (arg, arrItemType = null, matchTypeFn) ->
 		if !Array.isArray(arg)
 			return false
 		if arrItemType?
 			for item in arg
-				if !matchTypeFn(item, arrItemType)
+				if matchTypeFn(item, arrItemType) != true
 					return false
 		return true
 
@@ -28,3 +29,6 @@ module.exports =
 
 	object: (arg) ->
 		return arg? && typeof arg == 'object'
+
+	'*': ->
+		return true

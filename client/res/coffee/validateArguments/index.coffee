@@ -1,6 +1,16 @@
 types = require('./types')
 
 
+sliceStackTrace = (error, sliceIndex) ->
+	try
+		throw new error.constructor(error.message)
+	catch err
+		lines = err.stack.split('\n')
+		lines.splice(1, 1 + sliceIndex)
+		err.stack = lines.join('\n')
+		return err
+
+
 parseSingleTypeStr = (typeStr) ->
 	separatorIndex = typeStr.indexOf('>')
 	if separatorIndex >= 0
@@ -39,10 +49,11 @@ matchesType = (value, typeStr, types) ->
 			typeStr = typeStr.slice(1)
 		else
 			typeStr = typeStr.slice(0, -1)
-	else isOptional = false
+	else
+		isOptional = false
 
-	if matchSingleType(value, parseTypeStr('null')[0], types) == true
-		return isOptional
+	if matchSingleType(value, parseTypeStr('null')[0], types) && isOptional
+		return true
 
 	possibleTypes = parseTypeStr(typeStr)
 	for typeObj in possibleTypes
@@ -53,6 +64,9 @@ matchesType = (value, typeStr, types) ->
 			if err instanceof TypeError
 				matches = err
 			throw err
+
+		if matches instanceof TypeError && possibleTypes.length == 1
+			return matches
 		if matches == true then return true
 	return false
 
@@ -67,10 +81,18 @@ findType = (value, types) ->
 
 validateArguments = (args, argTypes, types, returnErrors) ->
 	for type, i in argTypes
-		if !matchesType(args[i], type, types)
+		try
+			matches = matchesType(args[i], type, types)
+		catch err
+			throw sliceStackTrace(err, 2)
+		if matches != true
 			if returnErrors
-				realType = findType(args[i], types)
-				return new TypeError("Invalid argument type at index #{i}: it must be `#{type}`, not `#{realType}`")
+				if matches instanceof TypeError
+					msg = matches.message
+				else
+					realType = findType(args[i], types)
+					msg = "it must be `#{type}`, not `#{realType}`"
+				throw sliceStackTrace(new TypeError("Invalid argument type at index #{i}: #{msg}"), 2)
 			else
 				return false
 	if returnErrors
@@ -79,6 +101,7 @@ validateArguments = (args, argTypes, types, returnErrors) ->
 		return true
 
 
+# IT'S IMPORTANT THAT THERE IS 1 STACK LAYER ABOVE validateArguments FUNCTION - otherwise, sliceStackTrace will cut incorrectly
 getValidatorFn = (types) ->
 	validateFn = (args, argTypes) ->
 		return validateArguments(args, argTypes, types, true)

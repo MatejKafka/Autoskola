@@ -2,8 +2,6 @@ EventEmitter = require('events')
 MESSAGES = require('../../MESSAGES').questionView
 createElem = require('../createElem')
 
-# TODO: add links inside answer li - tabindex & cursor support
-
 
 renderQuestionImage = (img, container) ->
 		container.classList.add('singleImg')

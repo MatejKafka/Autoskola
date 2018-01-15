@@ -1,6 +1,7 @@
 module.exports =
 	# TODO: change in production
 	verboseErrorMessages: true
+	logStoreOperations: true
 
 	answerClickTimeout: 500
 	loaderScreenTimeout: 500

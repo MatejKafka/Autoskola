@@ -1,315 +1,216 @@
-getArgumentValidator = require('../../validateArguments').getScope
-StorageFullError = require('./store/StorageFullError')
+StorageFullError = require('./storage/StorageFullError')
 
-getDb = require('./store/getDb')
-getMemoryStore = require('./store/getMemoryStore')
+createStoreState = require('./util/createStoreStateObject')
 
-itemOperations = require('./operations/index')
-
-generateStructure = require('./structure/generateStructure')
 updateStructure = require('./structure/updateStructure')
-getClearStructure = require('./structure/getClearStructure')
 
-applyFnArray = require('./applyFnArray')
-cloneValue = require('./store/cloneValue')
+getExternalItem = require('./util/eveItem/getExternalItem')
+getInternalItem = require('./util/eveItem/getInternalItem')
 
-isItemWithMeta = (item) ->
-	return item? && typeof item == 'object' && item[metaSymbol]?
+validateArguments = require('./typeValidator')
+stringifyQuery = require('./util/stringifyQuery')
 
-raw_separateStoreItem = require('./separateStoreItem')
-separateStoreItem = (storeItem) ->
-	return raw_separateStoreItem(storeItem, metaSymbol)
-
-raw_rewriteInternalItem = require('./rewriteInternalItem')
-rewriteInternalItem = (internalItem) ->
-	return raw_rewriteInternalItem(internalItem, metaSymbol)
-
-raw_validateStoreItem = require('./validateStoreItem')
-validateItemWithMeta = (item) ->
-	return raw_validateStoreItem(item, metaSymbol)
-
-validateArguments = getArgumentValidator()
-validateArguments.addType('id', (arg) -> @int(arg) && arg >= 0)
+storeOperations = require('./storeOperations')
 
 
 ALREADY_LOADED_NAMESPACES = []
-metaSymbol = Symbol('eveStore metadata')
-
 
 module.exports = (storeNamespace) ->
 	if ALREADY_LOADED_NAMESPACES.indexOf(storeNamespace) > -1
 		throw new Error('eveStore instance already loaded for this namespace - only one instance for each namespace is allowed')
 	ALREADY_LOADED_NAMESPACES.push(storeNamespace)
 
-	store =
-		db: getDb(storeNamespace)
-		memory: getMemoryStore()
+	state = createStoreState(storeNamespace)
 
-	structure = generateStructure(store)
-
-	validators = {}
-	decorators = {}
-	undecorators = {}
 
 	listeners = {}
-	emit = (opType, message, strData, data) ->
-		throw err if (err = validateArguments(arguments, ['string', 'string', 'string', 'object']))?
+	emit = (opType, message, infoObj = null, data = null) ->
+		validateArguments(arguments, ['string', 'string', 'object?', 'object?'])
 
+		if infoObj?
+			infoObj.namespace = state.store.namespace
+		if data?
+			data.namespace = state.store.namespace
+
+		emitTime = Date.now()
 		if listeners[opType]?
 			for cb in listeners[opType]
-				cb(message, strData, data, opType)
+				cb(opType, message, infoObj, data, emitTime)
 		if listeners['*']?
 			for cb in listeners['*']
-				cb(message, strData, data, opType)
+				cb(opType, message, infoObj, data, emitTime)
 		return
 
-	# TODO: rewrite, big mess
-	return eve = {
+
+	# TODO: add possibility to use multiple tags for single item
+	# TODO: add more complex logging (add cache hit info,...)
+	return {
 		add: (tag, persist, item) ->
-			if arguments.length == 1
-				item = tag
-				persist = null
-				tag = null
+			internalItem = storeOperations.add(state, tag, persist, item)
+			addedItem = getExternalItem(internalItem, state.fnArrays.decorators)
 
-			else if arguments.length == 2
-				item = persist
-				if typeof tag == 'boolean'
-					persist = tag
-					tag = null
-				else
-					persist = null
-
-			throw err if (err = validateArguments([tag, persist, item], ['string?', 'true?', 'object']))?
-
-			if isItemWithMeta(item)
-				console.warn('to update item, use store.update, not store.add')
-				throw new Error('store.add does not accept already inserted item - use store.update for changes')
-
-			if tag?
-				try
-					applyFnArray(item, validators[tag], true, false)
-				catch err
-					console.warn("validation failed - tag: #{tag}", item)
-					throw err
-
-			returnedItem = itemOperations.add({
-				item: item
-				meta: {tag: tag, persistent: persist}
-				isExisting: false
-			}, store, structure)
-
-			structure = updateStructure.add(structure, returnedItem, store)
-			rewrittenItem = rewriteInternalItem(returnedItem)
-			if returnedItem.meta.tag?
-				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
-				tagStr = ", tag: #{returnedItem.meta.tag}"
-			else
-				tagStr = ''
-			# TODO: add more complex logging (add cache hit info,...)
-			emit('add', "Added new item to `#{storeNamespace}`",
-				"(id: #{returnedItem.meta.id}#{tagStr}, persist: #{returnedItem.meta.persistent})",
-				rewrittenItem
-			)
-			return rewrittenItem
+			emit('add', "Added new item",
+				{id: addedItem.$id, persist: addedItem.$persistent, tag: addedItem.$tag}
+				{item: addedItem})
+			return addedItem
 
 
 		update: (item) ->
-			validateItemWithMeta(item)
+			internalItem = storeOperations.update(state, item)
+			updatedItem = getExternalItem(internalItem, state.fnArrays.decorators)
 
-			tag = item[metaSymbol].tag
-			if tag?
-				item = applyFnArray(item, undecorators[tag], null, true)
-				try
-					applyFnArray(item, validators[tag], false, false)
-				catch err
-					console.warn("validation failed - tag: #{tag}", item)
-					throw err
-
-			separatedItem = separateStoreItem(item)
-			separatedItem.isExisting = true
-
-			itemOperations.remove(separatedItem, store, structure)
-			returnedItem = itemOperations.add(separatedItem, store, structure)
-			structure = updateStructure.change(structure, returnedItem, store)
-			rewrittenItem = rewriteInternalItem(returnedItem)
-
-			if returnedItem.meta.tag?
-				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
-
-			emit('update', "Updated item", "(id: #{returnedItem.meta.id})", rewrittenItem)
-			return rewrittenItem
+			emit('update', "Updated item", {id: updatedItem.$id}, {item: updatedItem})
+			return updatedItem
 
 
-		remove: (itemOrId, __isInternal = false) ->
-			if Array.isArray(itemOrId)
-				removedItems = for item in itemOrId
-					eve.remove(item, __isInternal)
-				return removedItems
+		# itemToRemove can be id, item, or array of either
+		remove: (itemToRemove) ->
+			removedItem = storeOperations.remove(state, itemToRemove)
 
-			if !validateArguments.matches([itemOrId], ['id'])
-				validateItemWithMeta(itemOrId)
-				itemOrId = separateStoreItem(itemOrId)
+			if !removedItem?
+				# no found item
+				emit('remove', "Attempted to remove missing item",
+					{id: (if typeof itemToRemove == 'number' then itemToRemove else itemToRemove.$id), itemCount: 0},
+					{item: itemToRemove, itemCount: 0})
+				return null
 
-			removedItem = itemOperations.remove(itemOrId, store, structure)
-			if removedItem?
-				structure = updateStructure.remove(structure, removedItem, store)
-			rewrittenItem = rewriteInternalItem(removedItem)
+			if Array.isArray(removedItem)
+				# multiple items
+				externalItems = removedItem
+					.filter((item) -> item?)
+					.map((item) -> getExternalItem(item, state.fnArrays.decorators))
 
-			if removedItem.meta.tag?
-				rewrittenItem = applyFnArray(rewrittenItem, decorators[removedItem.meta.tag], null, true)
+				emit('remove', "Removed multiple items",
+					{itemCount: externalItems.length}
+					{item: externalItems, itemCount: externalItems.length})
+				return externalItems
 
-			if !__isInternal
-				if removedItem?
-					emit('remove',
-						"Removed item from `#{storeNamespace}`", "(id: #{removedItem.meta.id},
-							added #{Math.floor((Date.now() - removedItem.meta.writeTime) / 1000)} seconds ago)",
-						rewrittenItem)
-				else
-					emit('remove', "Attempted to remove missing item",
-						"(id: #{if typeof itemOrId == 'number' then itemOrId else itemOrId.meta.id})",
-						null)
-
-			return rewrittenItem
+			else
+				# single item
+				externalItem = getExternalItem(removedItem, state.fnArrays.decorators)
+				emit('remove', "Removed single item",
+					{id: externalItem.$id, itemCount: 1, added: Math.floor((Date.now() - externalItem.$writeTime) / 1000) + " seconds ago"}
+					{item: externalItem, itemCount: 1})
+				return externalItem
 
 
 		removeByQuery: (query) ->
-			unfilteredResult = eve.find(query, true)
-				.map((item) => eve.remove(item, true))
-			result = unfilteredResult.filter((item) -> item?)
+			removedItems = storeOperations.removeByQuery(state, query)
+			externalItems = removedItems.map((item) -> getExternalItem(item, state.fnArrays.decorators))
 
 			emit('removeByQuery', 'Removed items by query',
-				"(removedItemCount: #{result.length}, foundItemCount: #{unfilteredResult.length})",
-				{query: query, foundItemCount: unfilteredResult.length, removedItemCount: result.length})
-
-			return result
+				{itemCount: externalItems.length},
+				{query: query, item: externalItems})
+			return externalItems
 
 
 		get: (id) ->
-			throw err if (err = validateArguments(arguments, ['int']))?
+			returnedItem = storeOperations.get(state, id)
+			externalItem = getExternalItem(returnedItem, state.fnArrays.decorators)
 
-			returnedItem = itemOperations.get(id, store, structure)
-			rewrittenItem = rewriteInternalItem(returnedItem)
-			if returnedItem.meta.tag?
-				rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true)
-			emit('get', 'Looked up item by ID', "(id: #{id})", rewrittenItem)
-			return rewrittenItem
+			emit('get', 'Looked up item by ID', {id: id}, {item: externalItem})
+			return externalItem
 
 
-		find: (query, __isInternal = false, __singleRecord = false) ->
-			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
+		find: (query) ->
+			foundItems = storeOperations.find(state, query, false)
+			externalItems = foundItems.map((item) -> getExternalItem(item, state.fnArrays.decorators))
 
-			rawItems = itemOperations.find(query, store, structure, __singleRecord)
-				.filter((i) -> i?)
-
-			if __isInternal
-				items = rawItems
-			else
-				items = for item in rawItems
-					rewrittenItem = rewriteInternalItem(item)
-					if item.meta.tag?
-						applyFnArray(rewrittenItem, decorators[item.meta.tag], null, true)
-					else
-						rewrittenItem
-
-			if !__isInternal
-				if typeof query == 'string'
-					queryStr = "($tag: #{query})"
-				else if typeof query == 'number'
-					queryStr = '#' + query
-				else
-					qParts = []
-					for key, value of query
-						qParts.push("#{key}: #{value}")
-					queryStr = qParts.join(', ')
-
-				emit('find', 'Querying store to find items', "(itemCount: #{rawItems.length}, query: (#{queryStr}))", {query: query, itemCount: rawItems.length})
-
-			return items
+			emit('find', 'Querying store to find items',
+				{itemCount: externalItems.length, query: stringifyQuery(query)},
+				{query: query, item: externalItems})
+			return externalItems
 
 
 		findOne: (query) ->
-			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
+			foundItem = storeOperations.findOne(state, query)
+			externalItem = getExternalItem(foundItem, state.fnArrays.decorators)
 
-			result = eve.find(query, null, true)[0]
-			if !result?
-				result = null
-			return result
+			if externalItem?
+				id = externalItem.$id
+			else
+				id = null
+			emit('findOne', 'Querying store to find single item',
+				{query: stringifyQuery(query), id: id},
+				{query: query, item: externalItem})
+			return externalItem
 
 
 		count: (query) ->
-			throw err if (err = validateArguments(arguments, ['string|id|object?']))?
-			return itemOperations.count(query, store, structure)
+			itemCount = storeOperations.count(state, query)
+			emit('count', 'Counting items matching query',
+				{count: itemCount, query: stringifyQuery(query)},
+				{count: itemCount, query: query})
+			return itemCount
 
 
 		forEach: (fn) ->
-			throw err if (err = validateArguments(arguments, ['function']))?
+			validateArguments([fn], ['function'])
 
 			cb = (item) ->
-				if item.meta.tag?
-					fn(applyFnArray(rewriteInternalItem(item), decorators[item.meta.tag], null, true))
-				else
-					fn(rewriteInternalItem(item))
-			store.db.forEachItem(cb)
-			store.memory.forEachItem(cb)
+				fn(getExternalItem(item, state.fnArrays.decorators))
+
+			storeOperations.forEach(state, cb)
+			emit('forEach', 'Ran a function for each item', null, {callback: cb})
 			return
 
 
 		isEmpty: ->
-			return store.db.isEmpty() && store.memory.isEmpty()
+			isEmpty = storeOperations.isEmpty(state)
+			emit('isEmpty', 'Checked if store is empty', {empty: isEmpty}, {empty: isEmpty})
+			return isEmpty
 
 
 		clear: ->
-			store.db.clear()
-			store.memory.clear()
-			structure = getClearStructure()
+			storeOperations.clear(state)
 			emit('clear', 'Store cleared')
 			return
 
 
 
 		setCacheFor: (query) ->
-			throw err if (err = validateArguments(arguments, ['object']))?
-			structure = updateStructure.cacheQuery(structure, query, store)
+			validateArguments([query], ['query'])
+			state.structure = updateStructure.cacheQuery(state.structure, query, state.store)
 			return
 
 		setValidatorFor: (tag, fn) ->
-			throw err if (err = validateArguments(arguments, ['string', 'function']))?
-			if !validators[tag]?
-				validators[tag] = []
-			validators[tag].push(fn)
-			return validators[tag].length
+			validateArguments(arguments, ['string', 'function'])
+			if !state.fnArrays.validators[tag]?
+				state.fnArrays.validators[tag] = []
+			state.fnArrays.validators[tag].push(fn)
+			return state.fnArrays.validators[tag].length
 
 		setDecoratorFor: (tag, decoratorObj) ->
 			{decorate, undecorate} = decoratorObj
-			throw err if (err = validateArguments(arguments, ['string', 'object']))?
+			validateArguments(arguments, ['string', 'object'])
 			if typeof decorate != 'function' || typeof undecorate != 'function'
 				throw new Error('Invalid parameters')
 
-			if !decorators[tag]?
-				decorators[tag] = []
-				undecorators[tag] = []
-			decorators[tag].push(decorate)
-			undecorators[tag].unshift(undecorate)
-			return decorators[tag].length
+			if !state.fnArrays.decorators[tag]?
+				state.fnArrays.decorators[tag] = []
+				state.fnArrays.undecorators[tag] = []
+			state.fnArrays.decorators[tag].push(decorate)
+			state.fnArrays.undecorators[tag].unshift(undecorate)
+			return state.fnArrays.decorators[tag].length
 
 
 		StorageFullError: StorageFullError
 
 		persistentStorageAvailable: ->
-			return store.db.isAvailable()
+			return state.store.db.isAvailable()
 
 
 		getRawItem: (item) ->
-			validateItemWithMeta(item)
-			return separateStoreItem(item).item
+			internalItem = getInternalItem(item, state.fnArrays.undecorators)
+			return internalItem.item
 
 		getMetadata: (item) ->
-			validateItemWithMeta(item)
-			return separateStoreItem(item).meta
+			internalItem = getInternalItem(item, state.fnArrays.undecorators)
+			return internalItem.meta
 
 
 		__on: (operationType, cb) ->
-			throw err if (err = validateArguments(arguments, ['string', 'function']))?
+			validateArguments(arguments, ['string', 'function'])
 			if !listeners[operationType]?
 				listeners[operationType] = []
 			listeners[operationType].push(cb)
@@ -317,23 +218,20 @@ module.exports = (storeNamespace) ->
 
 
 		__getStructure: ->
-			return cloneValue(structure)
+			return state.structure
 
 
 		__dumpItem: (item) ->
-			validateItemWithMeta(item)
-			item = separateStoreItem(item)
+			internalItem = getInternalItem(item, state.fnArrays.undecorators)
 
 			str = ''
-			if item.meta.tag?
-				str += "##{item.meta.tag}\n"
+			if internalItem.meta.tag?
+				str += "##{internalItem.meta.tag}\n"
 			else
 				str += 'NO_TAG'
 
-			str += "\tstore:#{if item.meta.persistent then 'persistent' else 'memory'}\n
-					\twriteTime: #{Date(item.meta.writeTime)} \n\t"
-
-			console.log(str, item.item)
+			str += "\tstore:#{if internalItem.meta.persistent then 'persistent' else 'memory'}\n
+					\twriteTime: #{Date(internalItem.meta.writeTime)} \n\t"
 			return str
 	}
 

@@ -136,7 +136,7 @@ module.exports = (options) ->
 
 	questionListElem = container.getElementsByClassName('questionList')[0]
 	setTimeout ->
-		# TODO: fix to avoid loadjump issue
+		# TODO: fix to avoid content jump after load
 
 		# height fix to account for scrollbar height
 		# must be delayed to work with overflow-y = auto

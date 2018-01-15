@@ -1,6 +1,6 @@
 localStorageSupported = require('./localStorageSupported')
 isQuotaExceededError = require('./isQuotaExceededError')
-cloneValue = require('./cloneValue')
+cloneValue = require('../util/cloneValue')
 StorageFullError = require('./StorageFullError')
 isEmptyObj = require('../util/isEmptyObj')
 

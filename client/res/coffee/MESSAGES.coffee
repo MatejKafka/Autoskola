@@ -1,4 +1,6 @@
 module.exports =
+	pageTitle: 'Příprava k závěrečným testům autoškoly ' + (new Date()).getFullYear()
+
 	questionSelect:
 		selectAll: 'Vybrat vše'
 		deselectAll: 'Odvybrat vše'
