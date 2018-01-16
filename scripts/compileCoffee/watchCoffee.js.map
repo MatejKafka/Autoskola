@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "watchCoffee.js",
+  "sourceRoot": "",
+  "sources": [
+    "watchCoffee.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,OAAA,GAAU,OAAA,CAAQ,SAAR;;EACV,SAAA,GAAY,OAAA,CAAQ,aAAR;;EAGZ,SAAA,GAAY,OAAA,CAAQ,kBAAR;;EAEZ,QAAA,GAAW,OAAA,CAAQ,SAAA,CAAA,CAAR;;EAGX,QAAQ,CAAC,KAAT,CAAe,EAAf,EAAmB,SAAC,GAAD,EAAM,KAAN;IAClB,SAAA,CAAU,GAAV,EAAe,KAAf;EADkB,CAAnB;AATA"
+}

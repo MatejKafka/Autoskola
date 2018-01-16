@@ -45,6 +45,8 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/utilityOperations/setCacheFor.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/toInternalItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/toInternalItem.js" />
+      <root url="file://$PROJECT_DIR$/server/config.js" />
+      <root url="file://$PROJECT_DIR$/server/updateTestData/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/storeOperations/find.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/typeValidator.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/index.js" />
