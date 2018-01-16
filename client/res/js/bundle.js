@@ -68,7 +68,8 @@
 /***/ (function(module, exports) {
 
 module.exports = {
-  pageTitle: 'Příprava k závěrečným testům autoškoly ' + (new Date()).getFullYear(),
+  tabTitle: 'Příprava k závěrečným testům autoškoly ' + (new Date()).getFullYear(),
+  pageTitle: "<h1>Autoškola " + ((new Date()).getFullYear()) + "</h1><h2>pro skupinu B</h2>",
   questionSelect: {
     selectAll: 'Vybrat vše',
     deselectAll: 'Odvybrat vše',
@@ -2032,7 +2033,9 @@ window.db = {
   STORE_TAGS: STORE_TAGS
 };
 
-document.title = MESSAGES.pageTitle;
+document.title = MESSAGES.tabTitle;
+
+document.getElementById('pageTitle').innerHTML = MESSAGES.pageTitle;
 
 bindMobileMenuToggle(document.getElementById('mobileMenuToggle'), document.getElementById('sidebar'), document.getElementById('mobilePageCover'));
 

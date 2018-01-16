@@ -31,7 +31,8 @@ window.db =
 
 
 # GUI INIT
-document.title = MESSAGES.pageTitle
+document.title = MESSAGES.tabTitle
+document.getElementById('pageTitle').innerHTML = MESSAGES.pageTitle
 
 bindMobileMenuToggle(
 	document.getElementById('mobileMenuToggle'),
