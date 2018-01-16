@@ -8,6 +8,8 @@
 	"scripts": {
 		"postinstall": "node ./scripts/installFull.js",
 		"start": "cd server && npm start",
-		"updateTestData": "cd server && npm run-script updateTestData"
+		"updateTestData": "cd server && npm run-script updateTestData",
+		"buildClient": "cd scripts && npm run-script buildClient",
+		"buildPhpServer": "cd scripts && npm run-script buildPhpServer"
 	}
 }

@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteRule ^api/getSection api/getSection.php [L]
+RewriteRule ^api/getQuestion api/getQuestion.php [L]
