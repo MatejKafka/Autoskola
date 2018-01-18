@@ -1,7 +1,7 @@
 require('./polyfills')
 
 
-CONFIG = require('./CONFIG')
+CONFIG = require('./config/CONFIG')
 MESSAGES = require('./MESSAGES')
 STORE_TAGS = require('./STORE_TAGS')
 

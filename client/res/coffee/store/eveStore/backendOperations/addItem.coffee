@@ -1,8 +1,11 @@
 getNextId = require('../getNextId')
 cloneValue = require('../util/cloneValue')
+validateArguments = require('../typeValidator')
 
 
-module.exports = ({item, meta, isExisting}, store) ->
+module.exports = ({item, meta, isExisting}, eventInfoCb, store) ->
+	validateArguments([item, meta, isExisting, eventInfoCb], ['object', 'object', 'boolean', 'function'])
+
 	if isExisting
 		# will overwrite existing item
 		newMeta = meta

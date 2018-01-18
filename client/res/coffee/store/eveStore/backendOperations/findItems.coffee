@@ -1,9 +1,12 @@
+EVENT_INFO_TYPES = require('../EVENT_INFO_TYPES')
+
 getItem = require('./getItem')
 matchesQuery = require('../util/matchesQuery')
 separateItemQuery = require('../util/separateItemQuery')
+validateArguments = require('../typeValidator')
 
 
-handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
+handleSingleMetaParamQuery = (metaQuery, eventInfoCb, store, structure, singleRecord) ->
 	if metaQuery.id? && typeof metaQuery.id == 'number'
 		return [getItem(metaQuery.id, store, structure)]
 
@@ -15,7 +18,7 @@ handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
 		if singleRecord
 			itemIds = itemIds.slice(0, 1)
 		items = itemIds.map (id) ->
-			getItem(id, store, structure)
+			getItem(id, eventInfoCb, store, structure)
 		return items
 
 	else if metaQuery.persistent? && metaQuery.persistent == 'boolean'
@@ -28,7 +31,7 @@ handleSingleMetaParamQuery = (metaQuery, store, structure, singleRecord) ->
 
 
 # TODO: add support for queries against arrays (something like $contains operator)
-findUnsortedItems = (query, store, structure, singleRecord = false) ->
+findUnsortedItems = (query, eventInfoCb, store, structure, singleRecord = false) ->
 	if !query?
 		if singleRecord
 			record = store.db.readFirstItem()
@@ -46,30 +49,31 @@ findUnsortedItems = (query, store, structure, singleRecord = false) ->
 	else if typeof query == 'string'
 		# tag
 		query = {$tag: query}
-	else if typeof query != 'object'
-		throw new Error("findItem only accepts query object, id or tag, not #{typeof query}")
 
 
+	# check if there's a matching cached query
 	# TODO: rewrite, currently needs exactly same query to use cache
 	findQueryStr = Object.keys(query).sort().join(',')
 	for cachedQuery in structure.byQuery
 		cachedQueryStr = Object.keys(cachedQuery.fullQuery).sort().join(',')
 		if findQueryStr == cachedQueryStr && matchesQuery.testObj(query, cachedQuery.rawFindQuery)
 			# matches
+			eventInfoCb(EVENT_INFO_TYPES.cacheHit, {cacheHit: true})
 			key = cachedQuery.cachedKey
 			if cachedQuery.isMetaKey
 				key = '$' + key
 			value = query[key]
 			itemIds = cachedQuery.values[value]
 			if Array.isArray(itemIds)
-				return itemIds.map((id) -> getItem(id, store, structure))
+				return itemIds.map((id) -> getItem(id, eventInfoCb, store, structure))
 			return []
 
 
+	eventInfoCb(EVENT_INFO_TYPES.cacheHit, {cacheHit: false})
 	{item: itemQuery, meta: metaQuery} = separateItemQuery(query)
 
 	if Object.keys(itemQuery).length == 0 && Object.keys(metaQuery).length == 1
-		result = handleSingleMetaParamQuery(metaQuery, store, structure, singleRecord)
+		result = handleSingleMetaParamQuery(metaQuery, eventInfoCb, store, structure, singleRecord)
 		if result?
 			return result
 
@@ -79,7 +83,7 @@ findUnsortedItems = (query, store, structure, singleRecord = false) ->
 		if !structure.byTag[metaQuery.tag]?
 			return []
 		items = structure.byTag[metaQuery.tag]
-			.map (id) -> getItem(id, store, structure)
+			.map (id) -> getItem(id, eventInfoCb, store, structure)
 
 		if metaQuery.persistent? && typeof metaQuery.persistent == 'boolean'
 			items = items.filter((item) -> item.meta.persistent = metaQuery.persistent)
@@ -103,8 +107,10 @@ findUnsortedItems = (query, store, structure, singleRecord = false) ->
 
 
 
-module.exports = (query, store, structure, singleRecord) ->
-	unsortedResult = findUnsortedItems(query, store, structure, singleRecord)
+module.exports = (query, eventInfoCb, store, structure, singleRecord) ->
+	validateArguments([query, eventInfoCb], ['query', 'function'])
+
+	unsortedResult = findUnsortedItems(query, eventInfoCb, store, structure, singleRecord)
 
 	if unsortedResult.length > 1
 		unsortedResult.sort (a, b) ->

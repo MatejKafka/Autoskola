@@ -1,4 +1,9 @@
-module.exports = (id, store, structure) ->
+validate = require('../typeValidator')
+
+
+module.exports = (id, eventInfoCb, store, structure) ->
+	validate([id, eventInfoCb], ['id', 'function'])
+
 	switch structure.location[id]
 		when structure.LOCATIONS.DB
 			return store.db.readItem(id)

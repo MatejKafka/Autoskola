@@ -60,11 +60,48 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getArgumentValidator, isExternalItem, isInternalItem, validator;
+
+getArgumentValidator = __webpack_require__(15).getScope;
+
+isExternalItem = __webpack_require__(63);
+
+isInternalItem = __webpack_require__(64);
+
+validator = getArgumentValidator();
+
+validator.addType('id', function(arg) {
+  return this.int(arg) && arg >= 0;
+});
+
+validator.addType('externalItem', isExternalItem);
+
+validator.addType('internalItem', isInternalItem);
+
+validator.addType('query', function(arg) {
+  return this.int(arg) || this.string(arg) || this.object(arg) || this["null"](arg);
+});
+
+validator.addType('item_tag', function(arg) {
+  return this.string(arg) || this["null"](arg);
+});
+
+validator.addType('item_persistent', function(arg) {
+  return this.boolean(arg);
+});
+
+module.exports = validator;
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -111,12 +148,16 @@ module.exports = {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = {
   verboseErrorMessages: true,
-  logStoreOperations: true,
+  storeLogging: {
+    log: true,
+    showLogData: false,
+    showStackTraces: false
+  },
   answerClickTimeout: 500,
   loaderScreenTimeout: 500,
   shuffleAnswers: {
@@ -127,43 +168,6 @@ module.exports = {
   testComposition: [[[24, 16, 25], 10], [14, 3], [17, 3], [19, 4], [21, 2], [22, 2], [20, 1]],
   storeNamespace: 'store'
 };
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getArgumentValidator, isExternalItem, isInternalItem, validator;
-
-getArgumentValidator = __webpack_require__(15).getScope;
-
-isExternalItem = __webpack_require__(66);
-
-isInternalItem = __webpack_require__(67);
-
-validator = getArgumentValidator();
-
-validator.addType('id', function(arg) {
-  return this.int(arg) && arg >= 0;
-});
-
-validator.addType('externalItem', isExternalItem);
-
-validator.addType('internalItem', isInternalItem);
-
-validator.addType('query', function(arg) {
-  return this.int(arg) || this.string(arg) || this.object(arg) || this["null"](arg);
-});
-
-validator.addType('item_tag', function(arg) {
-  return this.string(arg) || this["null"](arg);
-});
-
-validator.addType('item_persistent', function(arg) {
-  return this.boolean(arg);
-});
-
-module.exports = validator;
 
 
 /***/ }),
@@ -280,9 +284,9 @@ var findItems, getValueFromItem, isEmptyObj, matchesQuery, separateItemQuery, se
 
 findItems = __webpack_require__(11);
 
-matchesQuery = __webpack_require__(21);
+matchesQuery = __webpack_require__(25);
 
-separateItemQuery = __webpack_require__(22);
+separateItemQuery = __webpack_require__(26);
 
 isEmptyObj = __webpack_require__(10);
 
@@ -390,7 +394,7 @@ module.exports = updateStructure = {
       propKey = propKey.slice(1);
     }
     propMap = {};
-    items = findItems(findQuery, store, structure, false);
+    items = findItems(findQuery, (function() {}), store, structure, false);
     for (i = 0, len = items.length; i < len; i++) {
       item = items[i];
       value = getValueFromItem(item, propKey, isMeta);
@@ -416,11 +420,13 @@ module.exports = updateStructure = {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MESSAGES, QuestionView, bindNavigationButtons, renderQuestionList, scrollToCenter;
+var MESSAGES, QuestionView, bindNavigationButtons, renderQuestionList, scrollToCenter, validate;
 
-MESSAGES = __webpack_require__(0).questionView;
+MESSAGES = __webpack_require__(1).questionView;
 
-QuestionView = __webpack_require__(46);
+validate = __webpack_require__(15);
+
+QuestionView = __webpack_require__(49);
 
 bindNavigationButtons = function(container, questionCount, index, handlers) {
   var backButton, nextQuestionButton, previousQuestionButton;
@@ -490,8 +496,9 @@ renderQuestionList = function(questionCount, index, containerList, gotoQuestionF
 };
 
 module.exports = function(options) {
-  var boundHighlightAnswer, container, gotoNextQuestion, gotoPreviousQuestion, handlers, highlightQuestionInList, index, messages, question, questionIds, questionListElem, questionView, shuffleAnswers;
-  questionIds = options.questionIds, index = options.questionIndex, container = options.container, shuffleAnswers = options.shuffleAnswers, handlers = options.handlers, messages = options.messages;
+  var boundHighlightAnswer, container, gotoNextQuestion, gotoPreviousQuestion, handlers, highlightQuestionInList, index, messages, question, questionCount, questionListElem, questionView, shuffleAnswers;
+  questionCount = options.questionCount, question = options.question, index = options.questionIndex, container = options.container, shuffleAnswers = options.shuffleAnswers, handlers = options.handlers, messages = options.messages;
+  validate([questionCount, question, index], ['int', 'object', 'int']);
   handlers = Object.assign({
     prepareView: null,
     gotoQuestion: function(newIndex) {
@@ -516,14 +523,14 @@ module.exports = function(options) {
     if (index > 0) {
       return handlers.gotoQuestion(index - 1);
     } else {
-      return handlers.gotoQuestion(questionIds.length - 1);
+      return handlers.gotoQuestion(questionCount - 1);
     }
   };
   gotoNextQuestion = function(fromAnswerClick) {
     if (fromAnswerClick == null) {
       fromAnswerClick = false;
     }
-    if (index < questionIds.length - 1) {
+    if (index < questionCount - 1) {
       return handlers.gotoQuestion(index + 1);
     } else if (fromAnswerClick) {
       return handlers.lastQuestionAnswer();
@@ -531,9 +538,9 @@ module.exports = function(options) {
       return handlers.gotoQuestion(0);
     }
   };
-  if (index > questionIds.length - 1) {
-    console.error('Question index is too high - you only have ' + questionIds.length + ' questions selected!');
-    handlers.gotoQuestion(questionIds.length - 1);
+  if (index > questionCount - 1) {
+    console.error('Question index is too high - you only have ' + questionCount + ' questions selected!');
+    handlers.gotoQuestion(questionCount - 1);
     return;
   }
   if (index < 0) {
@@ -541,17 +548,13 @@ module.exports = function(options) {
     handlers.gotoQuestion(0);
     return;
   }
-  question = store.findOne({
-    $tag: db.STORE_TAGS.QUESTION,
-    id: questionIds[index]
-  });
-  container.innerHTML = ("<div class='topbar'> <a href='javascript:void(0);' class='backButton'>" + messages.backButton + "</a> <span class='questionNavigation'> <a href='javascript:void(0);' class='previousQuestionButton'>" + MESSAGES.previousQuestion + "</a> <span class='questionNumber'> <span class='questionIndex'>" + (index + 1) + "</span> " + MESSAGES.from + " <span class='questionCollectionLength'>" + questionIds.length + "</span> </span> <a href='javascript:void(0);' class='nextQuestionButton'>") + MESSAGES.nextQuestion + "</a> </span> </div> <hr class='questionNavigationLine'> <ul class='questionList'></ul> <hr> <div class='testContainer'></div>";
+  container.innerHTML = ("<div class='topbar'> <a href='javascript:void(0);' class='backButton'>" + messages.backButton + "</a> <span class='questionNavigation'> <a href='javascript:void(0);' class='previousQuestionButton'>" + MESSAGES.previousQuestion + "</a> <span class='questionNumber'> <span class='questionIndex'>" + (index + 1) + "</span> " + MESSAGES.from + " <span class='questionCollectionLength'>" + questionCount + "</span> </span> <a href='javascript:void(0);' class='nextQuestionButton'>") + MESSAGES.nextQuestion + "</a> </span> </div> <hr class='questionNavigationLine'> <ul class='questionList'></ul> <hr> <div class='testContainer'></div>";
   questionListElem = container.getElementsByClassName('questionList')[0];
   setTimeout(function() {
     return questionListElem.style.height = (2 * questionListElem.offsetHeight - questionListElem.clientHeight) + 'px';
   }, 0);
-  highlightQuestionInList = renderQuestionList(questionIds.length, index, questionListElem, handlers.gotoQuestion);
-  bindNavigationButtons(container, questionIds.length, index, {
+  highlightQuestionInList = renderQuestionList(questionCount, index, questionListElem, handlers.gotoQuestion);
+  bindNavigationButtons(container, questionCount, index, {
     back: handlers.backButtonClick,
     previousQuestion: gotoPreviousQuestion,
     nextQuestion: gotoNextQuestion
@@ -595,13 +598,13 @@ var decorateItem, getExternalItemTag, metaSymbol, parseExternalItem, runItemVali
 
 metaSymbol = __webpack_require__(6);
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-decorateItem = __webpack_require__(23);
+decorateItem = __webpack_require__(19);
 
-runItemValidators = __webpack_require__(25);
+runItemValidators = __webpack_require__(21);
 
-parseExternalItem = __webpack_require__(68);
+parseExternalItem = __webpack_require__(65);
 
 getExternalItemTag = function(externalItem) {
   return externalItem[metaSymbol].tag;
@@ -991,15 +994,19 @@ module.exports = function(obj) {
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findUnsortedItems, getItem, handleSingleMetaParamQuery, matchesQuery, separateItemQuery;
+var EVENT_INFO_TYPES, findUnsortedItems, getItem, handleSingleMetaParamQuery, matchesQuery, separateItemQuery, validateArguments;
 
-getItem = __webpack_require__(20);
+EVENT_INFO_TYPES = __webpack_require__(18);
 
-matchesQuery = __webpack_require__(21);
+getItem = __webpack_require__(24);
 
-separateItemQuery = __webpack_require__(22);
+matchesQuery = __webpack_require__(25);
 
-handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord) {
+separateItemQuery = __webpack_require__(26);
+
+validateArguments = __webpack_require__(0);
+
+handleSingleMetaParamQuery = function(metaQuery, eventInfoCb, store, structure, singleRecord) {
   var itemIds, items, targetStore;
   if ((metaQuery.id != null) && typeof metaQuery.id === 'number') {
     return [getItem(metaQuery.id, store, structure)];
@@ -1012,7 +1019,7 @@ handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord)
       itemIds = itemIds.slice(0, 1);
     }
     items = itemIds.map(function(id) {
-      return getItem(id, store, structure);
+      return getItem(id, eventInfoCb, store, structure);
     });
     return items;
   } else if ((metaQuery.persistent != null) && metaQuery.persistent === 'boolean') {
@@ -1025,7 +1032,7 @@ handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord)
   return null;
 };
 
-findUnsortedItems = function(query, store, structure, singleRecord) {
+findUnsortedItems = function(query, eventInfoCb, store, structure, singleRecord) {
   var cachedQuery, cachedQueryStr, findQueryStr, i, item, itemIds, itemQuery, items, j, key, len, len1, matches, metaQuery, record, ref, ref1, result, value;
   if (singleRecord == null) {
     singleRecord = false;
@@ -1052,8 +1059,6 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
     query = {
       $tag: query
     };
-  } else if (typeof query !== 'object') {
-    throw new Error("findItem only accepts query object, id or tag, not " + (typeof query));
   }
   findQueryStr = Object.keys(query).sort().join(',');
   ref = structure.byQuery;
@@ -1061,6 +1066,9 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
     cachedQuery = ref[i];
     cachedQueryStr = Object.keys(cachedQuery.fullQuery).sort().join(',');
     if (findQueryStr === cachedQueryStr && matchesQuery.testObj(query, cachedQuery.rawFindQuery)) {
+      eventInfoCb(EVENT_INFO_TYPES.cacheHit, {
+        cacheHit: true
+      });
       key = cachedQuery.cachedKey;
       if (cachedQuery.isMetaKey) {
         key = '$' + key;
@@ -1069,15 +1077,18 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
       itemIds = cachedQuery.values[value];
       if (Array.isArray(itemIds)) {
         return itemIds.map(function(id) {
-          return getItem(id, store, structure);
+          return getItem(id, eventInfoCb, store, structure);
         });
       }
       return [];
     }
   }
+  eventInfoCb(EVENT_INFO_TYPES.cacheHit, {
+    cacheHit: false
+  });
   ref1 = separateItemQuery(query), itemQuery = ref1.item, metaQuery = ref1.meta;
   if (Object.keys(itemQuery).length === 0 && Object.keys(metaQuery).length === 1) {
-    result = handleSingleMetaParamQuery(metaQuery, store, structure, singleRecord);
+    result = handleSingleMetaParamQuery(metaQuery, eventInfoCb, store, structure, singleRecord);
     if (result != null) {
       return result;
     }
@@ -1087,7 +1098,7 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
       return [];
     }
     items = structure.byTag[metaQuery.tag].map(function(id) {
-      return getItem(id, store, structure);
+      return getItem(id, eventInfoCb, store, structure);
     });
     if ((metaQuery.persistent != null) && typeof metaQuery.persistent === 'boolean') {
       items = items.filter(function(item) {
@@ -1116,9 +1127,10 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
   return matches;
 };
 
-module.exports = function(query, store, structure, singleRecord) {
+module.exports = function(query, eventInfoCb, store, structure, singleRecord) {
   var unsortedResult;
-  unsortedResult = findUnsortedItems(query, store, structure, singleRecord);
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  unsortedResult = findUnsortedItems(query, eventInfoCb, store, structure, singleRecord);
   if (unsortedResult.length > 1) {
     unsortedResult.sort(function(a, b) {
       return a.meta.id - b.meta.id;
@@ -1136,15 +1148,15 @@ var findItemsInStore, validateArguments;
 
 findItemsInStore = __webpack_require__(11);
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-module.exports = function(state, query, shouldReturnSingleRecord) {
+module.exports = function(state, eventInfoCb, query, shouldReturnSingleRecord) {
   var items;
   if (shouldReturnSingleRecord == null) {
     shouldReturnSingleRecord = false;
   }
-  validateArguments([query, shouldReturnSingleRecord], ['query', 'boolean']);
-  items = findItemsInStore(query, state.store, state.structure, shouldReturnSingleRecord).filter(function(i) {
+  validateArguments([query, eventInfoCb, shouldReturnSingleRecord], ['query', 'function', 'boolean']);
+  items = findItemsInStore(query, eventInfoCb, state.store, state.structure, shouldReturnSingleRecord).filter(function(i) {
     return i != null;
   });
   return items;
@@ -1172,7 +1184,7 @@ module.exports = {
 
 var CONFIG;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 module.exports = function(testObj) {
   var answer, answerIndex, answerResults, i, j, len, maxScore, question, questionId, ref, score;
@@ -1216,20 +1228,9 @@ module.exports = function(testObj) {
 
 var findType, getValidatorFn, matchSingleType, matchesType, parseSingleTypeStr, parseTypeStr, sliceStackTrace, types, validateArguments;
 
-types = __webpack_require__(39);
+types = __webpack_require__(41);
 
-sliceStackTrace = function(error, sliceIndex) {
-  var err, lines;
-  try {
-    throw new error.constructor(error.message);
-  } catch (error1) {
-    err = error1;
-    lines = err.stack.split('\n');
-    lines.splice(1, 1 + sliceIndex);
-    err.stack = lines.join('\n');
-    return err;
-  }
-};
+sliceStackTrace = __webpack_require__(42);
 
 parseSingleTypeStr = function(typeStr) {
   var separatorIndex;
@@ -1297,8 +1298,8 @@ matchesType = function(value, typeStr, types) {
     matches = null;
     try {
       matches = matchSingleType(value, typeObj, types);
-    } catch (error1) {
-      err = error1;
+    } catch (error) {
+      err = error;
       if (err instanceof TypeError) {
         matches = err;
       }
@@ -1331,8 +1332,8 @@ validateArguments = function(args, argTypes, types, returnErrors) {
     type = argTypes[i];
     try {
       matches = matchesType(args[i], type, types);
-    } catch (error1) {
-      err = error1;
+    } catch (error) {
+      err = error;
       throw sliceStackTrace(err, 2);
     }
     if (matches !== true) {
@@ -1477,7 +1478,7 @@ SELECT_ALL_ID = 'selectAll';
 
 EventEmitter = __webpack_require__(8);
 
-MESSAGES = __webpack_require__(0).questionSelect;
+MESSAGES = __webpack_require__(1).questionSelect;
 
 getListItemHtml = function(filter, i, listName) {
   return ("<li data-filter-id='" + filter.id + "' " + (i != null ? "data-index='" + i + "'" : '') + ">") + ("<input type='checkbox' checked id='" + (listName + '-' + filter.id) + "'>") + ("<label for='" + (listName + '-' + filter.id) + "'>") + ("<span class='filterName'>" + filter.name + "</span> ") + "<span class='questionCountWrapper'>[<span class='questionCount'></span>]</span>" + "</label>" + "</li>";
@@ -1700,6 +1701,77 @@ module.exports = QuestionSelectList = (function(superClass) {
 /* 18 */
 /***/ (function(module, exports) {
 
+module.exports = {
+  cacheHit: 'cacheHit'
+};
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var applyFnArray;
+
+applyFnArray = __webpack_require__(20);
+
+module.exports = function(externalItem, tag, decorators) {
+  if (externalItem == null) {
+    return null;
+  }
+  if (tag != null) {
+    return applyFnArray(externalItem, decorators[tag], null, true);
+  }
+  return externalItem;
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = function(item, fnArr, additionalParam, checkForReturnValue) {
+  var fn, i, len, originalItem;
+  if (fnArr == null) {
+    return item;
+  }
+  originalItem = item;
+  for (i = 0, len = fnArr.length; i < len; i++) {
+    fn = fnArr[i];
+    item = fn(item, additionalParam);
+    if (checkForReturnValue && item !== originalItem) {
+      throw new Error('processor function must return modified item, not new object');
+    }
+  }
+  return item;
+};
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var applyFnArray;
+
+applyFnArray = __webpack_require__(20);
+
+module.exports = function(externalItem, tag, validators) {
+  var err;
+  if (tag != null) {
+    try {
+      applyFnArray(externalItem, validators[tag], true, false);
+    } catch (error) {
+      err = error;
+      console.warn("validation failed - tag: " + tag, externalItem);
+      throw err;
+    }
+  }
+};
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
 var StorageFullError,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1717,7 +1789,7 @@ module.exports = StorageFullError = (function(superClass) {
 
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = function() {
@@ -1736,10 +1808,15 @@ module.exports = function() {
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports) {
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = function(id, store, structure) {
+var validate;
+
+validate = __webpack_require__(0);
+
+module.exports = function(id, eventInfoCb, store, structure) {
+  validate([id, eventInfoCb], ['id', 'function']);
   switch (structure.location[id]) {
     case structure.LOCATIONS.DB:
       return store.db.readItem(id);
@@ -1752,7 +1829,7 @@ module.exports = function(id, store, structure) {
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports) {
 
 var testObj;
@@ -1789,7 +1866,7 @@ module.exports.testObj = testObj;
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports) {
 
 var hasProp = {}.hasOwnProperty;
@@ -1815,80 +1892,21 @@ module.exports = function(query) {
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var applyFnArray;
+var cloneValue, getNextId, validateArguments;
 
-applyFnArray = __webpack_require__(24);
-
-module.exports = function(externalItem, tag, decorators) {
-  if (externalItem == null) {
-    return null;
-  }
-  if (tag != null) {
-    return applyFnArray(externalItem, decorators[tag], null, true);
-  }
-  return externalItem;
-};
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports) {
-
-module.exports = function(item, fnArr, additionalParam, checkForReturnValue) {
-  var fn, i, len, originalItem;
-  if (fnArr == null) {
-    return item;
-  }
-  originalItem = item;
-  for (i = 0, len = fnArr.length; i < len; i++) {
-    fn = fnArr[i];
-    item = fn(item, additionalParam);
-    if (checkForReturnValue && item !== originalItem) {
-      throw new Error('processor function must return modified item, not new object');
-    }
-  }
-  return item;
-};
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var applyFnArray;
-
-applyFnArray = __webpack_require__(24);
-
-module.exports = function(externalItem, tag, validators) {
-  var err;
-  if (tag != null) {
-    try {
-      applyFnArray(externalItem, validators[tag], true, false);
-    } catch (error) {
-      err = error;
-      console.warn("validation failed - tag: " + tag, externalItem);
-      throw err;
-    }
-  }
-};
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var cloneValue, getNextId;
-
-getNextId = __webpack_require__(72);
+getNextId = __webpack_require__(75);
 
 cloneValue = __webpack_require__(9);
 
-module.exports = function(arg, store) {
+validateArguments = __webpack_require__(0);
+
+module.exports = function(arg, eventInfoCb, store) {
   var id, isExisting, item, meta, metaItem, newMeta, persistent;
   item = arg.item, meta = arg.meta, isExisting = arg.isExisting;
+  validateArguments([item, meta, isExisting, eventInfoCb], ['object', 'object', 'boolean', 'function']);
   if (isExisting) {
     newMeta = meta;
   } else {
@@ -1919,15 +1937,15 @@ module.exports = function(arg, store) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var validateArguments;
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-module.exports = function(itemId, store, structure) {
-  validateArguments(arguments, ['id']);
+module.exports = function(itemId, eventInfoCb, store, structure) {
+  validateArguments([itemId, eventInfoCb], ['id', 'function']);
   switch (structure.location[itemId]) {
     case structure.LOCATIONS.DB:
       return store.db.removeItem(itemId);
@@ -1940,14 +1958,14 @@ module.exports = function(itemId, store, structure) {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getInternalItem, getItemId, removeItem, removeItemFromStore, updateStructure, validateArguments;
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-removeItemFromStore = __webpack_require__(27);
+removeItemFromStore = __webpack_require__(28);
 
 updateStructure = __webpack_require__(4);
 
@@ -1965,7 +1983,7 @@ getItemId = function(item, expectInternalItem) {
   return getInternalItem(item).meta.id;
 };
 
-removeItem = module.exports = function(state, item, expectInternalItem) {
+removeItem = module.exports = function(state, eventInfoCb, item, expectInternalItem) {
   var itemId, removedItem, removedItems;
   if (expectInternalItem == null) {
     expectInternalItem = false;
@@ -1982,9 +2000,9 @@ removeItem = module.exports = function(state, item, expectInternalItem) {
     })();
     return removedItems;
   }
-  validateArguments([item], ['id|externalItem|internalItem']);
+  validateArguments([item, eventInfoCb], ['id|externalItem|internalItem', 'function']);
   itemId = getItemId(item, expectInternalItem);
-  removedItem = removeItemFromStore(itemId, state.store, state.structure);
+  removedItem = removeItemFromStore(itemId, eventInfoCb, state.store, state.structure);
   if (removedItem != null) {
     state.structure = updateStructure.remove(state.structure, removedItem, state.store);
   }
@@ -1993,36 +2011,48 @@ removeItem = module.exports = function(state, item, expectInternalItem) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = function(traceStr, sliceIndex) {
+  var lines;
+  lines = traceStr.split('\n');
+  lines.splice(1, 1 + sliceIndex);
+  return lines.join('\n');
+};
+
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, STORE_TAGS, bindErrorListeners, bindMobileMenuToggle, bindSidemenuManager, getLoaderManager, loaderManager, prepareStore, questionTypes, setupScreenManager, validateArguments;
 
-__webpack_require__(30);
+__webpack_require__(32);
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
 STORE_TAGS = __webpack_require__(13);
 
-window.util = __webpack_require__(38);
+window.util = __webpack_require__(40);
 
 validateArguments = __webpack_require__(15);
 
-bindErrorListeners = __webpack_require__(40);
+bindErrorListeners = __webpack_require__(43);
 
-setupScreenManager = __webpack_require__(41);
+setupScreenManager = __webpack_require__(44);
 
-prepareStore = __webpack_require__(55);
+prepareStore = __webpack_require__(58);
 
-bindSidemenuManager = __webpack_require__(92);
+bindSidemenuManager = __webpack_require__(96);
 
-getLoaderManager = __webpack_require__(93);
+getLoaderManager = __webpack_require__(97);
 
-bindMobileMenuToggle = __webpack_require__(94);
+bindMobileMenuToggle = __webpack_require__(98);
 
-questionTypes = __webpack_require__(95);
+questionTypes = __webpack_require__(99);
 
 bindErrorListeners();
 
@@ -2051,11 +2081,11 @@ prepareStore().then(function() {
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 if (window.Promise == null) {
-  window.Promise = __webpack_require__(31);
+  window.Promise = __webpack_require__(33);
 }
 
 if (window.Symbol == null) {
@@ -2065,18 +2095,18 @@ if (window.Symbol == null) {
 }
 
 if (Object.assign == null) {
-  Object.assign = __webpack_require__(36);
+  Object.assign = __webpack_require__(38);
 }
 
 if (Array.prototype.fill == null) {
   Object.defineProperty(Array.prototype, 'fill', {
-    value: __webpack_require__(37)
+    value: __webpack_require__(39)
   });
 }
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -2313,10 +2343,10 @@ if (Array.prototype.fill == null) {
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34).setImmediate))
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -2369,13 +2399,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(33);
+__webpack_require__(35);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -2565,10 +2595,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34), __webpack_require__(35)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36), __webpack_require__(37)))
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports) {
 
 var g;
@@ -2595,7 +2625,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -2785,7 +2815,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports) {
 
 var slice = [].slice,
@@ -2807,7 +2837,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = function(fillValue, start, end) {
@@ -2829,7 +2859,7 @@ module.exports = function(fillValue, start, end) {
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getTestResults,
@@ -2912,7 +2942,7 @@ module.exports = {
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -2962,14 +2992,32 @@ module.exports = {
 
 
 /***/ }),
-/* 40 */
+/* 42 */
+/***/ (function(module, exports) {
+
+module.exports = function(error, sliceIndex) {
+  var err, lines;
+  try {
+    throw new error.constructor(error.message);
+  } catch (error1) {
+    err = error1;
+    lines = err.stack.split('\n');
+    lines.splice(1, 1 + sliceIndex);
+    err.stack = lines.join('\n');
+    return err;
+  }
+};
+
+
+/***/ }),
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES;
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 module.exports = function() {
   var handleUncaughtError;
@@ -3004,22 +3052,22 @@ module.exports = function() {
 
 
 /***/ }),
-/* 41 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bindScreenManager, screens;
 
-bindScreenManager = __webpack_require__(42);
+bindScreenManager = __webpack_require__(45);
 
 screens = {
-  questionSelect: __webpack_require__(43),
-  browsing: __webpack_require__(45),
-  evaluateSession: __webpack_require__(47),
-  browseEvaluatedSession: __webpack_require__(48),
-  prepareTest: __webpack_require__(49),
-  practiceTest: __webpack_require__(52),
-  evaluateTest: __webpack_require__(53),
-  browseEvaluatedTest: __webpack_require__(54)
+  questionSelect: __webpack_require__(46),
+  browsing: __webpack_require__(48),
+  evaluateSession: __webpack_require__(50),
+  browseEvaluatedSession: __webpack_require__(51),
+  prepareTest: __webpack_require__(52),
+  practiceTest: __webpack_require__(55),
+  evaluateTest: __webpack_require__(56),
+  browseEvaluatedTest: __webpack_require__(57)
 };
 
 module.exports = function() {
@@ -3031,7 +3079,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 42 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getHash, gotoPage, screenHash, updateView;
@@ -3084,16 +3132,16 @@ module.exports = function(container, screens, defaultScreen) {
 
 
 /***/ }),
-/* 43 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var MESSAGES, QuestionNumberDisplay, QuestionSelectList;
 
-MESSAGES = __webpack_require__(0).questionSelect;
+MESSAGES = __webpack_require__(1).questionSelect;
 
 QuestionSelectList = __webpack_require__(17);
 
-QuestionNumberDisplay = __webpack_require__(44);
+QuestionNumberDisplay = __webpack_require__(47);
 
 module.exports = function(container, goto, params) {
   var disableSubmitButtonIfUnselected, form, i, questionIds, questionNumberDisplay, questionNumberDisplayElem, questionTypeList, questionTypeListElem, sectionList, sectionListElem, session, submitButton;
@@ -3164,7 +3212,7 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 44 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EventEmitter, QuestionNumberDisplay, QuestionSelectList,
@@ -3217,14 +3265,14 @@ module.exports = QuestionNumberDisplay = (function(superClass) {
 
 
 /***/ }),
-/* 45 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).browsingQuestions;
+MESSAGES = __webpack_require__(1).browsingQuestions;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 renderQuestion = __webpack_require__(5);
 
@@ -3278,7 +3326,8 @@ module.exports = function(container, goto, params) {
   correctAnswerClicked = false;
   clickedAnswerIndexes = [];
   renderQuestion({
-    questionIds: sessionItem.questionIds,
+    question: question,
+    questionCount: sessionItem.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.browsingMode,
@@ -3373,7 +3422,7 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 46 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EventEmitter, MESSAGES, QuestionView, createElem, generateAnswerList, generateQuestionElem, renderQuestionImage,
@@ -3382,7 +3431,7 @@ var EventEmitter, MESSAGES, QuestionView, createElem, generateAnswerList, genera
 
 EventEmitter = __webpack_require__(8);
 
-MESSAGES = __webpack_require__(0).questionView;
+MESSAGES = __webpack_require__(1).questionView;
 
 createElem = __webpack_require__(3);
 
@@ -3528,14 +3577,14 @@ module.exports = QuestionView = (function(superClass) {
 
 
 /***/ }),
-/* 47 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, e, getResults, renderQuestionList, renderSuccessBar;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0).evaluateTest;
+MESSAGES = __webpack_require__(1).evaluateTest;
 
 e = __webpack_require__(3);
 
@@ -3637,14 +3686,14 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 48 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).browsingQuestions;
+MESSAGES = __webpack_require__(1).browsingQuestions;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 renderQuestion = __webpack_require__(5);
 
@@ -3687,7 +3736,8 @@ module.exports = function(container, goto, params) {
   questionContainer = createElem('div .questionView .browsingMode .showResults');
   container.appendChild(questionContainer);
   renderQuestion({
-    questionIds: session.questionIds,
+    question: question,
+    questionCount: session.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -3757,14 +3807,14 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Highcharts, generateTest, getChartConfig, renderFinishedTestChart;
 
-generateTest = __webpack_require__(50);
+generateTest = __webpack_require__(53);
 
-Highcharts = __webpack_require__(51);
+Highcharts = __webpack_require__(54);
 
 getChartConfig = function(maxScore, testScores, passScores) {
   return {
@@ -3831,7 +3881,7 @@ renderFinishedTestChart = function(container, testResults) {
 };
 
 module.exports = function(container, goto) {
-  var currentTest, i, startButton, testChartContainer, testChartLabel;
+  var currentTest, i, items, startButton, testChartContainer, testChartLabel;
   currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST);
   if (currentTest != null) {
     if (currentTest.finished) {
@@ -3854,8 +3904,9 @@ module.exports = function(container, goto) {
   }
   container.innerHTML = '<h1>Cvičný test</h1> <div class="finishedTestLabel">Výsledky předchozích testů:</div> <div class="finishedTestChart"></div> <button class="actionButton startTestButton">ZAHÁJIT NOVÝ CVIČNÝ TEST</button>';
   testChartContainer = container.getElementsByClassName('finishedTestChart')[0];
-  if (store.count(db.STORE_TAGS.PRACTICE_TEST) > 0) {
-    renderFinishedTestChart(testChartContainer, store.find(db.STORE_TAGS.PRACTICE_TEST));
+  items = store.find(db.STORE_TAGS.PRACTICE_TEST);
+  if (items.length > 0) {
+    renderFinishedTestChart(testChartContainer, items);
   } else {
     testChartLabel = container.getElementsByClassName('finishedTestLabel')[0];
     testChartLabel.style.display = 'none';
@@ -3872,12 +3923,12 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, getRandomQuestions, getTestQuestionIds;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 getRandomQuestions = function(sectionIds, count) {
   var i, j, len, len1, questionId, questionIds, ref, section, sectionId, selectedQuestions;
@@ -3942,7 +3993,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module, exports) {
 
 /*
@@ -4344,14 +4395,14 @@ d[c][b],f[c][b],t+1));else n(a)?(f[c]=F(a)?[]:{},l(a,d[c]||{},f[c],t+1)):f[c]=d[
 
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).practiceTest;
+MESSAGES = __webpack_require__(1).practiceTest;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 renderQuestion = __webpack_require__(5);
 
@@ -4396,7 +4447,8 @@ module.exports = function(container, goto, params) {
   container.appendChild(questionContainer);
   clicked = false;
   renderQuestion({
-    questionIds: questionIds,
+    question: question,
+    questionCount: questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -4453,14 +4505,14 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, PASS_SCORE, e, getTestResults, renderQuestionList, renderSuccessBar, saveTestResults;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0).evaluateTest;
+MESSAGES = __webpack_require__(1).evaluateTest;
 
 PASS_SCORE = CONFIG.testSuccessThreshold;
 
@@ -4581,14 +4633,14 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).practiceTest;
+MESSAGES = __webpack_require__(1).practiceTest;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 renderQuestion = __webpack_require__(5);
 
@@ -4631,7 +4683,8 @@ module.exports = function(container, goto, params) {
   questionContainer = createElem('div .questionView .testMode .showResults');
   container.appendChild(questionContainer);
   renderQuestion({
-    questionIds: currentTest.questionIds,
+    question: question,
+    questionCount: currentTest.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -4700,20 +4753,20 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createWrappedEveStore, storeConfig, updateTestData;
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-createWrappedEveStore = __webpack_require__(56);
+createWrappedEveStore = __webpack_require__(59);
 
-updateTestData = __webpack_require__(83);
+updateTestData = __webpack_require__(87);
 
-storeConfig = __webpack_require__(90);
+storeConfig = __webpack_require__(94);
 
 module.exports = function() {
   var decorator, i, j, k, len, len1, len2, query, ref, ref1, ref2, validator;
@@ -4744,7 +4797,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, KEYS, MESSAGES, createEveStore, moveCollectionToMemory,
@@ -4755,11 +4808,11 @@ KEYS = {
   placeholder: 'persistentStorageFullPlaceholder'
 };
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
-createEveStore = __webpack_require__(57);
+createEveStore = __webpack_require__(60);
 
 moveCollectionToMemory = function(tag, eve) {
   var collectionInDb, i, item, items, len;
@@ -4854,34 +4907,36 @@ module.exports = function() {
   };
   out.StorageFullError = eve.StorageFullError;
   out.rawStore = eve;
-  if (CONFIG.logStoreOperations) {
-    __webpack_require__(82)(out);
+  if (CONFIG.storeLogging.log) {
+    __webpack_require__(85)(out);
   }
   return out;
 };
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ALREADY_LOADED_NAMESPACES, StorageFullError, createStoreState, getExternalItem, getInternalItem, storeOperations, stringifyQuery, updateStructure, validateArguments;
+var ALREADY_LOADED_NAMESPACES, EVENT_INFO_TYPES, StorageFullError, createStoreState, getExternalItem, getInternalItem, storeOperations, stringifyQuery, updateStructure, validateArguments;
 
-StorageFullError = __webpack_require__(18);
+EVENT_INFO_TYPES = __webpack_require__(18);
 
-createStoreState = __webpack_require__(58);
-
-updateStructure = __webpack_require__(4);
-
-getExternalItem = __webpack_require__(64);
+getExternalItem = __webpack_require__(61);
 
 getInternalItem = __webpack_require__(7);
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-stringifyQuery = __webpack_require__(69);
+StorageFullError = __webpack_require__(22);
 
-storeOperations = __webpack_require__(70);
+createStoreState = __webpack_require__(66);
+
+updateStructure = __webpack_require__(4);
+
+stringifyQuery = __webpack_require__(72);
+
+storeOperations = __webpack_require__(73);
 
 ALREADY_LOADED_NAMESPACES = [];
 
@@ -4927,7 +4982,7 @@ module.exports = function(storeNamespace) {
   return {
     add: function(tag, persist, item) {
       var addedItem, internalItem;
-      internalItem = storeOperations.add(state, tag, persist, item);
+      internalItem = storeOperations.add(state, (function() {}), tag, persist, item);
       addedItem = getExternalItem(internalItem, state.fnArrays.decorators);
       emit('add', "Added new item", {
         id: addedItem.$id,
@@ -4940,7 +4995,7 @@ module.exports = function(storeNamespace) {
     },
     update: function(item) {
       var internalItem, updatedItem;
-      internalItem = storeOperations.update(state, item);
+      internalItem = storeOperations.update(state, (function() {}), item);
       updatedItem = getExternalItem(internalItem, state.fnArrays.decorators);
       emit('update', "Updated item", {
         id: updatedItem.$id
@@ -4951,7 +5006,7 @@ module.exports = function(storeNamespace) {
     },
     remove: function(itemToRemove) {
       var externalItem, externalItems, removedItem;
-      removedItem = storeOperations.remove(state, itemToRemove);
+      removedItem = storeOperations.remove(state, (function() {}), itemToRemove);
       if (removedItem == null) {
         emit('remove', "Attempted to remove missing item", {
           id: (typeof itemToRemove === 'number' ? itemToRemove : itemToRemove.$id),
@@ -4989,22 +5044,30 @@ module.exports = function(storeNamespace) {
       }
     },
     removeByQuery: function(query) {
-      var externalItems, removedItems;
-      removedItems = storeOperations.removeByQuery(state, query);
+      var cacheHit, eventInfoCb, externalItems, removedItems;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      removedItems = storeOperations.removeByQuery(state, eventInfoCb, query);
       externalItems = removedItems.map(function(item) {
         return getExternalItem(item, state.fnArrays.decorators);
       });
       emit('removeByQuery', 'Removed items by query', {
-        itemCount: externalItems.length
+        itemCount: externalItems.length,
+        cacheHit: cacheHit
       }, {
         query: query,
-        item: externalItems
+        item: externalItems,
+        cacheHit: cacheHit
       });
       return externalItems;
     },
     get: function(id) {
       var externalItem, returnedItem;
-      returnedItem = storeOperations.get(state, id);
+      returnedItem = storeOperations.get(state, (function() {}), id);
       externalItem = getExternalItem(returnedItem, state.fnArrays.decorators);
       emit('get', 'Looked up item by ID', {
         id: id
@@ -5014,23 +5077,37 @@ module.exports = function(storeNamespace) {
       return externalItem;
     },
     find: function(query) {
-      var externalItems, foundItems;
-      foundItems = storeOperations.find(state, query, false);
+      var cacheHit, eventInfoCb, externalItems, foundItems;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      foundItems = storeOperations.find(state, eventInfoCb, query, false);
       externalItems = foundItems.map(function(item) {
         return getExternalItem(item, state.fnArrays.decorators);
       });
       emit('find', 'Querying store to find items', {
         itemCount: externalItems.length,
-        query: stringifyQuery(query)
+        query: stringifyQuery(query),
+        cacheHit: cacheHit
       }, {
         query: query,
-        item: externalItems
+        item: externalItems,
+        cacheHit: cacheHit
       });
       return externalItems;
     },
     findOne: function(query) {
-      var externalItem, foundItem, id;
-      foundItem = storeOperations.findOne(state, query);
+      var cacheHit, eventInfoCb, externalItem, foundItem, id;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      foundItem = storeOperations.findOne(state, eventInfoCb, query);
       externalItem = getExternalItem(foundItem, state.fnArrays.decorators);
       if (externalItem != null) {
         id = externalItem.$id;
@@ -5039,22 +5116,32 @@ module.exports = function(storeNamespace) {
       }
       emit('findOne', 'Querying store to find single item', {
         query: stringifyQuery(query),
-        id: id
+        id: id,
+        cacheHit: cacheHit
       }, {
         query: query,
-        item: externalItem
+        item: externalItem,
+        cacheHit: cacheHit
       });
       return externalItem;
     },
     count: function(query) {
-      var itemCount;
-      itemCount = storeOperations.count(state, query);
+      var cacheHit, eventInfoCb, itemCount;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      itemCount = storeOperations.count(state, eventInfoCb, query);
       emit('count', 'Counting items matching query', {
         count: itemCount,
-        query: stringifyQuery(query)
+        query: stringifyQuery(query),
+        cacheHit: cacheHit
       }, {
         count: itemCount,
-        query: query
+        query: query,
+        cacheHit: cacheHit
       });
       return itemCount;
     },
@@ -5064,14 +5151,14 @@ module.exports = function(storeNamespace) {
       cb = function(item) {
         return fn(getExternalItem(item, state.fnArrays.decorators));
       };
-      storeOperations.forEach(state, cb);
+      storeOperations.forEach(state, (function() {}), cb);
       emit('forEach', 'Ran a function for each item', null, {
         callback: cb
       });
     },
     isEmpty: function() {
       var isEmpty;
-      isEmpty = storeOperations.isEmpty(state);
+      isEmpty = storeOperations.isEmpty(state, (function() {}));
       emit('isEmpty', 'Checked if store is empty', {
         empty: isEmpty
       }, {
@@ -5080,7 +5167,7 @@ module.exports = function(storeNamespace) {
       return isEmpty;
     },
     clear: function() {
-      storeOperations.clear(state);
+      storeOperations.clear(state, (function() {}));
       emit('clear', 'Store cleared');
     },
     setCacheFor: function(query) {
@@ -5153,16 +5240,122 @@ module.exports.StorageFullError = StorageFullError;
 
 
 /***/ }),
-/* 58 */
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var decorateItem, rewriteInternalItem;
+
+rewriteInternalItem = __webpack_require__(62);
+
+decorateItem = __webpack_require__(19);
+
+module.exports = function(internalItem, decorators) {
+  if (internalItem == null) {
+    return null;
+  }
+  return decorateItem(rewriteInternalItem(internalItem), internalItem.meta.tag, decorators);
+};
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol, validateArguments;
+
+metaSymbol = __webpack_require__(6);
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(internalItem) {
+  var fn, item, key, meta;
+  if (internalItem == null) {
+    return null;
+  }
+  item = internalItem.item, meta = internalItem.meta;
+  item[metaSymbol] = meta;
+  fn = function(key) {
+    item.__defineGetter__('$' + key, function() {
+      return this[metaSymbol][key];
+    });
+    item.__defineSetter__('$tag', function(newValue) {
+      validateArguments([newValue], ['item_tag']);
+      return this[metaSymbol].tag = newValue;
+    });
+    return item.__defineSetter__('$persistent', function(newValue) {
+      validateArguments([newValue], ['item_persistent']);
+      return this[metaSymbol].persistent = newValue;
+    });
+  };
+  for (key in meta) {
+    fn(key);
+  }
+  return item;
+};
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol;
+
+metaSymbol = __webpack_require__(6);
+
+module.exports = function(item) {
+  return (item != null) && typeof item === 'object' && (item[metaSymbol] != null);
+};
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports) {
+
+module.exports = function(item) {
+  return typeof item.item === 'object' && typeof item.meta === 'object';
+};
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol;
+
+metaSymbol = __webpack_require__(6);
+
+module.exports = function(externalItem) {
+  var item, key, meta, value;
+  meta = externalItem[metaSymbol];
+  if (meta == null) {
+    meta = {};
+  }
+  item = {};
+  for (key in externalItem) {
+    value = externalItem[key];
+    if (key[0] === '$' && meta.hasOwnProperty(key.slice(1))) {
+      continue;
+    }
+    item[key] = value;
+  }
+  return {
+    item: item,
+    meta: meta
+  };
+};
+
+
+/***/ }),
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var generateStructure, getDb, getMemoryStore;
 
-getDb = __webpack_require__(59);
+getDb = __webpack_require__(67);
 
-getMemoryStore = __webpack_require__(62);
+getMemoryStore = __webpack_require__(70);
 
-generateStructure = __webpack_require__(63);
+generateStructure = __webpack_require__(71);
 
 module.exports = function(storeNamespace) {
   var store;
@@ -5184,19 +5377,19 @@ module.exports = function(storeNamespace) {
 
 
 /***/ }),
-/* 59 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var StorageFullError, cloneValue, isEmptyObj, isQuotaExceededError, localStorageSupported,
   hasProp = {}.hasOwnProperty;
 
-localStorageSupported = __webpack_require__(60);
+localStorageSupported = __webpack_require__(68);
 
-isQuotaExceededError = __webpack_require__(61);
+isQuotaExceededError = __webpack_require__(69);
 
 cloneValue = __webpack_require__(9);
 
-StorageFullError = __webpack_require__(18);
+StorageFullError = __webpack_require__(22);
 
 isEmptyObj = __webpack_require__(10);
 
@@ -5339,7 +5532,7 @@ module.exports = function(storageNamespace) {
 
 
 /***/ }),
-/* 60 */
+/* 68 */
 /***/ (function(module, exports) {
 
 module.exports = function() {
@@ -5367,7 +5560,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 61 */
+/* 69 */
 /***/ (function(module, exports) {
 
 module.exports = function(err) {
@@ -5391,7 +5584,7 @@ module.exports = function(err) {
 
 
 /***/ }),
-/* 62 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var cloneValue, isEmptyObj,
@@ -5485,12 +5678,12 @@ module.exports = function() {
 
 
 /***/ }),
-/* 63 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var forEachItem, getClearStructure, updateStructure;
 
-getClearStructure = __webpack_require__(19);
+getClearStructure = __webpack_require__(23);
 
 updateStructure = __webpack_require__(4);
 
@@ -5510,113 +5703,7 @@ module.exports = function(store) {
 
 
 /***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var decorateItem, rewriteInternalItem;
-
-rewriteInternalItem = __webpack_require__(65);
-
-decorateItem = __webpack_require__(23);
-
-module.exports = function(internalItem, decorators) {
-  if (internalItem == null) {
-    return null;
-  }
-  return decorateItem(rewriteInternalItem(internalItem), internalItem.meta.tag, decorators);
-};
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var metaSymbol, validateArguments;
-
-metaSymbol = __webpack_require__(6);
-
-validateArguments = __webpack_require__(2);
-
-module.exports = function(internalItem) {
-  var fn, item, key, meta;
-  if (internalItem == null) {
-    return null;
-  }
-  item = internalItem.item, meta = internalItem.meta;
-  item[metaSymbol] = meta;
-  fn = function(key) {
-    item.__defineGetter__('$' + key, function() {
-      return this[metaSymbol][key];
-    });
-    item.__defineSetter__('$tag', function(newValue) {
-      validateArguments([newValue], ['item_tag']);
-      return this[metaSymbol].tag = newValue;
-    });
-    return item.__defineSetter__('$persistent', function(newValue) {
-      validateArguments([newValue], ['item_persistent']);
-      return this[metaSymbol].persistent = newValue;
-    });
-  };
-  for (key in meta) {
-    fn(key);
-  }
-  return item;
-};
-
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var metaSymbol;
-
-metaSymbol = __webpack_require__(6);
-
-module.exports = function(item) {
-  return (item != null) && typeof item === 'object' && (item[metaSymbol] != null);
-};
-
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports) {
-
-module.exports = function(item) {
-  return typeof item.item === 'object' && typeof item.meta === 'object';
-};
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var metaSymbol;
-
-metaSymbol = __webpack_require__(6);
-
-module.exports = function(externalItem) {
-  var item, key, meta, value;
-  meta = externalItem[metaSymbol];
-  if (meta == null) {
-    meta = {};
-  }
-  item = {};
-  for (key in externalItem) {
-    value = externalItem[key];
-    if (key[0] === '$' && meta.hasOwnProperty(key.slice(1))) {
-      continue;
-    }
-    item[key] = value;
-  }
-  return {
-    item: item,
-    meta: meta
-  };
-};
-
-
-/***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(module, exports) {
 
 module.exports = function(queryObj) {
@@ -5638,41 +5725,41 @@ module.exports = function(queryObj) {
 
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  add: __webpack_require__(71),
-  update: __webpack_require__(73),
-  remove: __webpack_require__(28),
-  removeByQuery: __webpack_require__(74),
-  get: __webpack_require__(75),
+  add: __webpack_require__(74),
+  update: __webpack_require__(76),
+  remove: __webpack_require__(29),
+  removeByQuery: __webpack_require__(77),
+  get: __webpack_require__(78),
   find: __webpack_require__(12),
-  findOne: __webpack_require__(76),
-  count: __webpack_require__(77),
-  forEach: __webpack_require__(79),
-  isEmpty: __webpack_require__(80),
-  clear: __webpack_require__(81)
+  findOne: __webpack_require__(79),
+  count: __webpack_require__(80),
+  forEach: __webpack_require__(82),
+  isEmpty: __webpack_require__(83),
+  clear: __webpack_require__(84)
 };
 
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var addItemToStore, getInternalItem, runItemValidators, updateStructure, validateArguments;
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
 getInternalItem = __webpack_require__(7);
 
-runItemValidators = __webpack_require__(25);
+runItemValidators = __webpack_require__(21);
 
-addItemToStore = __webpack_require__(26);
+addItemToStore = __webpack_require__(27);
 
 updateStructure = __webpack_require__(4);
 
-module.exports = function(state, tag, persistent, item, expectInternalItem) {
+module.exports = function(state, eventInfoCb, tag, persistent, item, expectInternalItem) {
   var internalItem, isInternalItem, returnedItem;
   if (expectInternalItem == null) {
     expectInternalItem = false;
@@ -5690,7 +5777,7 @@ module.exports = function(state, tag, persistent, item, expectInternalItem) {
       persistent = null;
     }
   }
-  validateArguments([tag, persistent, item], ['string?', 'boolean?', 'object']);
+  validateArguments([tag, persistent, item, eventInfoCb], ['string?', 'boolean?', 'object', 'function']);
   internalItem = null;
   isInternalItem = false;
   if (!expectInternalItem) {
@@ -5718,14 +5805,14 @@ module.exports = function(state, tag, persistent, item, expectInternalItem) {
       persistent: persistent
     },
     isExisting: false
-  }, state.store, state.structure);
+  }, eventInfoCb, state.store);
   state.structure = updateStructure.add(state.structure, returnedItem, state.store);
   return returnedItem;
 };
 
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ (function(module, exports) {
 
 module.exports = function(store) {
@@ -5746,56 +5833,59 @@ module.exports = function(store) {
 
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var addItemToStore, getInternalItem, removeItemFromStore, updateStructure, validateArguments;
 
 getInternalItem = __webpack_require__(7);
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-addItemToStore = __webpack_require__(26);
+addItemToStore = __webpack_require__(27);
 
-removeItemFromStore = __webpack_require__(27);
+removeItemFromStore = __webpack_require__(28);
 
 updateStructure = __webpack_require__(4);
 
-module.exports = function(state, item, expectInternalItem) {
+module.exports = function(state, eventInfoCb, item, expectInternalItem) {
   var itemType, parsedItem, returnedItem;
   if (expectInternalItem == null) {
     expectInternalItem = false;
   }
   itemType = expectInternalItem ? 'internalItem' : 'externalItem';
-  validateArguments([item], [itemType]);
+  validateArguments([item, eventInfoCb], [itemType, 'function']);
   if (expectInternalItem) {
     parsedItem = item;
   } else {
     parsedItem = getInternalItem(item, state.fnArrays.undecorators, state.fnArrays.validators);
   }
   parsedItem.isExisting = true;
-  removeItemFromStore(parsedItem.meta.id, state.store, state.structure);
-  returnedItem = addItemToStore(parsedItem, state.store, state.structure);
+  removeItemFromStore(parsedItem.meta.id, eventInfoCb, state.store, state.structure);
+  returnedItem = addItemToStore(parsedItem, eventInfoCb, state.store);
   state.structure = updateStructure.change(state.structure, returnedItem, state.store);
   return returnedItem;
 };
 
 
 /***/ }),
-/* 74 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findItem, removeItem;
+var findItem, removeItem, validate;
 
 findItem = __webpack_require__(12);
 
-removeItem = __webpack_require__(28);
+removeItem = __webpack_require__(29);
 
-module.exports = function(state, query) {
+validate = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb, query) {
   var unfilteredResult;
-  unfilteredResult = findItem(state, query).map((function(_this) {
+  validate([eventInfoCb], ['function']);
+  unfilteredResult = findItem(state, eventInfoCb, query).map((function(_this) {
     return function(item) {
-      return removeItem(state, item, true);
+      return removeItem(state, eventInfoCb, item, true);
     };
   })(this));
   return unfilteredResult.filter(function(item) {
@@ -5805,32 +5895,35 @@ module.exports = function(state, query) {
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getItemFromStore, validateArguments;
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-getItemFromStore = __webpack_require__(20);
+getItemFromStore = __webpack_require__(24);
 
-module.exports = function(state, id) {
-  validateArguments([id], ['id']);
-  return getItemFromStore(id, state.store, state.structure);
+module.exports = function(state, eventInfoCb, id) {
+  validateArguments([id, eventInfoCb], ['id', 'function']);
+  return getItemFromStore(id, eventInfoCb, state.store, state.structure);
 };
 
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findItems;
+var findItems, validateArguments;
 
 findItems = __webpack_require__(12);
 
-module.exports = function(state, query) {
+validateArguments = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb, query) {
   var foundItem;
-  foundItem = findItems(state, query, true)[0];
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  foundItem = findItems(state, eventInfoCb, query, true)[0];
   if (foundItem == null) {
     foundItem = null;
   }
@@ -5839,62 +5932,18 @@ module.exports = function(state, query) {
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var countItemsInStore, validateArguments;
 
-validateArguments = __webpack_require__(2);
+validateArguments = __webpack_require__(0);
 
-countItemsInStore = __webpack_require__(78);
+countItemsInStore = __webpack_require__(81);
 
-module.exports = function(state, query) {
-  validateArguments([query], ['query']);
-  return countItemsInStore(query, state.store, state.structure);
-};
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var findItems;
-
-findItems = __webpack_require__(11);
-
-module.exports = function(query, store, structure) {
-  var itemIds;
-  if (typeof query === 'string') {
-    itemIds = structure.byTag[query];
-    if (itemIds != null) {
-      return itemIds.length;
-    }
-  }
-  return findItems(query, store, structure).length;
-};
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var validateArguments;
-
-validateArguments = __webpack_require__(2);
-
-module.exports = function(state, cb) {
-  validateArguments([cb], ['function']);
-  state.store.db.forEachItem(cb);
-  state.store.memory.forEachItem(cb);
-};
-
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports) {
-
-module.exports = function(state) {
-  return state.store.db.isEmpty() && state.store.memory.isEmpty();
+module.exports = function(state, eventInfoCb, query) {
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  return countItemsInStore(query, eventInfoCb, state.store, state.structure);
 };
 
 
@@ -5902,11 +5951,66 @@ module.exports = function(state) {
 /* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getClearStructure;
+var findItems, validateArguments;
 
-getClearStructure = __webpack_require__(19);
+findItems = __webpack_require__(11);
 
-module.exports = function(state) {
+validateArguments = __webpack_require__(0);
+
+module.exports = function(query, eventInfoCb, store, structure) {
+  var itemIds;
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  if (typeof query === 'string') {
+    itemIds = structure.byTag[query];
+    if (itemIds != null) {
+      return itemIds.length;
+    }
+  }
+  return findItems(query, eventInfoCb, store, structure).length;
+};
+
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb, cb) {
+  validateArguments([eventInfoCb, cb], ['function', 'function']);
+  state.store.db.forEachItem(cb);
+  state.store.memory.forEachItem(cb);
+};
+
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb) {
+  validateArguments([eventInfoCb], ['function']);
+  return state.store.db.isEmpty() && state.store.memory.isEmpty();
+};
+
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getClearStructure, validate;
+
+getClearStructure = __webpack_require__(23);
+
+validate = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb) {
+  validate([eventInfoCb], ['function']);
   state.store.db.clear();
   state.store.memory.clear();
   state.structure = getClearStructure();
@@ -5914,12 +6018,27 @@ module.exports = function(state) {
 
 
 /***/ }),
-/* 82 */
-/***/ (function(module, exports) {
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var CONFIG, getStackTrace, removeFirstLine, sliceStackTrace;
+
+CONFIG = __webpack_require__(2);
+
+getStackTrace = __webpack_require__(86);
+
+sliceStackTrace = __webpack_require__(30);
+
+removeFirstLine = function(str) {
+  var lines;
+  lines = str.split('\n');
+  lines.shift();
+  return lines.join('\n');
+};
 
 module.exports = function(store) {
   return store.__on('*', function(operationType, message, infoObj, data) {
-    var strData;
+    var args, strData;
     if (infoObj != null) {
       strData = Object.entries(infoObj).map(function(arg) {
         var key, value;
@@ -5928,27 +6047,56 @@ module.exports = function(store) {
       }).join(', ');
       if (strData.length > 0) {
         strData = '\n\t' + '(' + strData + ')';
-        if (data != null) {
-          strData += '\n';
-        }
       }
     } else {
       strData = '';
     }
-    return console.log(operationType + ': ' + message + strData, data);
+    args = [operationType + ': ' + message + strData];
+    if (CONFIG.storeLogging.showLogData && (data != null)) {
+      args.push('\n', data);
+    }
+    if (CONFIG.storeLogging.showStackTraces) {
+      args.push('\n' + removeFirstLine(sliceStackTrace(getStackTrace(), 3)));
+    }
+    return console.log.apply(console, args);
   });
 };
 
 
 /***/ }),
-/* 83 */
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getStackTrace, sliceStackTrace;
+
+sliceStackTrace = __webpack_require__(30);
+
+getStackTrace = module.exports = function() {
+  var container, err;
+  if (Error.captureStackTrace != null) {
+    container = {};
+    Error.captureStackTrace(container, getStackTrace);
+    return container.stack;
+  } else {
+    try {
+      throw new Error('');
+    } catch (error) {
+      err = error;
+      return sliceStackTrace(err.stack, 1);
+    }
+  }
+};
+
+
+/***/ }),
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var serverApi, updateCollection, updateQuestions, updateSections;
 
-serverApi = __webpack_require__(84);
+serverApi = __webpack_require__(88);
 
-updateCollection = __webpack_require__(89);
+updateCollection = __webpack_require__(93);
 
 updateSections = function() {
   return updateCollection(db.STORE_TAGS.SECTION, serverApi.getSection);
@@ -5964,16 +6112,16 @@ module.exports = function() {
 
 
 /***/ }),
-/* 84 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var BASE_API_URL, getHeaders, getOptions, getQuery, getResource, qs;
 
 BASE_API_URL = '/api/';
 
-__webpack_require__(85);
+__webpack_require__(89);
 
-qs = __webpack_require__(86);
+qs = __webpack_require__(90);
 
 getOptions = function(since) {
   return {
@@ -6066,7 +6214,7 @@ module.exports = {
 
 
 /***/ }),
-/* 85 */
+/* 89 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -6533,18 +6681,18 @@ module.exports = {
 
 
 /***/ }),
-/* 86 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(87);
-exports.encode = exports.stringify = __webpack_require__(88);
+exports.decode = exports.parse = __webpack_require__(91);
+exports.encode = exports.stringify = __webpack_require__(92);
 
 
 /***/ }),
-/* 87 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6635,7 +6783,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 88 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6727,7 +6875,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 89 */
+/* 93 */
 /***/ (function(module, exports) {
 
 var getLastCheckTime, saveItems, writeLastCheckTime;
@@ -6811,14 +6959,14 @@ module.exports = function(collectionTag, apiMethod) {
 
 
 /***/ }),
-/* 90 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TAGS, validateObjStructure;
 
 TAGS = __webpack_require__(13);
 
-validateObjStructure = __webpack_require__(91);
+validateObjStructure = __webpack_require__(95);
 
 module.exports = {
   cache: [
@@ -6912,7 +7060,7 @@ module.exports = {
 
 
 /***/ }),
-/* 91 */
+/* 95 */
 /***/ (function(module, exports) {
 
 var renderOrArray, typeOf;
@@ -6963,7 +7111,7 @@ module.exports = function(obj, template) {
 
 
 /***/ }),
-/* 92 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var SCREENS, createElem, getHash, parseHash, updateNavList;
@@ -7014,7 +7162,7 @@ module.exports = function(navlistElem) {
 
 
 /***/ }),
-/* 93 */
+/* 97 */
 /***/ (function(module, exports) {
 
 module.exports = function(coverElem) {
@@ -7046,7 +7194,7 @@ module.exports = function(coverElem) {
 
 
 /***/ }),
-/* 94 */
+/* 98 */
 /***/ (function(module, exports) {
 
 var CLASSES;
@@ -7083,7 +7231,7 @@ module.exports = function(buttonElem, sidebarElem, coverElem) {
 
 
 /***/ }),
-/* 95 */
+/* 99 */
 /***/ (function(module, exports) {
 
 var EXPONENT, THRESHOLD, getAnswers, getCorrectRatio;

@@ -1,8 +1,11 @@
 findItems = require('./find')
+validateArguments = require('../typeValidator')
 
 
-module.exports = (state, query) ->
-	foundItem = findItems(state, query, true)[0]
+module.exports = (state, eventInfoCb, query) ->
+	validateArguments([query, eventInfoCb], ['query', 'function'])
+
+	foundItem = findItems(state, eventInfoCb, query, true)[0]
 	if !foundItem?
 		foundItem = null
 

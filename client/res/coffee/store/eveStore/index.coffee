@@ -1,15 +1,14 @@
-StorageFullError = require('./storage/StorageFullError')
-
-createStoreState = require('./util/createStoreStateObject')
-
-updateStructure = require('./structure/updateStructure')
+EVENT_INFO_TYPES = require('./EVENT_INFO_TYPES')
 
 getExternalItem = require('./util/eveItem/getExternalItem')
 getInternalItem = require('./util/eveItem/getInternalItem')
 
 validateArguments = require('./typeValidator')
-stringifyQuery = require('./util/stringifyQuery')
 
+StorageFullError = require('./storage/StorageFullError')
+createStoreState = require('./util/createStoreStateObject')
+updateStructure = require('./structure/updateStructure')
+stringifyQuery = require('./util/stringifyQuery')
 storeOperations = require('./storeOperations')
 
 
@@ -43,10 +42,9 @@ module.exports = (storeNamespace) ->
 
 
 	# TODO: add possibility to use multiple tags for single item
-	# TODO: add more complex logging (add cache hit info,...)
 	return {
 		add: (tag, persist, item) ->
-			internalItem = storeOperations.add(state, tag, persist, item)
+			internalItem = storeOperations.add(state, (->), tag, persist, item)
 			addedItem = getExternalItem(internalItem, state.fnArrays.decorators)
 
 			emit('add', "Added new item",
@@ -56,7 +54,7 @@ module.exports = (storeNamespace) ->
 
 
 		update: (item) ->
-			internalItem = storeOperations.update(state, item)
+			internalItem = storeOperations.update(state, (->), item)
 			updatedItem = getExternalItem(internalItem, state.fnArrays.decorators)
 
 			emit('update', "Updated item", {id: updatedItem.$id}, {item: updatedItem})
@@ -65,7 +63,7 @@ module.exports = (storeNamespace) ->
 
 		# itemToRemove can be id, item, or array of either
 		remove: (itemToRemove) ->
-			removedItem = storeOperations.remove(state, itemToRemove)
+			removedItem = storeOperations.remove(state, (->), itemToRemove)
 
 			if !removedItem?
 				# no found item
@@ -95,17 +93,22 @@ module.exports = (storeNamespace) ->
 
 
 		removeByQuery: (query) ->
-			removedItems = storeOperations.removeByQuery(state, query)
+			cacheHit = null
+			eventInfoCb = (type, data) ->
+				if type == EVENT_INFO_TYPES.cacheHit
+					cacheHit = data.cacheHit
+
+			removedItems = storeOperations.removeByQuery(state, eventInfoCb, query)
 			externalItems = removedItems.map((item) -> getExternalItem(item, state.fnArrays.decorators))
 
 			emit('removeByQuery', 'Removed items by query',
-				{itemCount: externalItems.length},
-				{query: query, item: externalItems})
+				{itemCount: externalItems.length, cacheHit: cacheHit},
+				{query: query, item: externalItems, cacheHit: cacheHit})
 			return externalItems
 
 
 		get: (id) ->
-			returnedItem = storeOperations.get(state, id)
+			returnedItem = storeOperations.get(state, (->), id)
 			externalItem = getExternalItem(returnedItem, state.fnArrays.decorators)
 
 			emit('get', 'Looked up item by ID', {id: id}, {item: externalItem})
@@ -113,17 +116,27 @@ module.exports = (storeNamespace) ->
 
 
 		find: (query) ->
-			foundItems = storeOperations.find(state, query, false)
+			cacheHit = null
+			eventInfoCb = (type, data) ->
+				if type == EVENT_INFO_TYPES.cacheHit
+					cacheHit = data.cacheHit
+
+			foundItems = storeOperations.find(state, eventInfoCb, query, false)
 			externalItems = foundItems.map((item) -> getExternalItem(item, state.fnArrays.decorators))
 
 			emit('find', 'Querying store to find items',
-				{itemCount: externalItems.length, query: stringifyQuery(query)},
-				{query: query, item: externalItems})
+				{itemCount: externalItems.length, query: stringifyQuery(query), cacheHit: cacheHit},
+				{query: query, item: externalItems, cacheHit: cacheHit})
 			return externalItems
 
 
 		findOne: (query) ->
-			foundItem = storeOperations.findOne(state, query)
+			cacheHit = null
+			eventInfoCb = (type, data) ->
+				if type == EVENT_INFO_TYPES.cacheHit
+					cacheHit = data.cacheHit
+
+			foundItem = storeOperations.findOne(state, eventInfoCb, query)
 			externalItem = getExternalItem(foundItem, state.fnArrays.decorators)
 
 			if externalItem?
@@ -131,16 +144,21 @@ module.exports = (storeNamespace) ->
 			else
 				id = null
 			emit('findOne', 'Querying store to find single item',
-				{query: stringifyQuery(query), id: id},
-				{query: query, item: externalItem})
+				{query: stringifyQuery(query), id: id, cacheHit: cacheHit},
+				{query: query, item: externalItem, cacheHit: cacheHit})
 			return externalItem
 
 
 		count: (query) ->
-			itemCount = storeOperations.count(state, query)
+			cacheHit = null
+			eventInfoCb = (type, data) ->
+				if type == EVENT_INFO_TYPES.cacheHit
+					cacheHit = data.cacheHit
+
+			itemCount = storeOperations.count(state, eventInfoCb, query)
 			emit('count', 'Counting items matching query',
-				{count: itemCount, query: stringifyQuery(query)},
-				{count: itemCount, query: query})
+				{count: itemCount, query: stringifyQuery(query), cacheHit: cacheHit},
+				{count: itemCount, query: query, cacheHit: cacheHit})
 			return itemCount
 
 
@@ -150,19 +168,19 @@ module.exports = (storeNamespace) ->
 			cb = (item) ->
 				fn(getExternalItem(item, state.fnArrays.decorators))
 
-			storeOperations.forEach(state, cb)
+			storeOperations.forEach(state, (->), cb)
 			emit('forEach', 'Ran a function for each item', null, {callback: cb})
 			return
 
 
 		isEmpty: ->
-			isEmpty = storeOperations.isEmpty(state)
+			isEmpty = storeOperations.isEmpty(state, (->))
 			emit('isEmpty', 'Checked if store is empty', {empty: isEmpty}, {empty: isEmpty})
 			return isEmpty
 
 
 		clear: ->
-			storeOperations.clear(state)
+			storeOperations.clear(state, (->))
 			emit('clear', 'Store cleared')
 			return
 

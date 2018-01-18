@@ -1,3 +1,13 @@
+CONFIG = require('../config/CONFIG')
+
+getStackTrace = require('./util/getStackTrace')
+sliceStackTrace = require('./util/sliceStackTrace')
+
+removeFirstLine = (str) ->
+	lines = str.split('\n')
+	lines.shift()
+	return lines.join('\n')
+
 module.exports = (store) ->
 	store.__on '*', (operationType, message, infoObj, data) ->
 		if infoObj?
@@ -7,9 +17,13 @@ module.exports = (store) ->
 
 			if strData.length > 0
 				strData = '\n\t' + '(' + strData + ')'
-				if data?
-					strData += '\n'
 		else
 			strData = ''
 
-		console.log(operationType + ': ' + message + strData, data)
+		args = [operationType + ': ' + message + strData]
+		if CONFIG.storeLogging.showLogData && data?
+			args.push('\n', data)
+		if CONFIG.storeLogging.showStackTraces
+			args.push('\n' + removeFirstLine(sliceStackTrace(getStackTrace(), 3)))
+
+		console.log.apply(console, args)

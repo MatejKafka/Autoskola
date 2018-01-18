@@ -7,7 +7,7 @@ addItemToStore = require('../backendOperations/addItem')
 updateStructure = require('../structure/updateStructure')
 
 
-module.exports = (state, tag, persistent, item, expectInternalItem = false) ->
+module.exports = (state, eventInfoCb, tag, persistent, item, expectInternalItem = false) ->
 	# reorder arguments
 	if arguments.length == 1
 		item = tag
@@ -22,8 +22,7 @@ module.exports = (state, tag, persistent, item, expectInternalItem = false) ->
 		else
 			persistent = null
 
-	# validate arguments
-	validateArguments([tag, persistent, item], ['string?', 'boolean?', 'object'])
+	validateArguments([tag, persistent, item, eventInfoCb], ['string?', 'boolean?', 'object', 'function'])
 
 
 	internalItem = null
@@ -51,7 +50,7 @@ module.exports = (state, tag, persistent, item, expectInternalItem = false) ->
 		item: item
 		meta: {tag: tag, persistent: persistent}
 		isExisting: false
-	}, state.store, state.structure)
+	}, eventInfoCb, state.store)
 
 	state.structure = updateStructure.add(state.structure, returnedItem, state.store)
 	return returnedItem

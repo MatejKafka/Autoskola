@@ -6,9 +6,9 @@ removeItemFromStore = require('../backendOperations/removeItem')
 updateStructure = require('../structure/updateStructure')
 
 
-module.exports = (state, item, expectInternalItem = false) ->
+module.exports = (state, eventInfoCb, item, expectInternalItem = false) ->
 	itemType = if expectInternalItem then 'internalItem' else 'externalItem'
-	validateArguments([item], [itemType])
+	validateArguments([item, eventInfoCb], [itemType, 'function'])
 
 	if expectInternalItem
 		parsedItem = item
@@ -16,8 +16,8 @@ module.exports = (state, item, expectInternalItem = false) ->
 		parsedItem = getInternalItem(item, state.fnArrays.undecorators, state.fnArrays.validators)
 	parsedItem.isExisting = true
 
-	removeItemFromStore(parsedItem.meta.id, state.store, state.structure)
-	returnedItem = addItemToStore(parsedItem, state.store, state.structure)
+	removeItemFromStore(parsedItem.meta.id, eventInfoCb, state.store, state.structure)
+	returnedItem = addItemToStore(parsedItem, eventInfoCb, state.store)
 	state.structure = updateStructure.change(state.structure, returnedItem, state.store)
 
 	return returnedItem

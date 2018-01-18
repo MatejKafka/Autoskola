@@ -2,10 +2,10 @@ findItemsInStore = require('../backendOperations/findItems')
 validateArguments = require('../typeValidator')
 
 
-module.exports = (state, query, shouldReturnSingleRecord = false) ->
-	validateArguments([query, shouldReturnSingleRecord], ['query', 'boolean'])
+module.exports = (state, eventInfoCb, query, shouldReturnSingleRecord = false) ->
+	validateArguments([query, eventInfoCb, shouldReturnSingleRecord], ['query', 'function', 'boolean'])
 
-	items = findItemsInStore(query, state.store, state.structure, shouldReturnSingleRecord)
+	items = findItemsInStore(query, eventInfoCb, state.store, state.structure, shouldReturnSingleRecord)
 		.filter((i) -> i?)
 
 	return items

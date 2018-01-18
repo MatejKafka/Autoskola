@@ -96,7 +96,7 @@ module.exports = updateStructure =
 		if isMeta
 			propKey = propKey.slice(1)
 		propMap = {}
-		items = findItems(findQuery, store, structure, false)
+		items = findItems(findQuery, (->), store, structure, false)
 		for item in items
 			value = getValueFromItem(item, propKey, isMeta)
 			if !propMap[value]?

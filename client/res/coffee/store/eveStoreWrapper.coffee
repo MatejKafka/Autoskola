@@ -2,7 +2,7 @@ KEYS =
 	storageFull: 'persistentStorageFull'
 	placeholder: 'persistentStorageFullPlaceholder'
 
-CONFIG = require('../CONFIG')
+CONFIG = require('../config/CONFIG')
 MESSAGES = require('../MESSAGES')
 createEveStore = require('./eveStore')
 
@@ -85,7 +85,7 @@ module.exports = ->
 	out.StorageFullError = eve.StorageFullError
 	out.rawStore = eve
 
-	if CONFIG.logStoreOperations
+	if CONFIG.storeLogging.log
 		require('./bindStoreLogger')(out)
 
 	return out

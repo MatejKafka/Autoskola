@@ -2,7 +2,7 @@ validateArguments = require('../typeValidator')
 getItemFromStore = require('../backendOperations/getItem')
 
 
-module.exports = (state, id) ->
-	validateArguments([id], ['id'])
+module.exports = (state, eventInfoCb, id) ->
+	validateArguments([id, eventInfoCb], ['id', 'function'])
 
-	return getItemFromStore(id, state.store, state.structure)
+	return getItemFromStore(id, eventInfoCb, state.store, state.structure)

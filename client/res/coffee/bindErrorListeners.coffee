@@ -1,5 +1,5 @@
 MESSAGES = require('./MESSAGES')
-CONFIG = require('./CONFIG')
+CONFIG = require('./config/CONFIG')
 
 
 module.exports = ->

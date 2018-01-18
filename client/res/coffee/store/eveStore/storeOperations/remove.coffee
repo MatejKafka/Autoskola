@@ -17,7 +17,7 @@ getItemId = (item, expectInternalItem) ->
 
 
 # itemId can be id, item, or array of either
-removeItem = module.exports = (state, item, expectInternalItem = false) ->
+removeItem = module.exports = (state, eventInfoCb, item, expectInternalItem = false) ->
 	# item is array
 	if Array.isArray(item)
 		removedItems = for item in item
@@ -25,10 +25,10 @@ removeItem = module.exports = (state, item, expectInternalItem = false) ->
 		return removedItems
 
 
-	validateArguments([item], ['id|externalItem|internalItem'])
+	validateArguments([item, eventInfoCb], ['id|externalItem|internalItem', 'function'])
 
 	itemId = getItemId(item, expectInternalItem)
-	removedItem = removeItemFromStore(itemId, state.store, state.structure)
+	removedItem = removeItemFromStore(itemId, eventInfoCb, state.store, state.structure)
 	if removedItem?
 		state.structure = updateStructure.remove(state.structure, removedItem, state.store)
 

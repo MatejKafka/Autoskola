@@ -1,7 +1,7 @@
 validateArguments = require('../typeValidator')
 
-module.exports = (itemId, store, structure) ->
-	validateArguments(arguments, ['id'])
+module.exports = (itemId, eventInfoCb, store, structure) ->
+	validateArguments([itemId, eventInfoCb], ['id', 'function'])
 
 	switch structure.location[itemId]
 		when structure.LOCATIONS.DB
