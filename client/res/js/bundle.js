@@ -69,7 +69,7 @@
 
 var getArgumentValidator, isExternalItem, isInternalItem, validator;
 
-getArgumentValidator = __webpack_require__(15).getScope;
+getArgumentValidator = __webpack_require__(8).getScope;
 
 isExternalItem = __webpack_require__(63);
 
@@ -282,13 +282,13 @@ module.exports = function(identifierStr, children) {
 
 var findItems, getValueFromItem, isEmptyObj, matchesQuery, separateItemQuery, separateQuery, updateStructure;
 
-findItems = __webpack_require__(11);
+findItems = __webpack_require__(12);
 
 matchesQuery = __webpack_require__(25);
 
 separateItemQuery = __webpack_require__(26);
 
-isEmptyObj = __webpack_require__(10);
+isEmptyObj = __webpack_require__(11);
 
 separateQuery = function(cacheQuery) {
   var cache, cachePropQuery, find, findQuery, key, ref, value;
@@ -424,7 +424,7 @@ var MESSAGES, QuestionView, bindNavigationButtons, renderQuestionList, scrollToC
 
 MESSAGES = __webpack_require__(1).questionView;
 
-validate = __webpack_require__(15);
+validate = __webpack_require__(8);
 
 QuestionView = __webpack_require__(49);
 
@@ -632,6 +632,163 @@ module.exports = function(externalItem, undecorators, validators) {
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var findType, getValidatorFn, matchSingleType, matchesType, parseSingleTypeStr, parseTypeStr, sliceStackTrace, types, validateArguments;
+
+types = __webpack_require__(41);
+
+sliceStackTrace = __webpack_require__(42);
+
+parseSingleTypeStr = function(typeStr) {
+  var separatorIndex;
+  separatorIndex = typeStr.indexOf('>');
+  if (separatorIndex >= 0) {
+    return {
+      type: typeStr.slice(0, separatorIndex),
+      arg: typeStr.slice(separatorIndex + 1),
+      str: typeStr
+    };
+  } else {
+    return {
+      type: typeStr,
+      arg: null,
+      str: typeStr
+    };
+  }
+};
+
+parseTypeStr = function(typeStr) {
+  var block, j, len, possibleTypes, typeBlocks;
+  typeBlocks = typeStr.split('|').map(function(type) {
+    return type.trim();
+  });
+  possibleTypes = [];
+  for (j = 0, len = typeBlocks.length; j < len; j++) {
+    block = typeBlocks[j];
+    possibleTypes.push(parseSingleTypeStr(block));
+  }
+  return possibleTypes;
+};
+
+matchSingleType = function(value, typeObj, types) {
+  var callback;
+  if (types[typeObj.type] == null) {
+    throw new Error("Tried to check type against missing definition: " + typeObj.str);
+  }
+  callback = function(value, typeStr) {
+    return matchesType(value, typeStr, types);
+  };
+  return types[typeObj.type](value, typeObj.arg, callback);
+};
+
+matchesType = function(value, typeStr, types) {
+  var err, isOptional, j, len, matches, possibleTypes, typeObj;
+  if (typeof typeStr !== 'string') {
+    throw new Error('typeStr must be string, not ' + typeof typeStr);
+  }
+  if (typeStr[0] === '?' || typeStr[typeStr.length - 1] === '?') {
+    isOptional = true;
+    if (typeStr[0] === '?') {
+      typeStr = typeStr.slice(1);
+    } else {
+      typeStr = typeStr.slice(0, -1);
+    }
+  } else {
+    isOptional = false;
+  }
+  if (matchSingleType(value, parseTypeStr('null')[0], types) && isOptional) {
+    return true;
+  }
+  possibleTypes = parseTypeStr(typeStr);
+  for (j = 0, len = possibleTypes.length; j < len; j++) {
+    typeObj = possibleTypes[j];
+    matches = null;
+    try {
+      matches = matchSingleType(value, typeObj, types);
+    } catch (error) {
+      err = error;
+      if (err instanceof TypeError) {
+        matches = err;
+      }
+      throw err;
+    }
+    if (matches instanceof TypeError && possibleTypes.length === 1) {
+      return matches;
+    }
+    if (matches === true) {
+      return true;
+    }
+  }
+  return false;
+};
+
+findType = function(value, types) {
+  var typeName;
+  for (typeName in types) {
+    if (matchSingleType(value, parseTypeStr(typeName)[0], types)) {
+      return typeName;
+    }
+  }
+  console.warn('value does not match any defined type:', value);
+  return null;
+};
+
+validateArguments = function(args, argTypes, types, returnErrors) {
+  var err, i, j, len, matches, msg, realType, type;
+  for (i = j = 0, len = argTypes.length; j < len; i = ++j) {
+    type = argTypes[i];
+    try {
+      matches = matchesType(args[i], type, types);
+    } catch (error) {
+      err = error;
+      throw sliceStackTrace(err, 2);
+    }
+    if (matches !== true) {
+      if (returnErrors) {
+        if (matches instanceof TypeError) {
+          msg = matches.message;
+        } else {
+          realType = findType(args[i], types);
+          msg = "it must be `" + type + "`, not `" + realType + "`";
+        }
+        throw sliceStackTrace(new TypeError("Invalid argument type at index " + i + ": " + msg), 2);
+      } else {
+        return false;
+      }
+    }
+  }
+  if (returnErrors) {
+    return null;
+  } else {
+    return true;
+  }
+};
+
+getValidatorFn = function(types) {
+  var validateFn;
+  validateFn = function(args, argTypes) {
+    return validateArguments(args, argTypes, types, true);
+  };
+  validateFn.matches = function(args, argTypes) {
+    return validateArguments(args, argTypes, types, false);
+  };
+  validateFn.addType = function(name, checkFn) {
+    validateFn([name, checkFn], ['string', 'function']);
+    types[name] = checkFn;
+    return checkFn;
+  };
+  validateFn.getScope = function() {
+    return getValidatorFn(Object.assign({}, types));
+  };
+  return validateFn;
+};
+
+module.exports = getValidatorFn(types);
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -939,7 +1096,7 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 var cloneValue,
@@ -975,7 +1132,7 @@ module.exports = cloneValue;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var hasProp = {}.hasOwnProperty;
@@ -991,7 +1148,7 @@ module.exports = function(obj) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EVENT_INFO_TYPES, findUnsortedItems, getItem, handleSingleMetaParamQuery, matchesQuery, separateItemQuery, validateArguments;
@@ -1141,12 +1298,12 @@ module.exports = function(query, eventInfoCb, store, structure, singleRecord) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var findItemsInStore, validateArguments;
 
-findItemsInStore = __webpack_require__(11);
+findItemsInStore = __webpack_require__(12);
 
 validateArguments = __webpack_require__(0);
 
@@ -1164,7 +1321,7 @@ module.exports = function(state, eventInfoCb, query, shouldReturnSingleRecord) {
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1179,7 +1336,7 @@ module.exports = {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG;
@@ -1220,163 +1377,6 @@ module.exports = function(testObj) {
     answerResults: answerResults
   };
 };
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var findType, getValidatorFn, matchSingleType, matchesType, parseSingleTypeStr, parseTypeStr, sliceStackTrace, types, validateArguments;
-
-types = __webpack_require__(41);
-
-sliceStackTrace = __webpack_require__(42);
-
-parseSingleTypeStr = function(typeStr) {
-  var separatorIndex;
-  separatorIndex = typeStr.indexOf('>');
-  if (separatorIndex >= 0) {
-    return {
-      type: typeStr.slice(0, separatorIndex),
-      arg: typeStr.slice(separatorIndex + 1),
-      str: typeStr
-    };
-  } else {
-    return {
-      type: typeStr,
-      arg: null,
-      str: typeStr
-    };
-  }
-};
-
-parseTypeStr = function(typeStr) {
-  var block, j, len, possibleTypes, typeBlocks;
-  typeBlocks = typeStr.split('|').map(function(type) {
-    return type.trim();
-  });
-  possibleTypes = [];
-  for (j = 0, len = typeBlocks.length; j < len; j++) {
-    block = typeBlocks[j];
-    possibleTypes.push(parseSingleTypeStr(block));
-  }
-  return possibleTypes;
-};
-
-matchSingleType = function(value, typeObj, types) {
-  var callback;
-  if (types[typeObj.type] == null) {
-    throw new Error("Tried to check type against missing definition: " + typeObj.str);
-  }
-  callback = function(value, typeStr) {
-    return matchesType(value, typeStr, types);
-  };
-  return types[typeObj.type](value, typeObj.arg, callback);
-};
-
-matchesType = function(value, typeStr, types) {
-  var err, isOptional, j, len, matches, possibleTypes, typeObj;
-  if (typeof typeStr !== 'string') {
-    throw new Error('typeStr must be string, not ' + typeof typeStr);
-  }
-  if (typeStr[0] === '?' || typeStr[typeStr.length - 1] === '?') {
-    isOptional = true;
-    if (typeStr[0] === '?') {
-      typeStr = typeStr.slice(1);
-    } else {
-      typeStr = typeStr.slice(0, -1);
-    }
-  } else {
-    isOptional = false;
-  }
-  if (matchSingleType(value, parseTypeStr('null')[0], types) && isOptional) {
-    return true;
-  }
-  possibleTypes = parseTypeStr(typeStr);
-  for (j = 0, len = possibleTypes.length; j < len; j++) {
-    typeObj = possibleTypes[j];
-    matches = null;
-    try {
-      matches = matchSingleType(value, typeObj, types);
-    } catch (error) {
-      err = error;
-      if (err instanceof TypeError) {
-        matches = err;
-      }
-      throw err;
-    }
-    if (matches instanceof TypeError && possibleTypes.length === 1) {
-      return matches;
-    }
-    if (matches === true) {
-      return true;
-    }
-  }
-  return false;
-};
-
-findType = function(value, types) {
-  var typeName;
-  for (typeName in types) {
-    if (matchSingleType(value, parseTypeStr(typeName)[0], types)) {
-      return typeName;
-    }
-  }
-  console.warn('value does not match any defined type:', value);
-  return null;
-};
-
-validateArguments = function(args, argTypes, types, returnErrors) {
-  var err, i, j, len, matches, msg, realType, type;
-  for (i = j = 0, len = argTypes.length; j < len; i = ++j) {
-    type = argTypes[i];
-    try {
-      matches = matchesType(args[i], type, types);
-    } catch (error) {
-      err = error;
-      throw sliceStackTrace(err, 2);
-    }
-    if (matches !== true) {
-      if (returnErrors) {
-        if (matches instanceof TypeError) {
-          msg = matches.message;
-        } else {
-          realType = findType(args[i], types);
-          msg = "it must be `" + type + "`, not `" + realType + "`";
-        }
-        throw sliceStackTrace(new TypeError("Invalid argument type at index " + i + ": " + msg), 2);
-      } else {
-        return false;
-      }
-    }
-  }
-  if (returnErrors) {
-    return null;
-  } else {
-    return true;
-  }
-};
-
-getValidatorFn = function(types) {
-  var validateFn;
-  validateFn = function(args, argTypes) {
-    return validateArguments(args, argTypes, types, true);
-  };
-  validateFn.matches = function(args, argTypes) {
-    return validateArguments(args, argTypes, types, false);
-  };
-  validateFn.addType = function(name, checkFn) {
-    validateFn([name, checkFn], ['string', 'function']);
-    types[name] = checkFn;
-    return checkFn;
-  };
-  validateFn.getScope = function() {
-    return getValidatorFn(Object.assign({}, types));
-  };
-  return validateFn;
-};
-
-module.exports = getValidatorFn(types);
 
 
 /***/ }),
@@ -1476,7 +1476,7 @@ var EventEmitter, MESSAGES, QuestionSelectList, SELECT_ALL_ID, getListItemHtml,
 
 SELECT_ALL_ID = 'selectAll';
 
-EventEmitter = __webpack_require__(8);
+EventEmitter = __webpack_require__(9);
 
 MESSAGES = __webpack_require__(1).questionSelect;
 
@@ -1899,7 +1899,7 @@ var cloneValue, getNextId, validateArguments;
 
 getNextId = __webpack_require__(75);
 
-cloneValue = __webpack_require__(9);
+cloneValue = __webpack_require__(10);
 
 validateArguments = __webpack_require__(0);
 
@@ -2034,11 +2034,11 @@ CONFIG = __webpack_require__(2);
 
 MESSAGES = __webpack_require__(1);
 
-STORE_TAGS = __webpack_require__(13);
+STORE_TAGS = __webpack_require__(14);
 
 window.util = __webpack_require__(40);
 
-validateArguments = __webpack_require__(15);
+validateArguments = __webpack_require__(8);
 
 bindErrorListeners = __webpack_require__(43);
 
@@ -2865,7 +2865,7 @@ module.exports = function(fillValue, start, end) {
 var getTestResults,
   hasProp = {}.hasOwnProperty;
 
-getTestResults = __webpack_require__(14);
+getTestResults = __webpack_require__(15);
 
 module.exports = {
   evaluateCurrentTest: function() {
@@ -3219,7 +3219,7 @@ var EventEmitter, QuestionNumberDisplay, QuestionSelectList,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-EventEmitter = __webpack_require__(8);
+EventEmitter = __webpack_require__(9);
 
 QuestionSelectList = __webpack_require__(17);
 
@@ -3429,7 +3429,7 @@ var EventEmitter, MESSAGES, QuestionView, createElem, generateAnswerList, genera
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-EventEmitter = __webpack_require__(8);
+EventEmitter = __webpack_require__(9);
 
 MESSAGES = __webpack_require__(1).questionView;
 
@@ -4518,7 +4518,7 @@ PASS_SCORE = CONFIG.testSuccessThreshold;
 
 e = __webpack_require__(3);
 
-getTestResults = __webpack_require__(14);
+getTestResults = __webpack_require__(15);
 
 saveTestResults = function(test, results) {
   var endTime, i, isCorrect, j, len, ref, testId, testItem;
@@ -5387,11 +5387,11 @@ localStorageSupported = __webpack_require__(68);
 
 isQuotaExceededError = __webpack_require__(69);
 
-cloneValue = __webpack_require__(9);
+cloneValue = __webpack_require__(10);
 
 StorageFullError = __webpack_require__(22);
 
-isEmptyObj = __webpack_require__(10);
+isEmptyObj = __webpack_require__(11);
 
 module.exports = function(storageNamespace) {
   var baseKey, getKey, i, isAvailable, isItemKey, j, key, recordCache, ref, validateLocalStorage;
@@ -5590,9 +5590,9 @@ module.exports = function(err) {
 var cloneValue, isEmptyObj,
   hasProp = {}.hasOwnProperty;
 
-cloneValue = __webpack_require__(9);
+cloneValue = __webpack_require__(10);
 
-isEmptyObj = __webpack_require__(10);
+isEmptyObj = __webpack_require__(11);
 
 module.exports = function() {
   var read, remove, store, write;
@@ -5734,7 +5734,7 @@ module.exports = {
   remove: __webpack_require__(29),
   removeByQuery: __webpack_require__(77),
   get: __webpack_require__(78),
-  find: __webpack_require__(12),
+  find: __webpack_require__(13),
   findOne: __webpack_require__(79),
   count: __webpack_require__(80),
   forEach: __webpack_require__(82),
@@ -5874,7 +5874,7 @@ module.exports = function(state, eventInfoCb, item, expectInternalItem) {
 
 var findItem, removeItem, validate;
 
-findItem = __webpack_require__(12);
+findItem = __webpack_require__(13);
 
 removeItem = __webpack_require__(29);
 
@@ -5916,7 +5916,7 @@ module.exports = function(state, eventInfoCb, id) {
 
 var findItems, validateArguments;
 
-findItems = __webpack_require__(12);
+findItems = __webpack_require__(13);
 
 validateArguments = __webpack_require__(0);
 
@@ -5953,7 +5953,7 @@ module.exports = function(state, eventInfoCb, query) {
 
 var findItems, validateArguments;
 
-findItems = __webpack_require__(11);
+findItems = __webpack_require__(12);
 
 validateArguments = __webpack_require__(0);
 
@@ -6964,7 +6964,7 @@ module.exports = function(collectionTag, apiMethod) {
 
 var TAGS, validateObjStructure;
 
-TAGS = __webpack_require__(13);
+TAGS = __webpack_require__(14);
 
 validateObjStructure = __webpack_require__(95);
 

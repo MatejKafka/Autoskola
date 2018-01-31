@@ -107,7 +107,7 @@ module.exports = (options) ->
 		return
 
 
-	# TODO: render speed could be much improved by reusing questionList
+	# TODO: render speed could be greatly improved by reusing questionList
 	container.innerHTML = "
 		<div class='topbar'>
 			<a href='javascript:void(0);' class='backButton'>#{messages.backButton}</a>
