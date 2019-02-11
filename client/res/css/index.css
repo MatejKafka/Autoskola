@@ -1,0 +1,827 @@
+@font-face {
+  font-family: 'NotoMain';
+  src: url('../fonts/NotoSans-Regular.ttf');
+}
+@font-face {
+  font-family: 'NotoTitle';
+  src: url('../fonts/NotoSans-Regular.ttf');
+}
+@font-face {
+  font-family: 'NotoBold';
+  src: url('../fonts/NotoSans-Bold.ttf');
+}
+#sidebar {
+  position: fixed;
+  width: 18em;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 0 20px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  overflow: hidden;
+  background-color: #0286c2;
+  color: white;
+  border-right: 1px solid lightgrey;
+}
+#sidebar #pageTitle {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  margin-top: 1.6em;
+  margin-bottom: 40px;
+}
+#sidebar #pageTitle h1 {
+  color: #f7fcff;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+#sidebar #pageTitle h2 {
+  margin-top: 10px;
+  font-size: 140%;
+  color: #c5ecfe;
+}
+#sidebar #navList {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+#sidebar #navList li {
+  padding: 5px 5px 5px 0;
+  cursor: pointer;
+}
+#sidebar #navList li a {
+  color: #c5ecfe;
+}
+#sidebar #navList li a:hover {
+  color: inherit;
+}
+#sidebar #navList .selectedPage {
+  cursor: default;
+  font-weight: bold;
+}
+@media (max-width: 750px) {
+  #sidebar {
+    padding-top: 2.8em;
+    z-index: 2;
+    left: -18em;
+    transition: left 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  #sidebar #pageTitle {
+    margin-top: 0;
+  }
+  .mobileMenuOpen #sidebar {
+    left: 0;
+  }
+  .mobileMenuOpen #sidebar:focus {
+    left: -2em;
+  }
+}
+.questionSelect .sectionTitle {
+  margin-top: 0.6em;
+  margin-bottom: 0.3em;
+}
+.questionSelect .checkboxList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.questionSelect .checkboxList li {
+  padding: 0.3em;
+}
+.questionSelect .checkboxList li input {
+  height: 1em;
+  vertical-align: -10%;
+  cursor: pointer;
+}
+.questionSelect .checkboxList li label {
+  padding-left: 0.3em;
+  cursor: pointer;
+}
+.questionSelect .checkboxList li input:hover + label {
+  text-decoration: underline;
+}
+.questionSelect .checkboxList li label:hover {
+  text-decoration: underline;
+}
+.questionSelect .checkboxList li .questionCountWrapper {
+  font-weight: bold;
+}
+.questionSelect .checkboxList .emptyFilter {
+  opacity: 0.6;
+}
+.questionSelect .checkboxList li[data-filter-id=selectAll] input {
+  display: none;
+}
+.questionSelect .checkboxList li[data-filter-id=selectAll] label {
+  font-weight: bold;
+}
+.questionSelect .questionCounter {
+  font-weight: bold;
+  margin: 1.2em 0;
+  padding-left: 0.6em;
+}
+.questionSelect .startBrowsingButton {
+  margin-left: 0.6em;
+}
+.browsing .questionView.browsingMode .questionList .correctQuestion.currentQuestion,
+.browseEvaluatedSession .questionView.browsingMode .questionList .correctQuestion.currentQuestion {
+  color: #116e11;
+}
+.browsing .questionView.browsingMode .questionList .correctQuestion a,
+.browseEvaluatedSession .questionView.browsingMode .questionList .correctQuestion a {
+  color: #1ec71e;
+}
+.browsing .questionView.browsingMode .questionList .incorrectQuestion.currentQuestion,
+.browseEvaluatedSession .questionView.browsingMode .questionList .incorrectQuestion.currentQuestion {
+  color: #7c0f0f;
+}
+.browsing .questionView.browsingMode .questionList .incorrectQuestion a,
+.browseEvaluatedSession .questionView.browsingMode .questionList .incorrectQuestion a {
+  color: #d71919;
+}
+.browsing .questionView.browsingMode.showResults .questionList .unansweredQuestion.currentQuestion,
+.browseEvaluatedSession .questionView.browsingMode.showResults .questionList .unansweredQuestion.currentQuestion {
+  color: #606060;
+}
+.browsing .questionView.browsingMode.showResults .questionList .unansweredQuestion a,
+.browseEvaluatedSession .questionView.browsingMode.showResults .questionList .unansweredQuestion a {
+  color: #939393;
+}
+.browsing .questionView.browsingMode .answerList .clickedAnswer,
+.browseEvaluatedSession .questionView.browsingMode .answerList .clickedAnswer {
+  cursor: default;
+  padding: 0.6em;
+  background-color: white;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+}
+@keyframes incorrectAnswerAnimation {
+  0% {
+    background-color: lightcoral;
+  }
+  100% {
+    text-decoration: line-through;
+    color: grey;
+  }
+}
+.browsing .questionView.browsingMode .textAnswerList .correctAnswer,
+.browseEvaluatedSession .questionView.browsingMode .textAnswerList .correctAnswer {
+  padding: 0.6em;
+  background-color: lightgreen;
+  border: 2px solid #6bb16b;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.browsing .questionView.browsingMode .textAnswerList .incorrectAnswer,
+.browseEvaluatedSession .questionView.browsingMode .textAnswerList .incorrectAnswer {
+  animation: incorrectAnswerAnimation 0.5s linear;
+  text-decoration: line-through;
+  color: grey;
+}
+.browsing .questionView.browsingMode .textAnswerList .incorrectWithoutAnimationAnswer,
+.browseEvaluatedSession .questionView.browsingMode .textAnswerList .incorrectWithoutAnimationAnswer {
+  text-decoration: line-through;
+  color: grey;
+}
+.browsing .questionView.browsingMode .textAnswerList .correctUnansweredAnswer,
+.browseEvaluatedSession .questionView.browsingMode .textAnswerList .correctUnansweredAnswer {
+  padding: 0.6em;
+  background-color: lightgrey;
+  border: 2px solid #9d9d9d;
+  box-shadow: 2px 2px 5px lightgray;
+}
+@keyframes incorrectAnswerAnimationForImg {
+  0% {
+    background-color: lightcoral;
+  }
+  100% {
+    background-color: #bababa;
+  }
+}
+.browsing .questionView.browsingMode .imgAnswerList .correctAnswer,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .correctAnswer {
+  padding: 0.6em;
+  background-color: lightgreen;
+  border: 2px solid #6bb16b;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.browsing .questionView.browsingMode .imgAnswerList .correctAnswer .answerImageCover,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .correctAnswer .answerImageCover {
+  background-color: #21dd21;
+}
+.browsing .questionView.browsingMode .imgAnswerList .incorrectAnswer .answerImageCover,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .incorrectAnswer .answerImageCover {
+  animation: incorrectAnswerAnimationForImg 0.5s linear;
+  background-color: #bababa;
+}
+.browsing .questionView.browsingMode .imgAnswerList .incorrectWithoutAnimationAnswer .answerImageCover,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .incorrectWithoutAnimationAnswer .answerImageCover {
+  background-color: #bababa;
+}
+.browsing .questionView.browsingMode .imgAnswerList .correctUnansweredAnswer,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .correctUnansweredAnswer {
+  padding: 0.6em;
+  background-color: lightgrey;
+  border: 2px solid #9d9d9d;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.browsing .questionView.browsingMode .imgAnswerList .correctUnansweredAnswer .answerImageCover,
+.browseEvaluatedSession .questionView.browsingMode .imgAnswerList .correctUnansweredAnswer .answerImageCover {
+  background-color: #a7a7a7;
+}
+.practiceTest .questionView.testMode.showTest .questionList li.markedQuestion,
+.browseEvaluatedTest .questionView.testMode.showTest .questionList li.markedQuestion {
+  color: gray;
+}
+.practiceTest .questionView.testMode.showTest .questionList li.markedQuestion a,
+.browseEvaluatedTest .questionView.testMode.showTest .questionList li.markedQuestion a {
+  color: #67b6da;
+}
+.practiceTest .questionView.testMode.showTest .textAnswerList .markedAnswer,
+.browseEvaluatedTest .questionView.testMode.showTest .textAnswerList .markedAnswer {
+  padding: 0.6em;
+  background-color: lightblue;
+  border: 2px solid #81a1ab;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.practiceTest .questionView.testMode.showTest .imgAnswerList .markedAnswer,
+.browseEvaluatedTest .questionView.testMode.showTest .imgAnswerList .markedAnswer {
+  padding: 0.6em;
+  background-color: lightblue;
+  border: 2px solid #81a1ab;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.practiceTest .questionView.testMode.showTest .imgAnswerList .markedAnswer .answerImageCover,
+.browseEvaluatedTest .questionView.testMode.showTest .imgAnswerList .markedAnswer .answerImageCover {
+  background-color: #5bb1cd;
+}
+.practiceTest .questionView.testMode.showResults .questionList .correctQuestion.currentQuestion,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .correctQuestion.currentQuestion {
+  color: #116e11;
+}
+.practiceTest .questionView.testMode.showResults .questionList .correctQuestion a,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .correctQuestion a {
+  color: #1ec71e;
+}
+.practiceTest .questionView.testMode.showResults .questionList .incorrectQuestion.currentQuestion,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .incorrectQuestion.currentQuestion {
+  color: #7c0f0f;
+}
+.practiceTest .questionView.testMode.showResults .questionList .incorrectQuestion a,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .incorrectQuestion a {
+  color: #d71919;
+}
+.practiceTest .questionView.testMode.showResults .questionList .unansweredQuestion.currentQuestion,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .unansweredQuestion.currentQuestion {
+  color: #606060;
+}
+.practiceTest .questionView.testMode.showResults .questionList .unansweredQuestion a,
+.browseEvaluatedTest .questionView.testMode.showResults .questionList .unansweredQuestion a {
+  color: #939393;
+}
+.practiceTest .questionView.testMode.showResults .textAnswerList .correctAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .textAnswerList .correctAnswer {
+  padding: 0.6em;
+  background-color: lightgreen;
+  border: 2px solid #6bb16b;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.practiceTest .questionView.testMode.showResults .textAnswerList .incorrectAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .textAnswerList .incorrectAnswer {
+  padding: 0.6em;
+  background-color: lightcoral;
+  border: 2px solid #b35f5f;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.practiceTest .questionView.testMode.showResults .textAnswerList .correctUnansweredAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .textAnswerList .correctUnansweredAnswer {
+  padding: 0.6em;
+  background-color: lightgrey;
+  border: 2px solid #9d9d9d;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .correctAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .correctAnswer {
+  padding: 0.6em;
+  background-color: lightgreen;
+  border: 2px solid #6bb16b;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .correctAnswer .answerImageCover,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .correctAnswer .answerImageCover {
+  background-color: #21dd21;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .incorrectAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .incorrectAnswer {
+  padding: 0.6em;
+  background-color: lightcoral;
+  border: 2px solid #b35f5f;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .incorrectAnswer .answerImageCover,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .incorrectAnswer .answerImageCover {
+  background-color: #e10101;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .correctUnansweredAnswer,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .correctUnansweredAnswer {
+  padding: 0.6em;
+  background-color: lightgrey;
+  border: 2px solid #9d9d9d;
+  box-shadow: 2px 2px 5px lightgray;
+  background-color: white;
+}
+.practiceTest .questionView.testMode.showResults .imgAnswerList .correctUnansweredAnswer .answerImageCover,
+.browseEvaluatedTest .questionView.testMode.showResults .imgAnswerList .correctUnansweredAnswer .answerImageCover {
+  background-color: #a7a7a7;
+}
+.evaluateTest .continueTestButton,
+.evaluateSession .continueTestButton {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+}
+.evaluateTest .scoreBarContainer,
+.evaluateSession .scoreBarContainer {
+  padding: 0.6em;
+  background-color: white;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.evaluateTest .scoreBarContainer .successMessage,
+.evaluateSession .scoreBarContainer .successMessage {
+  margin: 0 0 0 5px;
+}
+.evaluateTest .scoreBarContainer .scoreBarLabels,
+.evaluateSession .scoreBarContainer .scoreBarLabels {
+  padding: 5px;
+}
+.evaluateTest .scoreBarContainer .scoreBarLabels .scoreBarPoints,
+.evaluateSession .scoreBarContainer .scoreBarLabels .scoreBarPoints {
+  float: left;
+  margin-bottom: 5px;
+}
+.evaluateTest .scoreBarContainer .scoreBarLabels .scoreBarPercentage,
+.evaluateSession .scoreBarContainer .scoreBarLabels .scoreBarPercentage {
+  float: right;
+}
+.evaluateTest .scoreBarContainer .scoreBar,
+.evaluateSession .scoreBarContainer .scoreBar {
+  position: relative;
+  clear: both;
+  width: 100%;
+  height: 1em;
+  background-color: lightgray;
+  overflow: hidden;
+}
+.evaluateTest .scoreBarContainer .scoreBar .scoreBarThreshold,
+.evaluateSession .scoreBarContainer .scoreBar .scoreBarThreshold {
+  position: absolute;
+  display: inline-block;
+  width: 0.5%;
+  height: 100%;
+  background-color: gray;
+}
+.evaluateTest .scoreBarContainer .scoreBar .scoreBarLine,
+.evaluateSession .scoreBarContainer .scoreBar .scoreBarLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.evaluateTest .scoreBarContainer.succeeded .successMessage,
+.evaluateSession .scoreBarContainer.succeeded .successMessage {
+  color: #22dd22 !important;
+}
+.evaluateTest .scoreBarContainer.succeeded .scoreBarLabels,
+.evaluateSession .scoreBarContainer.succeeded .scoreBarLabels {
+  color: #22dd22 !important;
+}
+.evaluateTest .scoreBarContainer.succeeded .scoreBarLine,
+.evaluateSession .scoreBarContainer.succeeded .scoreBarLine {
+  background-color: lightgreen;
+}
+.evaluateTest .scoreBarContainer.failed .successMessage,
+.evaluateSession .scoreBarContainer.failed .successMessage {
+  color: #d71919 !important;
+}
+.evaluateTest .scoreBarContainer.failed .scoreBarLabels,
+.evaluateSession .scoreBarContainer.failed .scoreBarLabels {
+  color: #d71919 !important;
+}
+.evaluateTest .scoreBarContainer.failed .scoreBarLine,
+.evaluateSession .scoreBarContainer.failed .scoreBarLine {
+  background-color: lightcoral;
+}
+.evaluateTest .questionAnswerList,
+.evaluateSession .questionAnswerList {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 0;
+  margin: -3px;
+}
+.evaluateTest .questionAnswerList li,
+.evaluateSession .questionAnswerList li {
+  position: relative;
+  padding: 0.6em;
+  background-color: white;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+  padding: 0;
+  width: calc((100% / 5) - 6px);
+  margin: 3px;
+}
+.evaluateTest .questionAnswerList li.correct,
+.evaluateSession .questionAnswerList li.correct {
+  border-color: #73be73;
+}
+.evaluateTest .questionAnswerList li.incorrect,
+.evaluateSession .questionAnswerList li.incorrect {
+  border-color: #c06666;
+}
+.evaluateTest .questionAnswerList li.unanswered,
+.evaluateSession .questionAnswerList li.unanswered {
+  border-color: #a9a9a9;
+}
+.evaluateTest .questionAnswerList li:hover,
+.evaluateSession .questionAnswerList li:hover {
+  border-color: #0286c2;
+}
+.evaluateTest .questionAnswerList li a,
+.evaluateSession .questionAnswerList li a {
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+.evaluateTest .questionAnswerList li .questionIndex,
+.evaluateSession .questionAnswerList li .questionIndex {
+  width: 100%;
+  height: calc(1.4em + 10px);
+  padding: 5px 7px;
+  color: white;
+}
+.evaluateTest .questionAnswerList li .questionText,
+.evaluateSession .questionAnswerList li .questionText {
+  display: -webkit-box;
+  width: 100%;
+  height: calc((4 * 1.4em) + 5px);
+  padding: 5px 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4;
+  font-size: 70%;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.evaluateTest .questionAnswerList .correct,
+.evaluateSession .questionAnswerList .correct {
+  background-color: lightgreen;
+}
+.evaluateTest .questionAnswerList .incorrect,
+.evaluateSession .questionAnswerList .incorrect {
+  background-color: lightcoral;
+}
+.evaluateTest .questionAnswerList .unanswered,
+.evaluateSession .questionAnswerList .unanswered {
+  background-color: lightgray;
+}
+@media (max-width: 750px) {
+  .evaluateTest .questionAnswerList li,
+  .evaluateSession .questionAnswerList li {
+    width: calc((100% / 3) - 6px);
+  }
+}
+.questionView {
+  position: relative;
+}
+.questionView .topbar .backButton {
+  font-weight: bold;
+  float: left;
+  line-height: 2.1;
+  vertical-align: middle;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.questionView .topbar .questionNavigation {
+  display: inline-block;
+  float: right;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.questionView .topbar .questionNavigation a {
+  vertical-align: -8%;
+  font-size: 150%;
+  font-weight: bold;
+  text-decoration: none;
+}
+.questionView .questionNavigationLine {
+  clear: both;
+}
+.questionView .questionList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 2em;
+}
+.questionView .questionList li {
+  font-weight: bold;
+  display: inline-block;
+  padding: 0.3em;
+}
+.questionView .questionList li a {
+  cursor: pointer;
+}
+.questionView .questionList::-webkit-scrollbar {
+  height: 0.6em;
+  background-color: lightgray;
+  border-radius: 1000px;
+}
+.questionView .questionList::-webkit-scrollbar-thumb {
+  background-color: #0286c2;
+  border-radius: 1000px;
+}
+.questionView .questionContainer .questionValue {
+  font-weight: bold;
+  margin-bottom: 0.6em;
+}
+.questionView .questionContainer .questionValue::before {
+  content: '(';
+}
+.questionView .questionContainer .questionValue::after {
+  content: ')';
+}
+.questionView .questionContainer .questionText {
+  margin-bottom: 0.6em;
+}
+.questionView .questionContainer .questionImage {
+  background-color: white;
+  border: 2px solid gray;
+  text-align: center;
+  line-height: 0;
+}
+.questionView .questionContainer .questionImage img {
+  max-width: 100%;
+}
+.questionView .answerList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.questionView .answerList li {
+  cursor: pointer;
+  margin: 0.6em 0;
+  padding: 0.6em;
+  background-color: white;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+}
+.questionView .answerList li a {
+  cursor: inherit;
+  text-decoration: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+.questionView .answerList li:hover {
+  border-color: #0286c2;
+}
+.questionView .imgAnswerList {
+  display: flex;
+  margin: 0 -0.3em;
+}
+.questionView .imgAnswerList li {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0.3em;
+  width: calc((100% / 3));
+}
+.questionView .imgAnswerList li img {
+  vertical-align: middle;
+  width: 100%;
+}
+.questionView .imgAnswerList li:before {
+  content: ' ';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+.questionView .imgAnswerList .answerImageCover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.5;
+  background-color: transparent;
+}
+@media (max-width: 750px) {
+  .questionView {
+    top: -1.8em;
+  }
+  .questionView .questionContainer .questionImage img {
+    max-height: 200px;
+  }
+}
+.prepareTest .finishedTestChart {
+  padding: 0.6em;
+  background-color: white;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+  padding: 1em;
+  height: 200px;
+  margin-top: 0.3em;
+  margin-bottom: 1.2em;
+}
+* {
+  box-sizing: border-box;
+  font-family: NotoMain, sans-serif;
+  line-height: 1.4;
+}
+a {
+  color: #0286c2;
+  text-decoration: underline;
+  font-weight: bold;
+}
+a:hover {
+  color: #c23e02;
+}
+button {
+  font-size: 100%;
+}
+html,
+body {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: NotoMain, sans-serif;
+  background-color: #eee;
+}
+hr {
+  background-color: lightgray;
+  height: 1px;
+  border: none;
+  margin: 0.6em -1.2em;
+}
+h1,
+h2,
+h3 {
+  font-family: NotoTitle, sans-serif;
+  font-weight: 100;
+}
+h1 {
+  font-size: 250%;
+}
+#content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 18em;
+  right: 0;
+}
+#container {
+  position: relative;
+  top: 4.9em;
+  left: 6em;
+  width: 644px;
+  margin-bottom: 10px;
+}
+#container h1,
+#container h2,
+#container h3 {
+  color: #0286c2;
+}
+#container h1 {
+  margin-top: 0;
+}
+.actionButton {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: white;
+  font-family: NotoBold, sans-serif;
+  font-size: inherit;
+  background-color: #0286c2;
+  border: none;
+  border-radius: 2px;
+}
+.actionButton.disabled {
+  background-color: grey !important;
+}
+#loaderCover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+#loaderCover #loaderPopup {
+  padding: 0.6em;
+  border: 2px solid #bebebe;
+  box-shadow: 2px 2px 5px lightgray;
+  position: relative;
+  width: 300px;
+  height: 200px;
+  top: 20%;
+  margin: auto;
+  padding: 60px;
+  box-shadow: none;
+  background-color: white;
+  text-align: center;
+}
+#loaderCover #loaderPopup #loaderPopupInside {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#mobileMenuToggle,
+#mobilePageCover {
+  display: none;
+}
+@media (max-width: 1060px) {
+  hr {
+    margin: 0.6em 0;
+  }
+  #container {
+    left: auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media (max-width: 950px) {
+  #container {
+    width: 100%;
+    padding: 0 0.6em;
+  }
+}
+@media (max-width: 750px) {
+  @-ms-viewport {
+    width: device-width;
+  }
+  #content {
+    left: 0;
+  }
+  #container {
+    top: 2.8em;
+  }
+  #mobileMenuToggle {
+    display: block;
+    position: absolute;
+    margin: 0 0 0 0.3em;
+    padding: 0.3em;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    font-size: 200%;
+    z-index: 3;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    color: gray;
+    transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .mobileMenuOpen #mobileMenuToggle {
+    color: white;
+  }
+  .mobileMenuOpen #mobilePageCover {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+  .backButton {
+    position: relative;
+    left: 2.6em;
+  }
+}
