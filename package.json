@@ -1,10 +1,14 @@
 {
 	"//": "TEST DATA UPDATER REQUIRES JAVA TO BE INSTALLED!",
 	"///": "RUN INSTALL WITH --unsafe-perm",
+
 	"name": "autoskola-testy",
-	"version": "0.9.0",
+	"version": "0.9.1",
 	"author": "Anagmate",
 	"private": true,
+	"config": {
+		"unsafe-perm": true
+	},
 	"scripts": {
 		"postinstall": "node ./scripts/installFull.js",
 		"start": "cd server && npm start",

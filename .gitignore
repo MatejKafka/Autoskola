@@ -1,7 +1,32 @@
-node_modules/
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/dictionaries/
 
 data/logs.txt
 out/
+
+
+# IGNORE GENERATED .JS FILES
+*.js
+!*.js/
+*.js.map
+!*.js.map/
+
+# IGNORE GENERATED .JS FILES
+*.css
+!*.css/
+*.css.map
+!*.css.map/
+
+
+# KEEP BUNDLED FILES
+!/client/res/css/**
+!/client/res/js/**
+
+
+# KEEP EVERYTHING INSIDE SCRIPTS DIR
+!scripts/**/*
+
+# EXCLUDE NODE_MODULES
+# must be at the bottom to apply to ./scripts/node_modules
+node_modules

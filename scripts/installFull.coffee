@@ -6,6 +6,8 @@ installNestedModules(path.resolve(__dirname, '../'))
 console.log('INSTALLED ALL INTERNAL MODULES')
 
 
+console.log('COMPILING CLIENT')
+
 runScriptSync = require('./util/runScriptSync')
 
 runScriptSync(path.resolve(__dirname, './compileCoffee'))

@@ -1,8 +1,8 @@
-PATHS = require('./../PATHS')
 path = require('path')
 fs = require('fs-extra')
 less = require('less')
 LessPluginAutoPrefix = require('less-plugin-autoprefix')
+PATHS = require('../PATHS')
 
 
 sourcePath = path.resolve(PATHS.CLIENT, './res/less/index.less')
