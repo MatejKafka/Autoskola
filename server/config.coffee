@@ -1,6 +1,7 @@
 path = require('path')
 
-testDataDir = path.resolve(__dirname, '../data/testData/')
+dataDir = path.resolve(__dirname, '../data/')
+testDataDir = path.resolve(dataDir, './testData/')
 
 module.exports =
 	port: 8080
@@ -19,4 +20,5 @@ module.exports =
 		sections: path.resolve(testDataDir, 'sections.json')
 		imgDir: path.resolve(testDataDir, 'img')
 		flashReplaceDir: path.resolve(testDataDir, 'flashReplace')
+		swfCacheDir: path.resolve(dataDir, './swfCache/')
 		imgDirUrl: '/questionImg/'

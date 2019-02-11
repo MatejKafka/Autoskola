@@ -24,7 +24,7 @@
 
 
 
-/api/getQuestion[?id=5,7,...&since=157818464984]
+/api/getQuestion[?id=5,7,...&since=157818464984&withRemoteImg=false]
     returns requested questions as JSON (id, question, options, correctAnswer)
 
     same format as /api/getSection, with added "withRemoteImg" parameter

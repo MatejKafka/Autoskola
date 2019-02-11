@@ -25,7 +25,9 @@ module.exports = async (question, targetDir) ->
 			question: questionImgObj
 			answers: answerImgObjs
 
-		writeFile(targetDir, getPath.structureJson(question.id), JSON.stringify(structure))
+		if answerImgObjs != null || questionImgObj != null
+			writeFile(targetDir, getPath.structureJson(question.id), JSON.stringify(structure))
+
 		return structure
 	catch err
 		console.error(chalk.red('ERROR OCCURRED - clearing question directory'))

@@ -5,7 +5,7 @@
 	"private": true,
 	"main": "index.js",
 	"scripts": {
-		"updateTestData": "coffee index.coffee"
+		"start": "coffee index.coffee"
 	},
 	"//": "lwip has incorrect dependencies and in current version, it won't install with node >7.5.0",
 	"engines": {

@@ -6,7 +6,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "coffee index.coffee",
-		"updateTestData": "cd updateTestData && npm run-script updateTestData"
+		"updateTestData": "cd updateTestData && npm start"
 	},
 	"author": "Anagmate",
 	"dependencies": {
