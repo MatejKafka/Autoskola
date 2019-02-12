@@ -158,6 +158,15 @@
   border: 2px solid #bebebe;
   box-shadow: 2px 2px 5px lightgray;
 }
+@-webkit-keyframes incorrectAnswerAnimation {
+  0% {
+    background-color: lightcoral;
+  }
+  100% {
+    text-decoration: line-through;
+    color: grey;
+  }
+}
 @keyframes incorrectAnswerAnimation {
   0% {
     background-color: lightcoral;
@@ -176,7 +185,8 @@
 }
 .browsing .questionView.browsingMode .textAnswerList .incorrectAnswer,
 .browseEvaluatedSession .questionView.browsingMode .textAnswerList .incorrectAnswer {
-  animation: incorrectAnswerAnimation 0.5s linear;
+  -webkit-animation: incorrectAnswerAnimation 0.5s linear;
+          animation: incorrectAnswerAnimation 0.5s linear;
   text-decoration: line-through;
   color: grey;
 }
@@ -191,6 +201,14 @@
   background-color: lightgrey;
   border: 2px solid #9d9d9d;
   box-shadow: 2px 2px 5px lightgray;
+}
+@-webkit-keyframes incorrectAnswerAnimationForImg {
+  0% {
+    background-color: lightcoral;
+  }
+  100% {
+    background-color: #bababa;
+  }
 }
 @keyframes incorrectAnswerAnimationForImg {
   0% {
@@ -214,7 +232,8 @@
 }
 .browsing .questionView.browsingMode .imgAnswerList .incorrectAnswer .answerImageCover,
 .browseEvaluatedSession .questionView.browsingMode .imgAnswerList .incorrectAnswer .answerImageCover {
-  animation: incorrectAnswerAnimationForImg 0.5s linear;
+  -webkit-animation: incorrectAnswerAnimationForImg 0.5s linear;
+          animation: incorrectAnswerAnimationForImg 0.5s linear;
   background-color: #bababa;
 }
 .browsing .questionView.browsingMode .imgAnswerList .incorrectWithoutAnimationAnswer .answerImageCover,
@@ -423,6 +442,7 @@
 }
 .evaluateTest .questionAnswerList,
 .evaluateSession .questionAnswerList {
+  display: -webkit-box;
   display: flex;
   flex-wrap: wrap;
   list-style-type: none;
@@ -480,6 +500,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
   font-size: 70%;
   color: rgba(255, 255, 255, 0.8);
   background-color: rgba(0, 0, 0, 0.2);
@@ -607,6 +628,7 @@
   border-color: #0286c2;
 }
 .questionView .imgAnswerList {
+  display: -webkit-box;
   display: flex;
   margin: 0 -0.3em;
 }
@@ -759,7 +781,8 @@ h1 {
 #loaderCover #loaderPopup #loaderPopupInside {
   position: relative;
   top: 50%;
-  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
 }
 #mobileMenuToggle,
 #mobilePageCover {

@@ -12,7 +12,7 @@ out/
 *.js.map
 !*.js.map/
 
-# IGNORE GENERATED .JS FILES
+# IGNORE GENERATED .CSS FILES
 *.css
 !*.css/
 *.css.map

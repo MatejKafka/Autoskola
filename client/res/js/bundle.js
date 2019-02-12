@@ -60,14 +60,53 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getArgumentValidator, isExternalItem, isInternalItem, validator;
+
+getArgumentValidator = __webpack_require__(8).getScope;
+
+isExternalItem = __webpack_require__(63);
+
+isInternalItem = __webpack_require__(64);
+
+validator = getArgumentValidator();
+
+validator.addType('id', function(arg) {
+  return this.int(arg) && arg >= 0;
+});
+
+validator.addType('externalItem', isExternalItem);
+
+validator.addType('internalItem', isInternalItem);
+
+validator.addType('query', function(arg) {
+  return this.int(arg) || this.string(arg) || this.object(arg) || this["null"](arg);
+});
+
+validator.addType('item_tag', function(arg) {
+  return this.string(arg) || this["null"](arg);
+});
+
+validator.addType('item_persistent', function(arg) {
+  return this.boolean(arg);
+});
+
+module.exports = validator;
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 module.exports = {
+  tabTitle: 'Příprava k závěrečným testům autoškoly ' + (new Date()).getFullYear(),
+  pageTitle: "<h1>Autoškola " + ((new Date()).getFullYear()) + "</h1><h2>pro skupinu B</h2>",
   questionSelect: {
     selectAll: 'Vybrat vše',
     deselectAll: 'Odvybrat vše',
@@ -109,11 +148,16 @@ module.exports = {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = {
   verboseErrorMessages: true,
+  storeLogging: {
+    log: true,
+    showLogData: false,
+    showStackTraces: false
+  },
   answerClickTimeout: 500,
   loaderScreenTimeout: 500,
   shuffleAnswers: {
@@ -127,7 +171,7 @@ module.exports = {
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 var parseIdentifierStr;
@@ -233,14 +277,156 @@ module.exports = function(identifierStr, children) {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MESSAGES, QuestionView, bindNavigationButtons, renderQuestionList, scrollToCenter;
+var findItems, getValueFromItem, isEmptyObj, matchesQuery, separateItemQuery, separateQuery, updateStructure;
 
-MESSAGES = __webpack_require__(0).questionView;
+findItems = __webpack_require__(12);
 
-QuestionView = __webpack_require__(34);
+matchesQuery = __webpack_require__(25);
+
+separateItemQuery = __webpack_require__(26);
+
+isEmptyObj = __webpack_require__(11);
+
+separateQuery = function(cacheQuery) {
+  var cache, cachePropQuery, find, findQuery, key, ref, value;
+  findQuery = {};
+  cachePropQuery = {};
+  for (key in cacheQuery) {
+    value = cacheQuery[key];
+    if ((value != null) && typeof value === 'object') {
+      ref = separateQuery(value), find = ref.find, cache = ref.cache;
+      if (!isEmptyObj(find)) {
+        findQuery[key] = find;
+      }
+      if (!isEmptyObj(cache)) {
+        cachePropQuery[key] = cache;
+      }
+    } else if (value != null) {
+      findQuery[key] = value;
+    } else {
+      cachePropQuery[key] = null;
+    }
+  }
+  return {
+    find: findQuery,
+    cache: cachePropQuery
+  };
+};
+
+getValueFromItem = function(item, key, isMeta) {
+  if (isMeta) {
+    return item.meta[key];
+  } else {
+    return item.item[key];
+  }
+};
+
+module.exports = updateStructure = {
+  add: function(structure, item) {
+    var i, key, len, query, ref;
+    structure.location[item.meta.id] = item.meta.persistent ? structure.LOCATIONS.DB : structure.LOCATIONS.MEMORY_STORE;
+    if (item.meta.tag != null) {
+      if (structure.byTag[item.meta.tag] == null) {
+        structure.byTag[item.meta.tag] = [];
+      }
+      structure.byTag[item.meta.tag].push(item.meta.id);
+    }
+    ref = structure.byQuery;
+    for (i = 0, len = ref.length; i < len; i++) {
+      query = ref[i];
+      if (matchesQuery(item, query.findQuery.item, query.findQuery.meta)) {
+        key = getValueFromItem(item, query.cachedKey, query.isMetaKey);
+        if (query.values[key] == null) {
+          query.values[key] = [];
+        }
+        query.values[key].push(item.meta.id);
+      }
+    }
+    return structure;
+  },
+  remove: function(structure, item) {
+    var i, index, key, len, query, ref, tagCache;
+    if (structure.location[item.meta.id] == null) {
+      return;
+    }
+    delete structure.location[item.meta.id];
+    if (item.meta.tag != null) {
+      tagCache = structure.byTag[item.meta.tag];
+      tagCache.splice(tagCache.indexOf(item.meta.id), 1);
+      if (tagCache.length === 0) {
+        delete structure.byTag[item.meta.tag];
+      }
+    }
+    ref = structure.byQuery;
+    for (i = 0, len = ref.length; i < len; i++) {
+      query = ref[i];
+      key = getValueFromItem(item, query.cachedKey, query.isMetaKey);
+      if (query.values[key] == null) {
+        continue;
+      }
+      index = query.values[key].indexOf(item.meta.id);
+      if (index >= 0) {
+        query.values[key].splice(index, 1);
+        if (query.values[key].length === 0) {
+          delete query.values[key];
+        }
+      }
+    }
+    return structure;
+  },
+  change: function(structure, item) {
+    updateStructure.remove(structure, item);
+    return updateStructure.add(structure, item);
+  },
+  cacheQuery: function(structure, query, store) {
+    var cacheQuery, findQuery, i, isMeta, item, items, keys, len, propKey, propMap, ref, value;
+    ref = separateQuery(query), findQuery = ref.find, cacheQuery = ref.cache;
+    keys = Object.keys(cacheQuery);
+    if (keys.length !== 1 || cacheQuery[keys[0]] !== null) {
+      throw new Error('current implementation of cached queries only supports single cached parameter (not nested)');
+    }
+    propKey = keys[0];
+    isMeta = propKey[0] === '$';
+    if (isMeta) {
+      propKey = propKey.slice(1);
+    }
+    propMap = {};
+    items = findItems(findQuery, (function() {}), store, structure, false);
+    for (i = 0, len = items.length; i < len; i++) {
+      item = items[i];
+      value = getValueFromItem(item, propKey, isMeta);
+      if (propMap[value] == null) {
+        propMap[value] = [];
+      }
+      propMap[value].push(item.meta.id);
+    }
+    structure.byQuery.push({
+      fullQuery: query,
+      findQuery: separateItemQuery(findQuery),
+      rawFindQuery: findQuery,
+      cachedKey: propKey,
+      isMetaKey: isMeta,
+      values: propMap
+    });
+    return structure;
+  }
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var MESSAGES, QuestionView, bindNavigationButtons, renderQuestionList, scrollToCenter, validate;
+
+MESSAGES = __webpack_require__(1).questionView;
+
+validate = __webpack_require__(8);
+
+QuestionView = __webpack_require__(49);
 
 bindNavigationButtons = function(container, questionCount, index, handlers) {
   var backButton, nextQuestionButton, previousQuestionButton;
@@ -310,8 +496,9 @@ renderQuestionList = function(questionCount, index, containerList, gotoQuestionF
 };
 
 module.exports = function(options) {
-  var boundHighlightAnswer, container, gotoNextQuestion, gotoPreviousQuestion, handlers, highlightQuestionInList, index, messages, question, questionIds, questionListElem, questionView, shuffleAnswers;
-  questionIds = options.questionIds, index = options.questionIndex, container = options.container, shuffleAnswers = options.shuffleAnswers, handlers = options.handlers, messages = options.messages;
+  var boundHighlightAnswer, container, gotoNextQuestion, gotoPreviousQuestion, handlers, highlightQuestionInList, index, messages, question, questionCount, questionListElem, questionView, shuffleAnswers;
+  questionCount = options.questionCount, question = options.question, index = options.questionIndex, container = options.container, shuffleAnswers = options.shuffleAnswers, handlers = options.handlers, messages = options.messages;
+  validate([questionCount, question, index], ['int', 'object', 'int']);
   handlers = Object.assign({
     prepareView: null,
     gotoQuestion: function(newIndex) {
@@ -336,14 +523,14 @@ module.exports = function(options) {
     if (index > 0) {
       return handlers.gotoQuestion(index - 1);
     } else {
-      return handlers.gotoQuestion(questionIds.length - 1);
+      return handlers.gotoQuestion(questionCount - 1);
     }
   };
   gotoNextQuestion = function(fromAnswerClick) {
     if (fromAnswerClick == null) {
       fromAnswerClick = false;
     }
-    if (index < questionIds.length - 1) {
+    if (index < questionCount - 1) {
       return handlers.gotoQuestion(index + 1);
     } else if (fromAnswerClick) {
       return handlers.lastQuestionAnswer();
@@ -351,9 +538,9 @@ module.exports = function(options) {
       return handlers.gotoQuestion(0);
     }
   };
-  if (index > questionIds.length - 1) {
-    console.error('Question index is too high - you only have ' + questionIds.length + ' questions selected!');
-    handlers.gotoQuestion(questionIds.length - 1);
+  if (index > questionCount - 1) {
+    console.error('Question index is too high - you only have ' + questionCount + ' questions selected!');
+    handlers.gotoQuestion(questionCount - 1);
     return;
   }
   if (index < 0) {
@@ -361,17 +548,13 @@ module.exports = function(options) {
     handlers.gotoQuestion(0);
     return;
   }
-  question = store.findOne({
-    $tag: db.STORE_TAGS.QUESTION,
-    id: questionIds[index]
-  });
-  container.innerHTML = ("<div class='topbar'> <a href='javascript:void(0);' class='backButton'>" + messages.backButton + "</a> <span class='questionNavigation'> <a href='javascript:void(0);' class='previousQuestionButton'>" + MESSAGES.previousQuestion + "</a> <span class='questionNumber'> <span class='questionIndex'>" + (index + 1) + "</span> " + MESSAGES.from + " <span class='questionCollectionLength'>" + questionIds.length + "</span> </span> <a href='javascript:void(0);' class='nextQuestionButton'>") + MESSAGES.nextQuestion + "</a> </span> </div> <hr class='questionNavigationLine'> <ul class='questionList'></ul> <hr> <div class='testContainer'></div>";
+  container.innerHTML = ("<div class='topbar'> <a href='javascript:void(0);' class='backButton'>" + messages.backButton + "</a> <span class='questionNavigation'> <a href='javascript:void(0);' class='previousQuestionButton'>" + MESSAGES.previousQuestion + "</a> <span class='questionNumber'> <span class='questionIndex'>" + (index + 1) + "</span> " + MESSAGES.from + " <span class='questionCollectionLength'>" + questionCount + "</span> </span> <a href='javascript:void(0);' class='nextQuestionButton'>") + MESSAGES.nextQuestion + "</a> </span> </div> <hr class='questionNavigationLine'> <ul class='questionList'></ul> <hr> <div class='testContainer'></div>";
   questionListElem = container.getElementsByClassName('questionList')[0];
   setTimeout(function() {
     return questionListElem.style.height = (2 * questionListElem.offsetHeight - questionListElem.clientHeight) + 'px';
   }, 0);
-  highlightQuestionInList = renderQuestionList(questionIds.length, index, questionListElem, handlers.gotoQuestion);
-  bindNavigationButtons(container, questionIds.length, index, {
+  highlightQuestionInList = renderQuestionList(questionCount, index, questionListElem, handlers.gotoQuestion);
+  bindNavigationButtons(container, questionCount, index, {
     back: handlers.backButtonClick,
     previousQuestion: gotoPreviousQuestion,
     nextQuestion: gotoNextQuestion
@@ -401,7 +584,519 @@ module.exports = function(options) {
 
 
 /***/ }),
-/* 4 */
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = Symbol('eveStore metadata');
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var decorateItem, getExternalItemTag, metaSymbol, parseExternalItem, runItemValidators, validateArguments;
+
+metaSymbol = __webpack_require__(6);
+
+validateArguments = __webpack_require__(0);
+
+decorateItem = __webpack_require__(19);
+
+runItemValidators = __webpack_require__(21);
+
+parseExternalItem = __webpack_require__(65);
+
+getExternalItemTag = function(externalItem) {
+  return externalItem[metaSymbol].tag;
+};
+
+module.exports = function(externalItem, undecorators, validators) {
+  var tag;
+  if (undecorators == null) {
+    undecorators = null;
+  }
+  if (validators == null) {
+    validators = null;
+  }
+  validateArguments(arguments, ['externalItem']);
+  tag = getExternalItemTag(externalItem);
+  if (undecorators != null) {
+    externalItem = decorateItem(externalItem, tag, undecorators);
+  }
+  if (validators != null) {
+    runItemValidators(externalItem, tag, validators);
+  }
+  return parseExternalItem(externalItem);
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var findType, getValidatorFn, matchSingleType, matchesType, parseSingleTypeStr, parseTypeStr, sliceStackTrace, types, validateArguments;
+
+types = __webpack_require__(41);
+
+sliceStackTrace = __webpack_require__(42);
+
+parseSingleTypeStr = function(typeStr) {
+  var separatorIndex;
+  separatorIndex = typeStr.indexOf('>');
+  if (separatorIndex >= 0) {
+    return {
+      type: typeStr.slice(0, separatorIndex),
+      arg: typeStr.slice(separatorIndex + 1),
+      str: typeStr
+    };
+  } else {
+    return {
+      type: typeStr,
+      arg: null,
+      str: typeStr
+    };
+  }
+};
+
+parseTypeStr = function(typeStr) {
+  var block, j, len, possibleTypes, typeBlocks;
+  typeBlocks = typeStr.split('|').map(function(type) {
+    return type.trim();
+  });
+  possibleTypes = [];
+  for (j = 0, len = typeBlocks.length; j < len; j++) {
+    block = typeBlocks[j];
+    possibleTypes.push(parseSingleTypeStr(block));
+  }
+  return possibleTypes;
+};
+
+matchSingleType = function(value, typeObj, types) {
+  var callback;
+  if (types[typeObj.type] == null) {
+    throw new Error("Tried to check type against missing definition: " + typeObj.str);
+  }
+  callback = function(value, typeStr) {
+    return matchesType(value, typeStr, types);
+  };
+  return types[typeObj.type](value, typeObj.arg, callback);
+};
+
+matchesType = function(value, typeStr, types) {
+  var err, isOptional, j, len, matches, possibleTypes, typeObj;
+  if (typeof typeStr !== 'string') {
+    throw new Error('typeStr must be string, not ' + typeof typeStr);
+  }
+  if (typeStr[0] === '?' || typeStr[typeStr.length - 1] === '?') {
+    isOptional = true;
+    if (typeStr[0] === '?') {
+      typeStr = typeStr.slice(1);
+    } else {
+      typeStr = typeStr.slice(0, -1);
+    }
+  } else {
+    isOptional = false;
+  }
+  if (matchSingleType(value, parseTypeStr('null')[0], types) && isOptional) {
+    return true;
+  }
+  possibleTypes = parseTypeStr(typeStr);
+  for (j = 0, len = possibleTypes.length; j < len; j++) {
+    typeObj = possibleTypes[j];
+    matches = null;
+    try {
+      matches = matchSingleType(value, typeObj, types);
+    } catch (error) {
+      err = error;
+      if (err instanceof TypeError) {
+        matches = err;
+      }
+      throw err;
+    }
+    if (matches instanceof TypeError && possibleTypes.length === 1) {
+      return matches;
+    }
+    if (matches === true) {
+      return true;
+    }
+  }
+  return false;
+};
+
+findType = function(value, types) {
+  var typeName;
+  for (typeName in types) {
+    if (matchSingleType(value, parseTypeStr(typeName)[0], types)) {
+      return typeName;
+    }
+  }
+  console.warn('value does not match any defined type:', value);
+  return null;
+};
+
+validateArguments = function(args, argTypes, types, returnErrors) {
+  var err, i, j, len, matches, msg, realType, type;
+  for (i = j = 0, len = argTypes.length; j < len; i = ++j) {
+    type = argTypes[i];
+    try {
+      matches = matchesType(args[i], type, types);
+    } catch (error) {
+      err = error;
+      throw sliceStackTrace(err, 2);
+    }
+    if (matches !== true) {
+      if (returnErrors) {
+        if (matches instanceof TypeError) {
+          msg = matches.message;
+        } else {
+          realType = findType(args[i], types);
+          msg = "it must be `" + type + "`, not `" + realType + "`";
+        }
+        throw sliceStackTrace(new TypeError("Invalid argument type at index " + i + ": " + msg), 2);
+      } else {
+        return false;
+      }
+    }
+  }
+  if (returnErrors) {
+    return null;
+  } else {
+    return true;
+  }
+};
+
+getValidatorFn = function(types) {
+  var validateFn;
+  validateFn = function(args, argTypes) {
+    return validateArguments(args, argTypes, types, true);
+  };
+  validateFn.matches = function(args, argTypes) {
+    return validateArguments(args, argTypes, types, false);
+  };
+  validateFn.addType = function(name, checkFn) {
+    validateFn([name, checkFn], ['string', 'function']);
+    types[name] = checkFn;
+    return checkFn;
+  };
+  validateFn.getScope = function() {
+    return getValidatorFn(Object.assign({}, types));
+  };
+  return validateFn;
+};
+
+module.exports = getValidatorFn(types);
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        // At least give some kind of context to the user
+        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
+        err.context = er;
+        throw err;
+      }
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    args = Array.prototype.slice.call(arguments, 1);
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else if (listeners) {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
+  if (this._events) {
+    var evlistener = this._events[type];
+
+    if (isFunction(evlistener))
+      return 1;
+    else if (evlistener)
+      return evlistener.length;
+  }
+  return 0;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  return emitter.listenerCount(type);
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 var cloneValue,
@@ -437,462 +1132,7 @@ module.exports = cloneValue;
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
-var R = typeof Reflect === 'object' ? Reflect : null
-var ReflectApply = R && typeof R.apply === 'function'
-  ? R.apply
-  : function ReflectApply(target, receiver, args) {
-    return Function.prototype.apply.call(target, receiver, args);
-  }
-
-var ReflectOwnKeys
-if (R && typeof R.ownKeys === 'function') {
-  ReflectOwnKeys = R.ownKeys
-} else if (Object.getOwnPropertySymbols) {
-  ReflectOwnKeys = function ReflectOwnKeys(target) {
-    return Object.getOwnPropertyNames(target)
-      .concat(Object.getOwnPropertySymbols(target));
-  };
-} else {
-  ReflectOwnKeys = function ReflectOwnKeys(target) {
-    return Object.getOwnPropertyNames(target);
-  };
-}
-
-function ProcessEmitWarning(warning) {
-  if (console && console.warn) console.warn(warning);
-}
-
-var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
-  return value !== value;
-}
-
-function EventEmitter() {
-  EventEmitter.init.call(this);
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._eventsCount = 0;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-var defaultMaxListeners = 10;
-
-Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
-  enumerable: true,
-  get: function() {
-    return defaultMaxListeners;
-  },
-  set: function(arg) {
-    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
-      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
-    }
-    defaultMaxListeners = arg;
-  }
-});
-
-EventEmitter.init = function() {
-
-  if (this._events === undefined ||
-      this._events === Object.getPrototypeOf(this)._events) {
-    this._events = Object.create(null);
-    this._eventsCount = 0;
-  }
-
-  this._maxListeners = this._maxListeners || undefined;
-};
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
-    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
-  }
-  this._maxListeners = n;
-  return this;
-};
-
-function $getMaxListeners(that) {
-  if (that._maxListeners === undefined)
-    return EventEmitter.defaultMaxListeners;
-  return that._maxListeners;
-}
-
-EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-  return $getMaxListeners(this);
-};
-
-EventEmitter.prototype.emit = function emit(type) {
-  var args = [];
-  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
-  var doError = (type === 'error');
-
-  var events = this._events;
-  if (events !== undefined)
-    doError = (doError && events.error === undefined);
-  else if (!doError)
-    return false;
-
-  // If there is no 'error' event listener then throw.
-  if (doError) {
-    var er;
-    if (args.length > 0)
-      er = args[0];
-    if (er instanceof Error) {
-      // Note: The comments on the `throw` lines are intentional, they show
-      // up in Node's output if this results in an unhandled exception.
-      throw er; // Unhandled 'error' event
-    }
-    // At least give some kind of context to the user
-    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
-    err.context = er;
-    throw err; // Unhandled 'error' event
-  }
-
-  var handler = events[type];
-
-  if (handler === undefined)
-    return false;
-
-  if (typeof handler === 'function') {
-    ReflectApply(handler, this, args);
-  } else {
-    var len = handler.length;
-    var listeners = arrayClone(handler, len);
-    for (var i = 0; i < len; ++i)
-      ReflectApply(listeners[i], this, args);
-  }
-
-  return true;
-};
-
-function _addListener(target, type, listener, prepend) {
-  var m;
-  var events;
-  var existing;
-
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-
-  events = target._events;
-  if (events === undefined) {
-    events = target._events = Object.create(null);
-    target._eventsCount = 0;
-  } else {
-    // To avoid recursion in the case that type === "newListener"! Before
-    // adding it to the listeners, first emit "newListener".
-    if (events.newListener !== undefined) {
-      target.emit('newListener', type,
-                  listener.listener ? listener.listener : listener);
-
-      // Re-assign `events` because a newListener handler could have caused the
-      // this._events to be assigned to a new object
-      events = target._events;
-    }
-    existing = events[type];
-  }
-
-  if (existing === undefined) {
-    // Optimize the case of one listener. Don't need the extra array object.
-    existing = events[type] = listener;
-    ++target._eventsCount;
-  } else {
-    if (typeof existing === 'function') {
-      // Adding the second element, need to change to array.
-      existing = events[type] =
-        prepend ? [listener, existing] : [existing, listener];
-      // If we've already got an array, just append.
-    } else if (prepend) {
-      existing.unshift(listener);
-    } else {
-      existing.push(listener);
-    }
-
-    // Check for listener leak
-    m = $getMaxListeners(target);
-    if (m > 0 && existing.length > m && !existing.warned) {
-      existing.warned = true;
-      // No error code for this since it is a Warning
-      // eslint-disable-next-line no-restricted-syntax
-      var w = new Error('Possible EventEmitter memory leak detected. ' +
-                          existing.length + ' ' + String(type) + ' listeners ' +
-                          'added. Use emitter.setMaxListeners() to ' +
-                          'increase limit');
-      w.name = 'MaxListenersExceededWarning';
-      w.emitter = target;
-      w.type = type;
-      w.count = existing.length;
-      ProcessEmitWarning(w);
-    }
-  }
-
-  return target;
-}
-
-EventEmitter.prototype.addListener = function addListener(type, listener) {
-  return _addListener(this, type, listener, false);
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.prependListener =
-    function prependListener(type, listener) {
-      return _addListener(this, type, listener, true);
-    };
-
-function onceWrapper() {
-  var args = [];
-  for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
-  if (!this.fired) {
-    this.target.removeListener(this.type, this.wrapFn);
-    this.fired = true;
-    ReflectApply(this.listener, this.target, args);
-  }
-}
-
-function _onceWrap(target, type, listener) {
-  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
-  var wrapped = onceWrapper.bind(state);
-  wrapped.listener = listener;
-  state.wrapFn = wrapped;
-  return wrapped;
-}
-
-EventEmitter.prototype.once = function once(type, listener) {
-  if (typeof listener !== 'function') {
-    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-  }
-  this.on(type, _onceWrap(this, type, listener));
-  return this;
-};
-
-EventEmitter.prototype.prependOnceListener =
-    function prependOnceListener(type, listener) {
-      if (typeof listener !== 'function') {
-        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-      }
-      this.prependListener(type, _onceWrap(this, type, listener));
-      return this;
-    };
-
-// Emits a 'removeListener' event if and only if the listener was removed.
-EventEmitter.prototype.removeListener =
-    function removeListener(type, listener) {
-      var list, events, position, i, originalListener;
-
-      if (typeof listener !== 'function') {
-        throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-      }
-
-      events = this._events;
-      if (events === undefined)
-        return this;
-
-      list = events[type];
-      if (list === undefined)
-        return this;
-
-      if (list === listener || list.listener === listener) {
-        if (--this._eventsCount === 0)
-          this._events = Object.create(null);
-        else {
-          delete events[type];
-          if (events.removeListener)
-            this.emit('removeListener', type, list.listener || listener);
-        }
-      } else if (typeof list !== 'function') {
-        position = -1;
-
-        for (i = list.length - 1; i >= 0; i--) {
-          if (list[i] === listener || list[i].listener === listener) {
-            originalListener = list[i].listener;
-            position = i;
-            break;
-          }
-        }
-
-        if (position < 0)
-          return this;
-
-        if (position === 0)
-          list.shift();
-        else {
-          spliceOne(list, position);
-        }
-
-        if (list.length === 1)
-          events[type] = list[0];
-
-        if (events.removeListener !== undefined)
-          this.emit('removeListener', type, originalListener || listener);
-      }
-
-      return this;
-    };
-
-EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-
-EventEmitter.prototype.removeAllListeners =
-    function removeAllListeners(type) {
-      var listeners, events, i;
-
-      events = this._events;
-      if (events === undefined)
-        return this;
-
-      // not listening for removeListener, no need to emit
-      if (events.removeListener === undefined) {
-        if (arguments.length === 0) {
-          this._events = Object.create(null);
-          this._eventsCount = 0;
-        } else if (events[type] !== undefined) {
-          if (--this._eventsCount === 0)
-            this._events = Object.create(null);
-          else
-            delete events[type];
-        }
-        return this;
-      }
-
-      // emit removeListener for all listeners on all events
-      if (arguments.length === 0) {
-        var keys = Object.keys(events);
-        var key;
-        for (i = 0; i < keys.length; ++i) {
-          key = keys[i];
-          if (key === 'removeListener') continue;
-          this.removeAllListeners(key);
-        }
-        this.removeAllListeners('removeListener');
-        this._events = Object.create(null);
-        this._eventsCount = 0;
-        return this;
-      }
-
-      listeners = events[type];
-
-      if (typeof listeners === 'function') {
-        this.removeListener(type, listeners);
-      } else if (listeners !== undefined) {
-        // LIFO order
-        for (i = listeners.length - 1; i >= 0; i--) {
-          this.removeListener(type, listeners[i]);
-        }
-      }
-
-      return this;
-    };
-
-function _listeners(target, type, unwrap) {
-  var events = target._events;
-
-  if (events === undefined)
-    return [];
-
-  var evlistener = events[type];
-  if (evlistener === undefined)
-    return [];
-
-  if (typeof evlistener === 'function')
-    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
-
-  return unwrap ?
-    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
-}
-
-EventEmitter.prototype.listeners = function listeners(type) {
-  return _listeners(this, type, true);
-};
-
-EventEmitter.prototype.rawListeners = function rawListeners(type) {
-  return _listeners(this, type, false);
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  if (typeof emitter.listenerCount === 'function') {
-    return emitter.listenerCount(type);
-  } else {
-    return listenerCount.call(emitter, type);
-  }
-};
-
-EventEmitter.prototype.listenerCount = listenerCount;
-function listenerCount(type) {
-  var events = this._events;
-
-  if (events !== undefined) {
-    var evlistener = events[type];
-
-    if (typeof evlistener === 'function') {
-      return 1;
-    } else if (evlistener !== undefined) {
-      return evlistener.length;
-    }
-  }
-
-  return 0;
-}
-
-EventEmitter.prototype.eventNames = function eventNames() {
-  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
-};
-
-function arrayClone(arr, n) {
-  var copy = new Array(n);
-  for (var i = 0; i < n; ++i)
-    copy[i] = arr[i];
-  return copy;
-}
-
-function spliceOne(list, index) {
-  for (; index + 1 < list.length; index++)
-    list[index] = list[index + 1];
-  list.pop();
-}
-
-function unwrapListeners(arr) {
-  var ret = new Array(arr.length);
-  for (var i = 0; i < ret.length; ++i) {
-    ret[i] = arr[i].listener || arr[i];
-  }
-  return ret;
-}
-
-
-/***/ }),
-/* 6 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var hasProp = {}.hasOwnProperty;
@@ -908,18 +1148,22 @@ module.exports = function(obj) {
 
 
 /***/ }),
-/* 7 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findUnsortedItems, getItem, handleSingleMetaParamQuery, matchesQuery, separateItemQuery;
+var EVENT_INFO_TYPES, findUnsortedItems, getItem, handleSingleMetaParamQuery, matchesQuery, separateItemQuery, validateArguments;
 
-getItem = __webpack_require__(14);
+EVENT_INFO_TYPES = __webpack_require__(18);
 
-matchesQuery = __webpack_require__(15);
+getItem = __webpack_require__(24);
 
-separateItemQuery = __webpack_require__(16);
+matchesQuery = __webpack_require__(25);
 
-handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord) {
+separateItemQuery = __webpack_require__(26);
+
+validateArguments = __webpack_require__(0);
+
+handleSingleMetaParamQuery = function(metaQuery, eventInfoCb, store, structure, singleRecord) {
   var itemIds, items, targetStore;
   if ((metaQuery.id != null) && typeof metaQuery.id === 'number') {
     return [getItem(metaQuery.id, store, structure)];
@@ -932,7 +1176,7 @@ handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord)
       itemIds = itemIds.slice(0, 1);
     }
     items = itemIds.map(function(id) {
-      return getItem(id, store, structure);
+      return getItem(id, eventInfoCb, store, structure);
     });
     return items;
   } else if ((metaQuery.persistent != null) && metaQuery.persistent === 'boolean') {
@@ -945,7 +1189,7 @@ handleSingleMetaParamQuery = function(metaQuery, store, structure, singleRecord)
   return null;
 };
 
-findUnsortedItems = function(query, store, structure, singleRecord) {
+findUnsortedItems = function(query, eventInfoCb, store, structure, singleRecord) {
   var cachedQuery, cachedQueryStr, findQueryStr, i, item, itemIds, itemQuery, items, j, key, len, len1, matches, metaQuery, record, ref, ref1, result, value;
   if (singleRecord == null) {
     singleRecord = false;
@@ -972,8 +1216,6 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
     query = {
       $tag: query
     };
-  } else if (typeof query !== 'object') {
-    throw new Error("findItem only accepts query object, id or tag, not " + (typeof query));
   }
   findQueryStr = Object.keys(query).sort().join(',');
   ref = structure.byQuery;
@@ -981,6 +1223,9 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
     cachedQuery = ref[i];
     cachedQueryStr = Object.keys(cachedQuery.fullQuery).sort().join(',');
     if (findQueryStr === cachedQueryStr && matchesQuery.testObj(query, cachedQuery.rawFindQuery)) {
+      eventInfoCb(EVENT_INFO_TYPES.cacheHit, {
+        cacheHit: true
+      });
       key = cachedQuery.cachedKey;
       if (cachedQuery.isMetaKey) {
         key = '$' + key;
@@ -989,15 +1234,18 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
       itemIds = cachedQuery.values[value];
       if (Array.isArray(itemIds)) {
         return itemIds.map(function(id) {
-          return getItem(id, store, structure);
+          return getItem(id, eventInfoCb, store, structure);
         });
       }
       return [];
     }
   }
+  eventInfoCb(EVENT_INFO_TYPES.cacheHit, {
+    cacheHit: false
+  });
   ref1 = separateItemQuery(query), itemQuery = ref1.item, metaQuery = ref1.meta;
   if (Object.keys(itemQuery).length === 0 && Object.keys(metaQuery).length === 1) {
-    result = handleSingleMetaParamQuery(metaQuery, store, structure, singleRecord);
+    result = handleSingleMetaParamQuery(metaQuery, eventInfoCb, store, structure, singleRecord);
     if (result != null) {
       return result;
     }
@@ -1007,7 +1255,7 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
       return [];
     }
     items = structure.byTag[metaQuery.tag].map(function(id) {
-      return getItem(id, store, structure);
+      return getItem(id, eventInfoCb, store, structure);
     });
     if ((metaQuery.persistent != null) && typeof metaQuery.persistent === 'boolean') {
       items = items.filter(function(item) {
@@ -1036,9 +1284,10 @@ findUnsortedItems = function(query, store, structure, singleRecord) {
   return matches;
 };
 
-module.exports = function(query, store, structure, singleRecord) {
+module.exports = function(query, eventInfoCb, store, structure, singleRecord) {
   var unsortedResult;
-  unsortedResult = findUnsortedItems(query, store, structure, singleRecord);
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  unsortedResult = findUnsortedItems(query, eventInfoCb, store, structure, singleRecord);
   if (unsortedResult.length > 1) {
     unsortedResult.sort(function(a, b) {
       return a.meta.id - b.meta.id;
@@ -1049,34 +1298,30 @@ module.exports = function(query, store, structure, singleRecord) {
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
 
-var g;
+var findItemsInStore, validateArguments;
 
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
+findItemsInStore = __webpack_require__(12);
 
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
+validateArguments = __webpack_require__(0);
 
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
+module.exports = function(state, eventInfoCb, query, shouldReturnSingleRecord) {
+  var items;
+  if (shouldReturnSingleRecord == null) {
+    shouldReturnSingleRecord = false;
+  }
+  validateArguments([query, eventInfoCb, shouldReturnSingleRecord], ['query', 'function', 'boolean']);
+  items = findItemsInStore(query, eventInfoCb, state.store, state.structure, shouldReturnSingleRecord).filter(function(i) {
+    return i != null;
+  });
+  return items;
+};
 
 
 /***/ }),
-/* 9 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -1091,12 +1336,12 @@ module.exports = {
 
 
 /***/ }),
-/* 10 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 module.exports = function(testObj) {
   var answer, answerIndex, answerResults, i, j, len, maxScore, question, questionId, ref, score;
@@ -1135,7 +1380,7 @@ module.exports = function(testObj) {
 
 
 /***/ }),
-/* 11 */
+/* 16 */
 /***/ (function(module, exports) {
 
 var decodeValue, encodeValue, parseTypeQueryString;
@@ -1222,7 +1467,7 @@ module.exports = {
 
 
 /***/ }),
-/* 12 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EventEmitter, MESSAGES, QuestionSelectList, SELECT_ALL_ID, getListItemHtml,
@@ -1231,9 +1476,9 @@ var EventEmitter, MESSAGES, QuestionSelectList, SELECT_ALL_ID, getListItemHtml,
 
 SELECT_ALL_ID = 'selectAll';
 
-EventEmitter = __webpack_require__(5);
+EventEmitter = __webpack_require__(9);
 
-MESSAGES = __webpack_require__(0).questionSelect;
+MESSAGES = __webpack_require__(1).questionSelect;
 
 getListItemHtml = function(filter, i, listName) {
   return ("<li data-filter-id='" + filter.id + "' " + (i != null ? "data-index='" + i + "'" : '') + ">") + ("<input type='checkbox' checked id='" + (listName + '-' + filter.id) + "'>") + ("<label for='" + (listName + '-' + filter.id) + "'>") + ("<span class='filterName'>" + filter.name + "</span> ") + "<span class='questionCountWrapper'>[<span class='questionCount'></span>]</span>" + "</label>" + "</li>";
@@ -1453,7 +1698,78 @@ module.exports = QuestionSelectList = (function(superClass) {
 
 
 /***/ }),
-/* 13 */
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  cacheHit: 'cacheHit'
+};
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var applyFnArray;
+
+applyFnArray = __webpack_require__(20);
+
+module.exports = function(externalItem, tag, decorators) {
+  if (externalItem == null) {
+    return null;
+  }
+  if (tag != null) {
+    return applyFnArray(externalItem, decorators[tag], null, true);
+  }
+  return externalItem;
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = function(item, fnArr, additionalParam, checkForReturnValue) {
+  var fn, i, len, originalItem;
+  if (fnArr == null) {
+    return item;
+  }
+  originalItem = item;
+  for (i = 0, len = fnArr.length; i < len; i++) {
+    fn = fnArr[i];
+    item = fn(item, additionalParam);
+    if (checkForReturnValue && item !== originalItem) {
+      throw new Error('processor function must return modified item, not new object');
+    }
+  }
+  return item;
+};
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var applyFnArray;
+
+applyFnArray = __webpack_require__(20);
+
+module.exports = function(externalItem, tag, validators) {
+  var err;
+  if (tag != null) {
+    try {
+      applyFnArray(externalItem, validators[tag], true, false);
+    } catch (error) {
+      err = error;
+      console.warn("validation failed - tag: " + tag, externalItem);
+      throw err;
+    }
+  }
+};
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, exports) {
 
 var StorageFullError,
@@ -1473,10 +1789,34 @@ module.exports = StorageFullError = (function(superClass) {
 
 
 /***/ }),
-/* 14 */
+/* 23 */
 /***/ (function(module, exports) {
 
-module.exports = function(id, store, structure) {
+module.exports = function() {
+  var structure;
+  structure = {
+    location: {},
+    byTag: {},
+    byQuery: [],
+    LOCATIONS: {
+      DB: 'db',
+      MEMORY_STORE: 'memoryStore'
+    }
+  };
+  return structure;
+};
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var validate;
+
+validate = __webpack_require__(0);
+
+module.exports = function(id, eventInfoCb, store, structure) {
+  validate([id, eventInfoCb], ['id', 'function']);
   switch (structure.location[id]) {
     case structure.LOCATIONS.DB:
       return store.db.readItem(id);
@@ -1489,7 +1829,7 @@ module.exports = function(id, store, structure) {
 
 
 /***/ }),
-/* 15 */
+/* 25 */
 /***/ (function(module, exports) {
 
 var testObj;
@@ -1526,7 +1866,7 @@ module.exports.testObj = testObj;
 
 
 /***/ }),
-/* 16 */
+/* 26 */
 /***/ (function(module, exports) {
 
 var hasProp = {}.hasOwnProperty;
@@ -1552,198 +1892,180 @@ module.exports = function(query) {
 
 
 /***/ }),
-/* 17 */
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var cloneValue, getNextId, validateArguments;
+
+getNextId = __webpack_require__(75);
+
+cloneValue = __webpack_require__(10);
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(arg, eventInfoCb, store) {
+  var id, isExisting, item, meta, metaItem, newMeta, persistent;
+  item = arg.item, meta = arg.meta, isExisting = arg.isExisting;
+  validateArguments([item, meta, isExisting, eventInfoCb], ['object', 'object', 'boolean', 'function']);
+  if (isExisting) {
+    newMeta = meta;
+  } else {
+    id = getNextId(store);
+    if (meta.persistent === true) {
+      persistent = true;
+    } else {
+      persistent = false;
+    }
+    newMeta = {
+      id: id,
+      tag: meta.tag,
+      persistent: persistent,
+      writeTime: Date.now()
+    };
+  }
+  metaItem = {
+    item: cloneValue(item),
+    meta: newMeta
+  };
+  if (newMeta.persistent) {
+    store.db.writeItem(newMeta.id, metaItem);
+  } else {
+    store.memory.writeItem(newMeta.id, metaItem);
+  }
+  return metaItem;
+};
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(itemId, eventInfoCb, store, structure) {
+  validateArguments([itemId, eventInfoCb], ['id', 'function']);
+  switch (structure.location[itemId]) {
+    case structure.LOCATIONS.DB:
+      return store.db.removeItem(itemId);
+    case structure.LOCATIONS.MEMORY_STORE:
+      return store.memory.removeItem(itemId);
+    default:
+      return null;
+  }
+};
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getInternalItem, getItemId, removeItem, removeItemFromStore, updateStructure, validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+removeItemFromStore = __webpack_require__(28);
+
+updateStructure = __webpack_require__(4);
+
+getInternalItem = __webpack_require__(7);
+
+getItemId = function(item, expectInternalItem) {
+  if (validateArguments.matches([item], ['id'])) {
+    return item;
+  }
+  if (expectInternalItem) {
+    validateArguments([item], ['internalItem']);
+    return item.meta.id;
+  }
+  validateArguments([item], ['externalItem']);
+  return getInternalItem(item).meta.id;
+};
+
+removeItem = module.exports = function(state, eventInfoCb, item, expectInternalItem) {
+  var itemId, removedItem, removedItems;
+  if (expectInternalItem == null) {
+    expectInternalItem = false;
+  }
+  if (Array.isArray(item)) {
+    removedItems = (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = item.length; i < len; i++) {
+        item = item[i];
+        results.push(removeItem(state, item));
+      }
+      return results;
+    })();
+    return removedItems;
+  }
+  validateArguments([item, eventInfoCb], ['id|externalItem|internalItem', 'function']);
+  itemId = getItemId(item, expectInternalItem);
+  removedItem = removeItemFromStore(itemId, eventInfoCb, state.store, state.structure);
+  if (removedItem != null) {
+    state.structure = updateStructure.remove(state.structure, removedItem, state.store);
+  }
+  return removedItem;
+};
+
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
-module.exports = function() {
-  var structure;
-  structure = {
-    location: {},
-    byTag: {},
-    byQuery: [],
-    LOCATIONS: {
-      DB: 'db',
-      MEMORY_STORE: 'memoryStore'
-    }
-  };
-  return structure;
+module.exports = function(traceStr, sliceIndex) {
+  var lines;
+  lines = traceStr.split('\n');
+  lines.splice(1, 1 + sliceIndex);
+  return lines.join('\n');
 };
 
 
 /***/ }),
-/* 18 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findItems, getValueFromItem, isEmptyObj, matchesQuery, separateItemQuery, separateQuery, updateStructure;
+var CONFIG, MESSAGES, STORE_TAGS, bindErrorListeners, bindMobileMenuToggle, bindSidemenuManager, getLoaderManager, loaderManager, prepareStore, questionTypes, setupScreenManager, validateArguments;
 
-findItems = __webpack_require__(7);
+__webpack_require__(32);
 
-matchesQuery = __webpack_require__(15);
+CONFIG = __webpack_require__(2);
 
-separateItemQuery = __webpack_require__(16);
+MESSAGES = __webpack_require__(1);
 
-isEmptyObj = __webpack_require__(6);
+STORE_TAGS = __webpack_require__(14);
 
-separateQuery = function(cacheQuery) {
-  var cache, cachePropQuery, find, findQuery, key, ref, value;
-  findQuery = {};
-  cachePropQuery = {};
-  for (key in cacheQuery) {
-    value = cacheQuery[key];
-    if ((value != null) && typeof value === 'object') {
-      ref = separateQuery(value), find = ref.find, cache = ref.cache;
-      if (!isEmptyObj(find)) {
-        findQuery[key] = find;
-      }
-      if (!isEmptyObj(cache)) {
-        cachePropQuery[key] = cache;
-      }
-    } else if (value != null) {
-      findQuery[key] = value;
-    } else {
-      cachePropQuery[key] = null;
-    }
-  }
-  return {
-    find: findQuery,
-    cache: cachePropQuery
-  };
-};
+window.util = __webpack_require__(40);
 
-getValueFromItem = function(item, key, isMeta) {
-  if (isMeta) {
-    return item.meta[key];
-  } else {
-    return item.item[key];
-  }
-};
+validateArguments = __webpack_require__(8);
 
-module.exports = updateStructure = {
-  add: function(structure, item) {
-    var i, key, len, query, ref;
-    structure.location[item.meta.id] = item.meta.persistent ? structure.LOCATIONS.DB : structure.LOCATIONS.MEMORY_STORE;
-    if (item.meta.tag != null) {
-      if (structure.byTag[item.meta.tag] == null) {
-        structure.byTag[item.meta.tag] = [];
-      }
-      structure.byTag[item.meta.tag].push(item.meta.id);
-    }
-    ref = structure.byQuery;
-    for (i = 0, len = ref.length; i < len; i++) {
-      query = ref[i];
-      if (matchesQuery(item, query.findQuery.item, query.findQuery.meta)) {
-        key = getValueFromItem(item, query.cachedKey, query.isMetaKey);
-        if (query.values[key] == null) {
-          query.values[key] = [];
-        }
-        query.values[key].push(item.meta.id);
-      }
-    }
-    return structure;
-  },
-  remove: function(structure, item) {
-    var i, index, key, len, query, ref, tagCache;
-    if (structure.location[item.meta.id] == null) {
-      return;
-    }
-    delete structure.location[item.meta.id];
-    if (item.meta.tag != null) {
-      tagCache = structure.byTag[item.meta.tag];
-      tagCache.splice(tagCache.indexOf(item.meta.id), 1);
-      if (tagCache.length === 0) {
-        delete structure.byTag[item.meta.tag];
-      }
-    }
-    ref = structure.byQuery;
-    for (i = 0, len = ref.length; i < len; i++) {
-      query = ref[i];
-      key = getValueFromItem(item, query.cachedKey, query.isMetaKey);
-      if (query.values[key] == null) {
-        continue;
-      }
-      index = query.values[key].indexOf(item.meta.id);
-      if (index >= 0) {
-        query.values[key].splice(index, 1);
-        if (query.values[key].length === 0) {
-          delete query.values[key];
-        }
-      }
-    }
-    return structure;
-  },
-  change: function(structure, item) {
-    updateStructure.remove(structure, item);
-    return updateStructure.add(structure, item);
-  },
-  cacheQuery: function(structure, query, store) {
-    var cacheQuery, findQuery, i, isMeta, item, items, keys, len, propKey, propMap, ref, value;
-    ref = separateQuery(query), findQuery = ref.find, cacheQuery = ref.cache;
-    keys = Object.keys(cacheQuery);
-    if (keys.length !== 1 || cacheQuery[keys[0]] !== null) {
-      throw new Error('current implementation of cached queries only supports single cached parameter (not nested)');
-    }
-    propKey = keys[0];
-    isMeta = propKey[0] === '$';
-    if (isMeta) {
-      propKey = propKey.slice(1);
-    }
-    propMap = {};
-    items = findItems(findQuery, store, structure, false);
-    for (i = 0, len = items.length; i < len; i++) {
-      item = items[i];
-      value = getValueFromItem(item, propKey, isMeta);
-      if (propMap[value] == null) {
-        propMap[value] = [];
-      }
-      propMap[value].push(item.meta.id);
-    }
-    structure.byQuery.push({
-      fullQuery: query,
-      findQuery: separateItemQuery(findQuery),
-      rawFindQuery: findQuery,
-      cachedKey: propKey,
-      isMetaKey: isMeta,
-      values: propMap
-    });
-    return structure;
-  }
-};
+bindErrorListeners = __webpack_require__(43);
 
+setupScreenManager = __webpack_require__(44);
 
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
+prepareStore = __webpack_require__(58);
 
-var CONFIG, STORE_TAGS, bindErrorListeners, bindMobileMenuToggle, bindSidemenuManager, getLoaderManager, loaderManager, prepareStore, questionTypes, setupScreenManager;
+bindSidemenuManager = __webpack_require__(96);
 
-__webpack_require__(20);
+getLoaderManager = __webpack_require__(97);
 
-CONFIG = __webpack_require__(1);
+bindMobileMenuToggle = __webpack_require__(98);
 
-STORE_TAGS = __webpack_require__(9);
-
-__webpack_require__(27);
-
-bindErrorListeners = __webpack_require__(28);
-
-setupScreenManager = __webpack_require__(29);
-
-prepareStore = __webpack_require__(43);
-
-bindSidemenuManager = __webpack_require__(69);
-
-getLoaderManager = __webpack_require__(70);
-
-bindMobileMenuToggle = __webpack_require__(71);
-
-questionTypes = __webpack_require__(72);
+questionTypes = __webpack_require__(99);
 
 bindErrorListeners();
+
+window.validateArguments = validateArguments;
 
 window.db = {
   questionTypes: questionTypes,
   STORE_TAGS: STORE_TAGS
 };
+
+document.title = MESSAGES.tabTitle;
+
+document.getElementById('pageTitle').innerHTML = MESSAGES.pageTitle;
 
 bindMobileMenuToggle(document.getElementById('mobileMenuToggle'), document.getElementById('sidebar'), document.getElementById('mobilePageCover'));
 
@@ -1759,11 +2081,11 @@ prepareStore().then(function() {
 
 
 /***/ }),
-/* 20 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 if (window.Promise == null) {
-  window.Promise = __webpack_require__(21);
+  window.Promise = __webpack_require__(33);
 }
 
 if (window.Symbol == null) {
@@ -1773,18 +2095,18 @@ if (window.Symbol == null) {
 }
 
 if (Object.assign == null) {
-  Object.assign = __webpack_require__(25);
+  Object.assign = __webpack_require__(38);
 }
 
 if (Array.prototype.fill == null) {
   Object.defineProperty(Array.prototype, 'fill', {
-    value: __webpack_require__(26)
+    value: __webpack_require__(39)
   });
 }
 
 
 /***/ }),
-/* 21 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -2021,24 +2343,21 @@ if (Array.prototype.fill == null) {
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(22).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34).setImmediate))
 
 /***/ }),
-/* 22 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
 var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
 exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
 };
 exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
 };
 exports.clearTimeout =
 exports.clearInterval = function(timeout) {
@@ -2053,7 +2372,7 @@ function Timeout(id, clearFn) {
 }
 Timeout.prototype.unref = Timeout.prototype.ref = function() {};
 Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
+  this._clearFn.call(window, this._id);
 };
 
 // Does not start the time, just sets up the members needed.
@@ -2080,21 +2399,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(23);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
+__webpack_require__(35);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 23 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -2284,10 +2595,37 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), __webpack_require__(24)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36), __webpack_require__(37)))
 
 /***/ }),
-/* 24 */
+/* 36 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 37 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -2477,7 +2815,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 25 */
+/* 38 */
 /***/ (function(module, exports) {
 
 var slice = [].slice,
@@ -2499,7 +2837,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 26 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = function(fillValue, start, end) {
@@ -2521,15 +2859,15 @@ module.exports = function(fillValue, start, end) {
 
 
 /***/ }),
-/* 27 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getTestResults,
   hasProp = {}.hasOwnProperty;
 
-getTestResults = __webpack_require__(10);
+getTestResults = __webpack_require__(15);
 
-window.util = {
+module.exports = {
   evaluateCurrentTest: function() {
     var currentTest;
     currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST);
@@ -2540,12 +2878,18 @@ window.util = {
   },
   storage: {
     getSize: function() {
-      var key, keyValueSize, sizes, totalSize;
+      var i, key, keyValueSize, sizes, totalSize;
       totalSize = 0;
       sizes = {
         byKey: {}
       };
-      for (key in localStorage) {
+      i = 0;
+      while (true) {
+        key = localStorage.key(i);
+        i++;
+        if (key == null) {
+          break;
+        }
         keyValueSize = (localStorage[key].length + key.length) * 2;
         totalSize += keyValueSize;
         sizes.byKey[key] = keyValueSize;
@@ -2598,14 +2942,82 @@ window.util = {
 
 
 /***/ }),
-/* 28 */
+/* 41 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  array: function(arg, arrItemType, matchTypeFn) {
+    var i, item, len;
+    if (arrItemType == null) {
+      arrItemType = null;
+    }
+    if (!Array.isArray(arg)) {
+      return false;
+    }
+    if (arrItemType != null) {
+      for (i = 0, len = arg.length; i < len; i++) {
+        item = arg[i];
+        if (matchTypeFn(item, arrItemType) !== true) {
+          return false;
+        }
+      }
+    }
+    return true;
+  },
+  "null": function(arg) {
+    return arg == null;
+  },
+  "function": function(arg) {
+    return typeof arg === 'function';
+  },
+  string: function(arg) {
+    return typeof arg === 'string';
+  },
+  int: function(arg) {
+    return this.number(arg) && (arg % 1) === 0;
+  },
+  number: function(arg) {
+    return typeof arg === 'number';
+  },
+  boolean: function(arg) {
+    return typeof arg === 'boolean';
+  },
+  object: function(arg) {
+    return (arg != null) && typeof arg === 'object';
+  },
+  '*': function() {
+    return true;
+  }
+};
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports) {
+
+module.exports = function(error, sliceIndex) {
+  var err, lines;
+  try {
+    throw new error.constructor(error.message);
+  } catch (error1) {
+    err = error1;
+    lines = err.stack.split('\n');
+    lines.splice(1, 1 + sliceIndex);
+    err.stack = lines.join('\n');
+    return err;
+  }
+};
+
+
+/***/ }),
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES;
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 module.exports = function() {
   var handleUncaughtError;
@@ -2640,22 +3052,22 @@ module.exports = function() {
 
 
 /***/ }),
-/* 29 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bindScreenManager, screens;
 
-bindScreenManager = __webpack_require__(30);
+bindScreenManager = __webpack_require__(45);
 
 screens = {
-  questionSelect: __webpack_require__(31),
-  browsing: __webpack_require__(33),
-  evaluateSession: __webpack_require__(35),
-  browseEvaluatedSession: __webpack_require__(36),
-  prepareTest: __webpack_require__(37),
-  practiceTest: __webpack_require__(40),
-  evaluateTest: __webpack_require__(41),
-  browseEvaluatedTest: __webpack_require__(42)
+  questionSelect: __webpack_require__(46),
+  browsing: __webpack_require__(48),
+  evaluateSession: __webpack_require__(50),
+  browseEvaluatedSession: __webpack_require__(51),
+  prepareTest: __webpack_require__(52),
+  practiceTest: __webpack_require__(55),
+  evaluateTest: __webpack_require__(56),
+  browseEvaluatedTest: __webpack_require__(57)
 };
 
 module.exports = function() {
@@ -2667,12 +3079,12 @@ module.exports = function() {
 
 
 /***/ }),
-/* 30 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getHash, gotoPage, screenHash, updateView;
 
-screenHash = __webpack_require__(11);
+screenHash = __webpack_require__(16);
 
 gotoPage = function(pageName, params) {
   window.location.hash = screenHash.generate(pageName, params);
@@ -2720,16 +3132,16 @@ module.exports = function(container, screens, defaultScreen) {
 
 
 /***/ }),
-/* 31 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var MESSAGES, QuestionNumberDisplay, QuestionSelectList;
 
-MESSAGES = __webpack_require__(0).questionSelect;
+MESSAGES = __webpack_require__(1).questionSelect;
 
-QuestionSelectList = __webpack_require__(12);
+QuestionSelectList = __webpack_require__(17);
 
-QuestionNumberDisplay = __webpack_require__(32);
+QuestionNumberDisplay = __webpack_require__(47);
 
 module.exports = function(container, goto, params) {
   var disableSubmitButtonIfUnselected, form, i, questionIds, questionNumberDisplay, questionNumberDisplayElem, questionTypeList, questionTypeListElem, sectionList, sectionListElem, session, submitButton;
@@ -2800,16 +3212,16 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 32 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EventEmitter, QuestionNumberDisplay, QuestionSelectList,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-EventEmitter = __webpack_require__(5);
+EventEmitter = __webpack_require__(9);
 
-QuestionSelectList = __webpack_require__(12);
+QuestionSelectList = __webpack_require__(17);
 
 module.exports = QuestionNumberDisplay = (function(superClass) {
   extend(QuestionNumberDisplay, superClass);
@@ -2853,18 +3265,18 @@ module.exports = QuestionNumberDisplay = (function(superClass) {
 
 
 /***/ }),
-/* 33 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).browsingQuestions;
+MESSAGES = __webpack_require__(1).browsingQuestions;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-renderQuestion = __webpack_require__(3);
+renderQuestion = __webpack_require__(5);
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 qIndexFromParams = function(params) {
   var index;
@@ -2914,7 +3326,8 @@ module.exports = function(container, goto, params) {
   correctAnswerClicked = false;
   clickedAnswerIndexes = [];
   renderQuestion({
-    questionIds: sessionItem.questionIds,
+    question: question,
+    questionCount: sessionItem.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.browsingMode,
@@ -3009,18 +3422,18 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 34 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var EventEmitter, MESSAGES, QuestionView, createElem, generateAnswerList, generateQuestionElem, renderQuestionImage,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-EventEmitter = __webpack_require__(5);
+EventEmitter = __webpack_require__(9);
 
-MESSAGES = __webpack_require__(0).questionView;
+MESSAGES = __webpack_require__(1).questionView;
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 renderQuestionImage = function(img, container) {
   container.classList.add('singleImg');
@@ -3164,16 +3577,16 @@ module.exports = QuestionView = (function(superClass) {
 
 
 /***/ }),
-/* 35 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, e, getResults, renderQuestionList, renderSuccessBar;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0).evaluateTest;
+MESSAGES = __webpack_require__(1).evaluateTest;
 
-e = __webpack_require__(2);
+e = __webpack_require__(3);
 
 getResults = function(sessionObj) {
   var existingAnswers;
@@ -3210,15 +3623,19 @@ renderQuestionList = function(session, goto) {
     results = [];
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       questionId = ref[i];
+      qAnswers = session.answers[i];
+      if ((qAnswers == null) || qAnswers.length === 0) {
+        continue;
+      }
       question = store.findOne({
         $tag: db.STORE_TAGS.QUESTION,
         id: questionId
       });
-      itemClass = '';
-      qAnswers = session.answers[i];
-      if ((qAnswers == null) || qAnswers.length === 0) {
+      if (question == null) {
         continue;
-      } else if (qAnswers.length === 1) {
+      }
+      itemClass = '';
+      if (qAnswers.length === 1) {
         itemClass = '.correct';
       } else {
         itemClass = '.incorrect';
@@ -3269,18 +3686,18 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 36 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).browsingQuestions;
+MESSAGES = __webpack_require__(1).browsingQuestions;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-renderQuestion = __webpack_require__(3);
+renderQuestion = __webpack_require__(5);
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 qIndexFromParams = function(params) {
   var index;
@@ -3319,7 +3736,8 @@ module.exports = function(container, goto, params) {
   questionContainer = createElem('div .questionView .browsingMode .showResults');
   container.appendChild(questionContainer);
   renderQuestion({
-    questionIds: session.questionIds,
+    question: question,
+    questionCount: session.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -3389,14 +3807,14 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 37 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Highcharts, generateTest, getChartConfig, renderFinishedTestChart;
 
-generateTest = __webpack_require__(38);
+generateTest = __webpack_require__(53);
 
-Highcharts = __webpack_require__(39);
+Highcharts = __webpack_require__(54);
 
 getChartConfig = function(maxScore, testScores, passScores) {
   return {
@@ -3463,7 +3881,7 @@ renderFinishedTestChart = function(container, testResults) {
 };
 
 module.exports = function(container, goto) {
-  var currentTest, i, startButton, testChartContainer, testChartLabel;
+  var currentTest, i, items, startButton, testChartContainer, testChartLabel;
   currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST);
   if (currentTest != null) {
     if (currentTest.finished) {
@@ -3486,8 +3904,9 @@ module.exports = function(container, goto) {
   }
   container.innerHTML = '<h1>Cvičný test</h1> <div class="finishedTestLabel">Výsledky předchozích testů:</div> <div class="finishedTestChart"></div> <button class="actionButton startTestButton">ZAHÁJIT NOVÝ CVIČNÝ TEST</button>';
   testChartContainer = container.getElementsByClassName('finishedTestChart')[0];
-  if (store.count(db.STORE_TAGS.PRACTICE_TEST) > 0) {
-    renderFinishedTestChart(testChartContainer, store.find(db.STORE_TAGS.PRACTICE_TEST));
+  items = store.find(db.STORE_TAGS.PRACTICE_TEST);
+  if (items.length > 0) {
+    renderFinishedTestChart(testChartContainer, items);
   } else {
     testChartLabel = container.getElementsByClassName('finishedTestLabel')[0];
     testChartLabel.style.display = 'none';
@@ -3504,12 +3923,12 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 38 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, getRandomQuestions, getTestQuestionIds;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
 getRandomQuestions = function(sectionIds, count) {
   var i, j, len, len1, questionId, questionIds, ref, section, sectionId, selectedQuestions;
@@ -3574,7 +3993,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 39 */
+/* 54 */
 /***/ (function(module, exports) {
 
 /*
@@ -3976,18 +4395,18 @@ d[c][b],f[c][b],t+1));else n(a)?(f[c]=F(a)?[]:{},l(a,d[c]||{},f[c],t+1)):f[c]=d[
 
 
 /***/ }),
-/* 40 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).practiceTest;
+MESSAGES = __webpack_require__(1).practiceTest;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-renderQuestion = __webpack_require__(3);
+renderQuestion = __webpack_require__(5);
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 qIndexFromParams = function(params) {
   var index;
@@ -4028,7 +4447,8 @@ module.exports = function(container, goto, params) {
   container.appendChild(questionContainer);
   clicked = false;
   renderQuestion({
-    questionIds: questionIds,
+    question: question,
+    questionCount: questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -4085,20 +4505,20 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 41 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, PASS_SCORE, e, getTestResults, renderQuestionList, renderSuccessBar, saveTestResults;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-MESSAGES = __webpack_require__(0).evaluateTest;
+MESSAGES = __webpack_require__(1).evaluateTest;
 
 PASS_SCORE = CONFIG.testSuccessThreshold;
 
-e = __webpack_require__(2);
+e = __webpack_require__(3);
 
-getTestResults = __webpack_require__(10);
+getTestResults = __webpack_require__(15);
 
 saveTestResults = function(test, results) {
   var endTime, i, isCorrect, j, len, ref, testId, testItem;
@@ -4213,18 +4633,18 @@ module.exports = function(container, goto) {
 
 
 /***/ }),
-/* 42 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createElem, qIndexFromParams, renderQuestion;
 
-MESSAGES = __webpack_require__(0).practiceTest;
+MESSAGES = __webpack_require__(1).practiceTest;
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-renderQuestion = __webpack_require__(3);
+renderQuestion = __webpack_require__(5);
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 qIndexFromParams = function(params) {
   var index;
@@ -4263,7 +4683,8 @@ module.exports = function(container, goto, params) {
   questionContainer = createElem('div .questionView .testMode .showResults');
   container.appendChild(questionContainer);
   renderQuestion({
-    questionIds: currentTest.questionIds,
+    question: question,
+    questionCount: currentTest.questionIds.length,
     questionIndex: qIndex,
     container: questionContainer,
     shuffleAnswers: CONFIG.shuffleAnswers.testMode,
@@ -4332,20 +4753,20 @@ module.exports = function(container, goto, params) {
 
 
 /***/ }),
-/* 43 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var CONFIG, MESSAGES, createWrappedEveStore, storeConfig, updateTestData;
 
-MESSAGES = __webpack_require__(0);
+MESSAGES = __webpack_require__(1);
 
-CONFIG = __webpack_require__(1);
+CONFIG = __webpack_require__(2);
 
-createWrappedEveStore = __webpack_require__(44);
+createWrappedEveStore = __webpack_require__(59);
 
-updateTestData = __webpack_require__(60);
+updateTestData = __webpack_require__(87);
 
-storeConfig = __webpack_require__(67);
+storeConfig = __webpack_require__(94);
 
 module.exports = function() {
   var decorator, i, j, k, len, len1, len2, query, ref, ref1, ref2, validator;
@@ -4376,10 +4797,10 @@ module.exports = function() {
 
 
 /***/ }),
-/* 44 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var KEYS, MESSAGES, createEveStore, moveCollectionToMemory,
+var CONFIG, KEYS, MESSAGES, createEveStore, moveCollectionToMemory,
   hasProp = {}.hasOwnProperty;
 
 KEYS = {
@@ -4387,9 +4808,11 @@ KEYS = {
   placeholder: 'persistentStorageFullPlaceholder'
 };
 
-MESSAGES = __webpack_require__(0);
+CONFIG = __webpack_require__(2);
 
-createEveStore = __webpack_require__(45);
+MESSAGES = __webpack_require__(1);
+
+createEveStore = __webpack_require__(60);
 
 moveCollectionToMemory = function(tag, eve) {
   var collectionInDb, i, item, items, len;
@@ -4484,363 +4907,330 @@ module.exports = function() {
   };
   out.StorageFullError = eve.StorageFullError;
   out.rawStore = eve;
+  if (CONFIG.storeLogging.log) {
+    __webpack_require__(85)(out);
+  }
   return out;
 };
 
 
 /***/ }),
-/* 45 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ALREADY_LOADED_NAMESPACES, StorageFullError, applyFnArray, cloneValue, generateStructure, getClearStructure, getDb, getMemoryStore, isItemWithMeta, itemOperations, metaSymbol, raw_rewriteInternalItem, raw_separateStoreItem, raw_validateStoreItem, rewriteInternalItem, separateStoreItem, updateStructure, validateItemWithMeta;
+var ALREADY_LOADED_NAMESPACES, EVENT_INFO_TYPES, StorageFullError, createStoreState, getExternalItem, getInternalItem, storeOperations, stringifyQuery, updateStructure, validateArguments;
 
-StorageFullError = __webpack_require__(13);
+EVENT_INFO_TYPES = __webpack_require__(18);
 
-getDb = __webpack_require__(46);
+getExternalItem = __webpack_require__(61);
 
-getMemoryStore = __webpack_require__(49);
+getInternalItem = __webpack_require__(7);
 
-itemOperations = __webpack_require__(50);
+validateArguments = __webpack_require__(0);
 
-generateStructure = __webpack_require__(55);
+StorageFullError = __webpack_require__(22);
 
-updateStructure = __webpack_require__(18);
+createStoreState = __webpack_require__(66);
 
-getClearStructure = __webpack_require__(17);
+updateStructure = __webpack_require__(4);
 
-applyFnArray = __webpack_require__(56);
+stringifyQuery = __webpack_require__(72);
 
-cloneValue = __webpack_require__(4);
-
-isItemWithMeta = function(item) {
-  return (item != null) && typeof item === 'object' && (item[metaSymbol] != null);
-};
-
-raw_separateStoreItem = __webpack_require__(57);
-
-separateStoreItem = function(storeItem) {
-  return raw_separateStoreItem(storeItem, metaSymbol);
-};
-
-raw_rewriteInternalItem = __webpack_require__(58);
-
-rewriteInternalItem = function(internalItem) {
-  return raw_rewriteInternalItem(internalItem, metaSymbol);
-};
-
-raw_validateStoreItem = __webpack_require__(59);
-
-validateItemWithMeta = function(item) {
-  return raw_validateStoreItem(item, metaSymbol);
-};
+storeOperations = __webpack_require__(73);
 
 ALREADY_LOADED_NAMESPACES = [];
 
-metaSymbol = Symbol('eveStore metadata');
-
 module.exports = function(storeNamespace) {
-  var decorators, emit, eve, listeners, store, structure, undecorators, validators;
+  var emit, listeners, state;
   if (ALREADY_LOADED_NAMESPACES.indexOf(storeNamespace) > -1) {
     throw new Error('eveStore instance already loaded for this namespace - only one instance for each namespace is allowed');
   }
   ALREADY_LOADED_NAMESPACES.push(storeNamespace);
-  store = {
-    db: getDb(storeNamespace),
-    memory: getMemoryStore()
-  };
-  structure = generateStructure(store);
-  validators = {};
-  decorators = {};
-  undecorators = {};
+  state = createStoreState(storeNamespace);
   listeners = {};
-  emit = function(opType, message, data) {
-    var cb, j, k, len, len1, ref, ref1;
+  emit = function(opType, message, infoObj, data) {
+    var cb, emitTime, i, j, len, len1, ref, ref1;
+    if (infoObj == null) {
+      infoObj = null;
+    }
+    if (data == null) {
+      data = null;
+    }
+    validateArguments(arguments, ['string', 'string', 'object?', 'object?']);
+    if (infoObj != null) {
+      infoObj.namespace = state.store.namespace;
+    }
+    if (data != null) {
+      data.namespace = state.store.namespace;
+    }
+    emitTime = Date.now();
     if (listeners[opType] != null) {
       ref = listeners[opType];
-      for (j = 0, len = ref.length; j < len; j++) {
-        cb = ref[j];
-        cb(message, data, opType);
+      for (i = 0, len = ref.length; i < len; i++) {
+        cb = ref[i];
+        cb(opType, message, infoObj, data, emitTime);
       }
     }
     if (listeners['*'] != null) {
       ref1 = listeners['*'];
-      for (k = 0, len1 = ref1.length; k < len1; k++) {
-        cb = ref1[k];
-        cb(message, data, opType);
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        cb = ref1[j];
+        cb(opType, message, infoObj, data, emitTime);
       }
     }
   };
-  return eve = {
+  return {
     add: function(tag, persist, item) {
-      var err, returnedItem, rewrittenItem;
-      if (arguments.length === 1) {
-        item = tag;
-        persist = null;
-        tag = null;
-      } else if (arguments.length === 2) {
-        item = persist;
-        if (typeof tag === 'boolean') {
-          persist = tag;
-          tag = null;
-        } else {
-          persist = null;
-        }
-      }
-      if (typeof item !== 'object') {
-        throw new Error('item must be object, not ' + typeof item);
-      }
-      if (isItemWithMeta(item)) {
-        console.warn('to update item, use store.update, not store.add');
-        throw new Error('store.add does not accept already inserted item - use store.update for changes');
-      }
-      if (tag != null) {
-        try {
-          applyFnArray(item, validators[tag], true, false);
-        } catch (error) {
-          err = error;
-          console.warn("validation failed - tag: " + tag, item);
-          throw err;
-        }
-      }
-      returnedItem = itemOperations.add({
-        item: item,
-        meta: {
-          tag: tag,
-          persistent: persist
-        },
-        isExisting: false
-      }, store, structure);
-      structure = updateStructure.add(structure, returnedItem, store);
-      rewrittenItem = rewriteInternalItem(returnedItem);
-      if (returnedItem.meta.tag != null) {
-        rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true);
-      }
-      emit('add', "Added new item to `" + storeNamespace + "` (id: " + returnedItem.meta.id + ")", rewrittenItem);
-      return rewrittenItem;
+      var addedItem, internalItem;
+      internalItem = storeOperations.add(state, (function() {}), tag, persist, item);
+      addedItem = getExternalItem(internalItem, state.fnArrays.decorators);
+      emit('add', "Added new item", {
+        id: addedItem.$id,
+        persist: addedItem.$persistent,
+        tag: addedItem.$tag
+      }, {
+        item: addedItem
+      });
+      return addedItem;
     },
     update: function(item) {
-      var err, returnedItem, rewrittenItem, separatedItem, tag;
-      validateItemWithMeta(item);
-      tag = item[metaSymbol].tag;
-      if (tag != null) {
-        item = applyFnArray(item, undecorators[tag], null, true);
-        try {
-          applyFnArray(item, validators[tag], false, false);
-        } catch (error) {
-          err = error;
-          console.warn("validation failed - tag: " + tag, item);
-          throw err;
-        }
-      }
-      separatedItem = separateStoreItem(item);
-      separatedItem.isExisting = true;
-      itemOperations.remove(separatedItem, store, structure);
-      returnedItem = itemOperations.add(separatedItem, store, structure);
-      structure = updateStructure.change(structure, returnedItem, store);
-      rewrittenItem = rewriteInternalItem(returnedItem);
-      if (returnedItem.meta.tag != null) {
-        rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true);
-      }
-      emit('update', "Updated item (id: " + returnedItem.meta.id + ")", rewrittenItem);
-      return rewrittenItem;
+      var internalItem, updatedItem;
+      internalItem = storeOperations.update(state, (function() {}), item);
+      updatedItem = getExternalItem(internalItem, state.fnArrays.decorators);
+      emit('update', "Updated item", {
+        id: updatedItem.$id
+      }, {
+        item: updatedItem
+      });
+      return updatedItem;
     },
-    remove: function(itemOrId, __isInternal) {
-      var item, removedItem, removedItems, rewrittenItem;
-      if (__isInternal == null) {
-        __isInternal = false;
+    remove: function(itemToRemove) {
+      var externalItem, externalItems, removedItem;
+      removedItem = storeOperations.remove(state, (function() {}), itemToRemove);
+      if (removedItem == null) {
+        emit('remove', "Attempted to remove missing item", {
+          id: (typeof itemToRemove === 'number' ? itemToRemove : itemToRemove.$id),
+          itemCount: 0
+        }, {
+          item: itemToRemove,
+          itemCount: 0
+        });
+        return null;
       }
-      if (Array.isArray(itemOrId)) {
-        removedItems = (function() {
-          var j, len, results;
-          results = [];
-          for (j = 0, len = itemOrId.length; j < len; j++) {
-            item = itemOrId[j];
-            results.push(eve.remove(item, __isInternal));
-          }
-          return results;
-        })();
-        return removedItems;
+      if (Array.isArray(removedItem)) {
+        externalItems = removedItem.filter(function(item) {
+          return item != null;
+        }).map(function(item) {
+          return getExternalItem(item, state.fnArrays.decorators);
+        });
+        emit('remove', "Removed multiple items", {
+          itemCount: externalItems.length
+        }, {
+          item: externalItems,
+          itemCount: externalItems.length
+        });
+        return externalItems;
+      } else {
+        externalItem = getExternalItem(removedItem, state.fnArrays.decorators);
+        emit('remove', "Removed single item", {
+          id: externalItem.$id,
+          itemCount: 1,
+          added: Math.floor((Date.now() - externalItem.$writeTime) / 1000) + " seconds ago"
+        }, {
+          item: externalItem,
+          itemCount: 1
+        });
+        return externalItem;
       }
-      if (typeof itemOrId !== 'number' && !__isInternal) {
-        validateItemWithMeta(itemOrId);
-        itemOrId = separateStoreItem(itemOrId);
-      }
-      removedItem = itemOperations.remove(itemOrId, store, structure);
-      if (removedItem != null) {
-        structure = updateStructure.remove(structure, removedItem, store);
-      }
-      rewrittenItem = rewriteInternalItem(removedItem);
-      if (removedItem.meta.tag != null) {
-        rewrittenItem = applyFnArray(rewrittenItem, decorators[removedItem.meta.tag], null, true);
-      }
-      if (!__isInternal) {
-        if (removedItem != null) {
-          emit('remove', "Removed item from `" + storeNamespace + "` (id: " + removedItem.meta.id + ", added " + (Math.floor((Date.now() - removedItem.meta.writeTime) / 1000)) + " seconds ago)", rewrittenItem);
-        } else {
-          emit('remove', "Attempted to remove missing item (id: " + (typeof itemOrId === 'number' ? itemOrId : itemOrId.meta.id) + ")", null);
-        }
-      }
-      return rewrittenItem;
     },
     removeByQuery: function(query) {
-      var result, unfilteredResult;
-      unfilteredResult = eve.find(query, true).map((function(_this) {
-        return function(item) {
-          return eve.remove(item, true);
-        };
-      })(this));
-      result = unfilteredResult.filter(function(item) {
-        return item != null;
+      var cacheHit, eventInfoCb, externalItems, removedItems;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      removedItems = storeOperations.removeByQuery(state, eventInfoCb, query);
+      externalItems = removedItems.map(function(item) {
+        return getExternalItem(item, state.fnArrays.decorators);
       });
-      emit('removeByQuery', "Removed items by query (removedItemCount: " + result.length + ", foundItemCount: " + unfilteredResult.length + ")", {
+      emit('removeByQuery', 'Removed items by query', {
+        itemCount: externalItems.length,
+        cacheHit: cacheHit
+      }, {
         query: query,
-        foundItemCount: unfilteredResult.length,
-        removedItemCount: result.length
+        item: externalItems,
+        cacheHit: cacheHit
       });
-      return result;
+      return externalItems;
     },
     get: function(id) {
-      var returnedItem, rewrittenItem;
-      returnedItem = itemOperations.get(id, store, structure);
-      rewrittenItem = rewriteInternalItem(returnedItem);
-      if (returnedItem.meta.tag != null) {
-        rewrittenItem = applyFnArray(rewrittenItem, decorators[returnedItem.meta.tag], null, true);
-      }
-      emit('get', "Looked up item by ID (id: " + id + ")", rewrittenItem);
-      return rewrittenItem;
-    },
-    find: function(query, __isInternal, __singleRecord) {
-      var item, items, rawItems, rewrittenItem;
-      if (__isInternal == null) {
-        __isInternal = false;
-      }
-      if (__singleRecord == null) {
-        __singleRecord = false;
-      }
-      rawItems = itemOperations.find(query, store, structure, __singleRecord).filter(function(i) {
-        return i != null;
+      var externalItem, returnedItem;
+      returnedItem = storeOperations.get(state, (function() {}), id);
+      externalItem = getExternalItem(returnedItem, state.fnArrays.decorators);
+      emit('get', 'Looked up item by ID', {
+        id: id
+      }, {
+        item: externalItem
       });
-      if (__isInternal) {
-        items = rawItems;
-      } else {
-        items = (function() {
-          var j, len, results;
-          results = [];
-          for (j = 0, len = rawItems.length; j < len; j++) {
-            item = rawItems[j];
-            rewrittenItem = rewriteInternalItem(item);
-            if (item.meta.tag != null) {
-              results.push(applyFnArray(rewrittenItem, decorators[item.meta.tag], null, true));
-            } else {
-              results.push(rewrittenItem);
-            }
-          }
-          return results;
-        })();
-      }
-      if (!__isInternal) {
-        emit('find', "Querying store to find items (itemCount: " + rawItems.length + ")", {
-          query: query,
-          itemCount: rawItems.length
-        });
-      }
-      return items;
+      return externalItem;
+    },
+    find: function(query) {
+      var cacheHit, eventInfoCb, externalItems, foundItems;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      foundItems = storeOperations.find(state, eventInfoCb, query, false);
+      externalItems = foundItems.map(function(item) {
+        return getExternalItem(item, state.fnArrays.decorators);
+      });
+      emit('find', 'Querying store to find items', {
+        itemCount: externalItems.length,
+        query: stringifyQuery(query),
+        cacheHit: cacheHit
+      }, {
+        query: query,
+        item: externalItems,
+        cacheHit: cacheHit
+      });
+      return externalItems;
     },
     findOne: function(query) {
-      var result;
-      result = eve.find(query, null, true)[0];
-      if (result == null) {
-        result = null;
+      var cacheHit, eventInfoCb, externalItem, foundItem, id;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      foundItem = storeOperations.findOne(state, eventInfoCb, query);
+      externalItem = getExternalItem(foundItem, state.fnArrays.decorators);
+      if (externalItem != null) {
+        id = externalItem.$id;
+      } else {
+        id = null;
       }
-      return result;
+      emit('findOne', 'Querying store to find single item', {
+        query: stringifyQuery(query),
+        id: id,
+        cacheHit: cacheHit
+      }, {
+        query: query,
+        item: externalItem,
+        cacheHit: cacheHit
+      });
+      return externalItem;
     },
     count: function(query) {
-      return itemOperations.count(query, store, structure);
+      var cacheHit, eventInfoCb, itemCount;
+      cacheHit = null;
+      eventInfoCb = function(type, data) {
+        if (type === EVENT_INFO_TYPES.cacheHit) {
+          return cacheHit = data.cacheHit;
+        }
+      };
+      itemCount = storeOperations.count(state, eventInfoCb, query);
+      emit('count', 'Counting items matching query', {
+        count: itemCount,
+        query: stringifyQuery(query),
+        cacheHit: cacheHit
+      }, {
+        count: itemCount,
+        query: query,
+        cacheHit: cacheHit
+      });
+      return itemCount;
     },
     forEach: function(fn) {
       var cb;
+      validateArguments([fn], ['function']);
       cb = function(item) {
-        if (item.meta.tag != null) {
-          return fn(applyFnArray(rewriteInternalItem(item), decorators[item.meta.tag], null, true));
-        } else {
-          return fn(rewriteInternalItem(item));
-        }
+        return fn(getExternalItem(item, state.fnArrays.decorators));
       };
-      store.db.forEachItem(cb);
-      store.memory.forEachItem(cb);
+      storeOperations.forEach(state, (function() {}), cb);
+      emit('forEach', 'Ran a function for each item', null, {
+        callback: cb
+      });
     },
     isEmpty: function() {
-      return store.db.isEmpty() && store.memory.isEmpty();
+      var isEmpty;
+      isEmpty = storeOperations.isEmpty(state, (function() {}));
+      emit('isEmpty', 'Checked if store is empty', {
+        empty: isEmpty
+      }, {
+        empty: isEmpty
+      });
+      return isEmpty;
     },
     clear: function() {
-      store.db.clear();
-      store.memory.clear();
-      structure = getClearStructure();
+      storeOperations.clear(state, (function() {}));
       emit('clear', 'Store cleared');
     },
     setCacheFor: function(query) {
-      if (typeof query !== 'object') {
-        throw new Error('Invalid parameters');
-      }
-      structure = updateStructure.cacheQuery(structure, query, store);
+      validateArguments([query], ['query']);
+      state.structure = updateStructure.cacheQuery(state.structure, query, state.store);
     },
     setValidatorFor: function(tag, fn) {
-      if (typeof tag !== 'string' || typeof fn !== 'function') {
-        throw new Error('Invalid parameters');
+      validateArguments(arguments, ['string', 'function']);
+      if (state.fnArrays.validators[tag] == null) {
+        state.fnArrays.validators[tag] = [];
       }
-      if (validators[tag] == null) {
-        validators[tag] = [];
-      }
-      validators[tag].push(fn);
-      return validators[tag].length;
+      state.fnArrays.validators[tag].push(fn);
+      return state.fnArrays.validators[tag].length;
     },
     setDecoratorFor: function(tag, decoratorObj) {
       var decorate, undecorate;
       decorate = decoratorObj.decorate, undecorate = decoratorObj.undecorate;
-      if (typeof tag !== 'string' || typeof decorate !== 'function' || typeof undecorate !== 'function') {
+      validateArguments(arguments, ['string', 'object']);
+      if (typeof decorate !== 'function' || typeof undecorate !== 'function') {
         throw new Error('Invalid parameters');
       }
-      if (decorators[tag] == null) {
-        decorators[tag] = [];
-        undecorators[tag] = [];
+      if (state.fnArrays.decorators[tag] == null) {
+        state.fnArrays.decorators[tag] = [];
+        state.fnArrays.undecorators[tag] = [];
       }
-      decorators[tag].push(decorate);
-      undecorators[tag].unshift(undecorate);
-      return decorators[tag].length;
+      state.fnArrays.decorators[tag].push(decorate);
+      state.fnArrays.undecorators[tag].unshift(undecorate);
+      return state.fnArrays.decorators[tag].length;
     },
     StorageFullError: StorageFullError,
     persistentStorageAvailable: function() {
-      return store.db.isAvailable();
+      return state.store.db.isAvailable();
     },
     getRawItem: function(item) {
-      validateItemWithMeta(item);
-      return separateStoreItem(item).item;
+      var internalItem;
+      internalItem = getInternalItem(item, state.fnArrays.undecorators);
+      return internalItem.item;
     },
     getMetadata: function(item) {
-      validateItemWithMeta(item);
-      return separateStoreItem(item).meta;
+      var internalItem;
+      internalItem = getInternalItem(item, state.fnArrays.undecorators);
+      return internalItem.meta;
     },
     __on: function(operationType, cb) {
+      validateArguments(arguments, ['string', 'function']);
       if (listeners[operationType] == null) {
         listeners[operationType] = [];
       }
       listeners[operationType].push(cb);
     },
     __getStructure: function() {
-      return cloneValue(structure);
+      return state.structure;
     },
     __dumpItem: function(item) {
-      var str;
-      validateItemWithMeta(item);
-      item = separateStoreItem(item);
+      var internalItem, str;
+      internalItem = getInternalItem(item, state.fnArrays.undecorators);
       str = '';
-      if (item.meta.tag != null) {
-        str += "#" + item.meta.tag + "\n";
+      if (internalItem.meta.tag != null) {
+        str += "#" + internalItem.meta.tag + "\n";
       } else {
         str += 'NO_TAG';
       }
-      str += "\tstore:" + (item.meta.persistent ? 'persistent' : 'memory') + "\n \twriteTime: " + (Date(item.meta.writeTime)) + " \n\t";
-      console.log(str, item.item);
+      str += "\tstore:" + (internalItem.meta.persistent ? 'persistent' : 'memory') + "\n \twriteTime: " + (Date(internalItem.meta.writeTime)) + " \n\t";
       return str;
     }
   };
@@ -4850,21 +5240,158 @@ module.exports.StorageFullError = StorageFullError;
 
 
 /***/ }),
-/* 46 */
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var decorateItem, rewriteInternalItem;
+
+rewriteInternalItem = __webpack_require__(62);
+
+decorateItem = __webpack_require__(19);
+
+module.exports = function(internalItem, decorators) {
+  if (internalItem == null) {
+    return null;
+  }
+  return decorateItem(rewriteInternalItem(internalItem), internalItem.meta.tag, decorators);
+};
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol, validateArguments;
+
+metaSymbol = __webpack_require__(6);
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(internalItem) {
+  var fn, item, key, meta;
+  if (internalItem == null) {
+    return null;
+  }
+  item = internalItem.item, meta = internalItem.meta;
+  item[metaSymbol] = meta;
+  fn = function(key) {
+    item.__defineGetter__('$' + key, function() {
+      return this[metaSymbol][key];
+    });
+    item.__defineSetter__('$tag', function(newValue) {
+      validateArguments([newValue], ['item_tag']);
+      return this[metaSymbol].tag = newValue;
+    });
+    return item.__defineSetter__('$persistent', function(newValue) {
+      validateArguments([newValue], ['item_persistent']);
+      return this[metaSymbol].persistent = newValue;
+    });
+  };
+  for (key in meta) {
+    fn(key);
+  }
+  return item;
+};
+
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol;
+
+metaSymbol = __webpack_require__(6);
+
+module.exports = function(item) {
+  return (item != null) && typeof item === 'object' && (item[metaSymbol] != null);
+};
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports) {
+
+module.exports = function(item) {
+  return typeof item.item === 'object' && typeof item.meta === 'object';
+};
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var metaSymbol;
+
+metaSymbol = __webpack_require__(6);
+
+module.exports = function(externalItem) {
+  var item, key, meta, value;
+  meta = externalItem[metaSymbol];
+  if (meta == null) {
+    meta = {};
+  }
+  item = {};
+  for (key in externalItem) {
+    value = externalItem[key];
+    if (key[0] === '$' && meta.hasOwnProperty(key.slice(1))) {
+      continue;
+    }
+    item[key] = value;
+  }
+  return {
+    item: item,
+    meta: meta
+  };
+};
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var generateStructure, getDb, getMemoryStore;
+
+getDb = __webpack_require__(67);
+
+getMemoryStore = __webpack_require__(70);
+
+generateStructure = __webpack_require__(71);
+
+module.exports = function(storeNamespace) {
+  var store;
+  store = {
+    db: getDb(storeNamespace),
+    memory: getMemoryStore(),
+    namespace: storeNamespace
+  };
+  return {
+    store: store,
+    fnArrays: {
+      validators: {},
+      decorators: {},
+      undecorators: {}
+    },
+    structure: generateStructure(store)
+  };
+};
+
+
+/***/ }),
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var StorageFullError, cloneValue, isEmptyObj, isQuotaExceededError, localStorageSupported,
   hasProp = {}.hasOwnProperty;
 
-localStorageSupported = __webpack_require__(47);
+localStorageSupported = __webpack_require__(68);
 
-isQuotaExceededError = __webpack_require__(48);
+isQuotaExceededError = __webpack_require__(69);
 
-cloneValue = __webpack_require__(4);
+cloneValue = __webpack_require__(10);
 
-StorageFullError = __webpack_require__(13);
+StorageFullError = __webpack_require__(22);
 
-isEmptyObj = __webpack_require__(6);
+isEmptyObj = __webpack_require__(11);
 
 module.exports = function(storageNamespace) {
   var baseKey, getKey, i, isAvailable, isItemKey, j, key, recordCache, ref, validateLocalStorage;
@@ -5005,7 +5532,7 @@ module.exports = function(storageNamespace) {
 
 
 /***/ }),
-/* 47 */
+/* 68 */
 /***/ (function(module, exports) {
 
 module.exports = function() {
@@ -5033,7 +5560,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 48 */
+/* 69 */
 /***/ (function(module, exports) {
 
 module.exports = function(err) {
@@ -5057,15 +5584,15 @@ module.exports = function(err) {
 
 
 /***/ }),
-/* 49 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var cloneValue, isEmptyObj,
   hasProp = {}.hasOwnProperty;
 
-cloneValue = __webpack_require__(4);
+cloneValue = __webpack_require__(10);
 
-isEmptyObj = __webpack_require__(6);
+isEmptyObj = __webpack_require__(11);
 
 module.exports = function() {
   var read, remove, store, write;
@@ -5151,62 +5678,141 @@ module.exports = function() {
 
 
 /***/ }),
-/* 50 */
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var forEachItem, getClearStructure, updateStructure;
+
+getClearStructure = __webpack_require__(23);
+
+updateStructure = __webpack_require__(4);
+
+forEachItem = function(store, fn) {
+  store.memory.forEachItem(fn);
+  return store.db.forEachItem(fn);
+};
+
+module.exports = function(store) {
+  var structure;
+  structure = getClearStructure();
+  forEachItem(store, function(item) {
+    return updateStructure.add(structure, item, store);
+  });
+  return structure;
+};
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+module.exports = function(queryObj) {
+  var queryStr;
+  if (typeof queryObj === 'string') {
+    queryStr = "($tag: " + queryObj + ")";
+  } else if (typeof queryObj === 'number') {
+    queryStr = '#' + queryObj;
+  } else {
+    queryStr = Object.entries(queryObj).map(function(arg) {
+      var key, value;
+      key = arg[0], value = arg[1];
+      return key + ': ' + value;
+    }).join(', ');
+    queryStr = '(' + queryStr + ')';
+  }
+  return queryStr;
+};
+
+
+/***/ }),
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  add: __webpack_require__(51),
-  remove: __webpack_require__(53),
-  get: __webpack_require__(14),
-  find: __webpack_require__(7),
-  count: __webpack_require__(54)
+  add: __webpack_require__(74),
+  update: __webpack_require__(76),
+  remove: __webpack_require__(29),
+  removeByQuery: __webpack_require__(77),
+  get: __webpack_require__(78),
+  find: __webpack_require__(13),
+  findOne: __webpack_require__(79),
+  count: __webpack_require__(80),
+  forEach: __webpack_require__(82),
+  isEmpty: __webpack_require__(83),
+  clear: __webpack_require__(84)
 };
 
 
 /***/ }),
-/* 51 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var cloneValue, getNextId;
+var addItemToStore, getInternalItem, runItemValidators, updateStructure, validateArguments;
 
-getNextId = __webpack_require__(52);
+validateArguments = __webpack_require__(0);
 
-cloneValue = __webpack_require__(4);
+getInternalItem = __webpack_require__(7);
 
-module.exports = function(arg, store) {
-  var id, isExisting, item, meta, metaItem, newMeta, persistent;
-  item = arg.item, meta = arg.meta, isExisting = arg.isExisting;
-  if (isExisting) {
-    newMeta = meta;
-  } else {
-    id = getNextId(store);
-    if (meta.persistent === true) {
-      persistent = true;
+runItemValidators = __webpack_require__(21);
+
+addItemToStore = __webpack_require__(27);
+
+updateStructure = __webpack_require__(4);
+
+module.exports = function(state, eventInfoCb, tag, persistent, item, expectInternalItem) {
+  var internalItem, isInternalItem, returnedItem;
+  if (expectInternalItem == null) {
+    expectInternalItem = false;
+  }
+  if (arguments.length === 1) {
+    item = tag;
+    persistent = null;
+    tag = null;
+  } else if (arguments.length === 2) {
+    item = persistent;
+    if (typeof tag === 'boolean') {
+      persistent = tag;
+      tag = null;
     } else {
-      persistent = false;
+      persistent = null;
     }
-    newMeta = {
-      id: id,
-      tag: meta.tag,
-      persistent: persistent,
-      writeTime: Date.now()
-    };
   }
-  metaItem = {
-    item: cloneValue(item),
-    meta: newMeta
-  };
-  if (newMeta.persistent) {
-    store.db.writeItem(newMeta.id, metaItem);
-  } else {
-    store.memory.writeItem(newMeta.id, metaItem);
+  validateArguments([tag, persistent, item, eventInfoCb], ['string?', 'boolean?', 'object', 'function']);
+  internalItem = null;
+  isInternalItem = false;
+  if (!expectInternalItem) {
+    if (validateArguments.matches([item], ['externalItem'])) {
+      internalItem = getInternalItem(item, state.fnArrays.undecorators);
+      isInternalItem = true;
+    }
+  } else if (validateArguments.matches([item], ['internalItem'])) {
+    isInternalItem = true;
   }
-  return metaItem;
+  if (isInternalItem) {
+    if (tag == null) {
+      tag = internalItem.meta.tag;
+    }
+    if (persistent == null) {
+      persistent = internalItem.meta.persistent;
+    }
+    item = internalItem.item;
+  }
+  runItemValidators(item, tag, state.fnArrays.validators);
+  returnedItem = addItemToStore({
+    item: item,
+    meta: {
+      tag: tag,
+      persistent: persistent
+    },
+    isExisting: false
+  }, eventInfoCb, state.store);
+  state.structure = updateStructure.add(state.structure, returnedItem, state.store);
+  return returnedItem;
 };
 
 
 /***/ }),
-/* 52 */
+/* 75 */
 /***/ (function(module, exports) {
 
 module.exports = function(store) {
@@ -5227,170 +5833,270 @@ module.exports = function(store) {
 
 
 /***/ }),
-/* 53 */
-/***/ (function(module, exports) {
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = function(itemOrId, store, structure) {
-  var id;
-  if (typeof itemOrId === 'object') {
-    id = itemOrId.meta.id;
+var addItemToStore, getInternalItem, removeItemFromStore, updateStructure, validateArguments;
+
+getInternalItem = __webpack_require__(7);
+
+validateArguments = __webpack_require__(0);
+
+addItemToStore = __webpack_require__(27);
+
+removeItemFromStore = __webpack_require__(28);
+
+updateStructure = __webpack_require__(4);
+
+module.exports = function(state, eventInfoCb, item, expectInternalItem) {
+  var itemType, parsedItem, returnedItem;
+  if (expectInternalItem == null) {
+    expectInternalItem = false;
+  }
+  itemType = expectInternalItem ? 'internalItem' : 'externalItem';
+  validateArguments([item, eventInfoCb], [itemType, 'function']);
+  if (expectInternalItem) {
+    parsedItem = item;
   } else {
-    id = itemOrId;
+    parsedItem = getInternalItem(item, state.fnArrays.undecorators, state.fnArrays.validators);
   }
-  switch (structure.location[id]) {
-    case structure.LOCATIONS.DB:
-      return store.db.removeItem(id);
-    case structure.LOCATIONS.MEMORY_STORE:
-      return store.memory.removeItem(id);
-    default:
-      return null;
-  }
+  parsedItem.isExisting = true;
+  removeItemFromStore(parsedItem.meta.id, eventInfoCb, state.store, state.structure);
+  returnedItem = addItemToStore(parsedItem, eventInfoCb, state.store);
+  state.structure = updateStructure.change(state.structure, returnedItem, state.store);
+  return returnedItem;
 };
 
 
 /***/ }),
-/* 54 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var findItems;
+var findItem, removeItem, validate;
 
-findItems = __webpack_require__(7);
+findItem = __webpack_require__(13);
 
-module.exports = function(query, store, structure) {
+removeItem = __webpack_require__(29);
+
+validate = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb, query) {
+  var unfilteredResult;
+  validate([eventInfoCb], ['function']);
+  unfilteredResult = findItem(state, eventInfoCb, query).map((function(_this) {
+    return function(item) {
+      return removeItem(state, eventInfoCb, item, true);
+    };
+  })(this));
+  return unfilteredResult.filter(function(item) {
+    return item != null;
+  });
+};
+
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getItemFromStore, validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+getItemFromStore = __webpack_require__(24);
+
+module.exports = function(state, eventInfoCb, id) {
+  validateArguments([id, eventInfoCb], ['id', 'function']);
+  return getItemFromStore(id, eventInfoCb, state.store, state.structure);
+};
+
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var findItems, validateArguments;
+
+findItems = __webpack_require__(13);
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb, query) {
+  var foundItem;
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  foundItem = findItems(state, eventInfoCb, query, true)[0];
+  if (foundItem == null) {
+    foundItem = null;
+  }
+  return foundItem;
+};
+
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var countItemsInStore, validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+countItemsInStore = __webpack_require__(81);
+
+module.exports = function(state, eventInfoCb, query) {
+  validateArguments([query, eventInfoCb], ['query', 'function']);
+  return countItemsInStore(query, eventInfoCb, state.store, state.structure);
+};
+
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var findItems, validateArguments;
+
+findItems = __webpack_require__(12);
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(query, eventInfoCb, store, structure) {
   var itemIds;
+  validateArguments([query, eventInfoCb], ['query', 'function']);
   if (typeof query === 'string') {
     itemIds = structure.byTag[query];
     if (itemIds != null) {
       return itemIds.length;
     }
   }
-  return findItems(query, store, structure).length;
+  return findItems(query, eventInfoCb, store, structure).length;
 };
 
 
 /***/ }),
-/* 55 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var forEachItem, getClearStructure, updateStructure;
+var validateArguments;
 
-getClearStructure = __webpack_require__(17);
+validateArguments = __webpack_require__(0);
 
-updateStructure = __webpack_require__(18);
+module.exports = function(state, eventInfoCb, cb) {
+  validateArguments([eventInfoCb, cb], ['function', 'function']);
+  state.store.db.forEachItem(cb);
+  state.store.memory.forEachItem(cb);
+};
 
-forEachItem = function(store, fn) {
-  store.memory.forEachItem(fn);
-  return store.db.forEachItem(fn);
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var validateArguments;
+
+validateArguments = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb) {
+  validateArguments([eventInfoCb], ['function']);
+  return state.store.db.isEmpty() && state.store.memory.isEmpty();
+};
+
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getClearStructure, validate;
+
+getClearStructure = __webpack_require__(23);
+
+validate = __webpack_require__(0);
+
+module.exports = function(state, eventInfoCb) {
+  validate([eventInfoCb], ['function']);
+  state.store.db.clear();
+  state.store.memory.clear();
+  state.structure = getClearStructure();
+};
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var CONFIG, getStackTrace, removeFirstLine, sliceStackTrace;
+
+CONFIG = __webpack_require__(2);
+
+getStackTrace = __webpack_require__(86);
+
+sliceStackTrace = __webpack_require__(30);
+
+removeFirstLine = function(str) {
+  var lines;
+  lines = str.split('\n');
+  lines.shift();
+  return lines.join('\n');
 };
 
 module.exports = function(store) {
-  var structure;
-  structure = getClearStructure();
-  forEachItem(store, function(item) {
-    return updateStructure.add(structure, item, store);
+  return store.__on('*', function(operationType, message, infoObj, data) {
+    var args, strData;
+    if (infoObj != null) {
+      strData = Object.entries(infoObj).map(function(arg) {
+        var key, value;
+        key = arg[0], value = arg[1];
+        return key + ': ' + value;
+      }).join(', ');
+      if (strData.length > 0) {
+        strData = '\n\t' + '(' + strData + ')';
+      }
+    } else {
+      strData = '';
+    }
+    args = [operationType + ': ' + message + strData];
+    if (CONFIG.storeLogging.showLogData && (data != null)) {
+      args.push('\n', data);
+    }
+    if (CONFIG.storeLogging.showStackTraces) {
+      args.push('\n' + removeFirstLine(sliceStackTrace(getStackTrace(), 3)));
+    }
+    return console.log.apply(console, args);
   });
-  return structure;
 };
 
 
 /***/ }),
-/* 56 */
-/***/ (function(module, exports) {
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = function(item, fnArr, additionalParam, checkForReturnValue) {
-  var fn, i, len, originalItem;
-  if (fnArr == null) {
-    return item;
-  }
-  originalItem = item;
-  for (i = 0, len = fnArr.length; i < len; i++) {
-    fn = fnArr[i];
-    item = fn(item, additionalParam);
-    if (checkForReturnValue && item !== originalItem) {
-      throw new Error('processor function must return modified item, not new object');
+var getStackTrace, sliceStackTrace;
+
+sliceStackTrace = __webpack_require__(30);
+
+getStackTrace = module.exports = function() {
+  var container, err;
+  if (Error.captureStackTrace != null) {
+    container = {};
+    Error.captureStackTrace(container, getStackTrace);
+    return container.stack;
+  } else {
+    try {
+      throw new Error('');
+    } catch (error) {
+      err = error;
+      return sliceStackTrace(err.stack, 1);
     }
   }
-  return item;
 };
 
 
 /***/ }),
-/* 57 */
-/***/ (function(module, exports) {
-
-module.exports = function(itemWithMeta, metaSymbol) {
-  var item, key, meta, value;
-  meta = itemWithMeta[metaSymbol];
-  if (meta == null) {
-    meta = {};
-  }
-  item = {};
-  for (key in itemWithMeta) {
-    value = itemWithMeta[key];
-    if (key[0] === '$' && meta.hasOwnProperty(key.slice(1))) {
-      continue;
-    }
-    item[key] = value;
-  }
-  return {
-    item: item,
-    meta: meta
-  };
-};
-
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports) {
-
-module.exports = function(itemAndMeta, metaSymbol) {
-  var fn, item, key, meta;
-  if (itemAndMeta == null) {
-    return null;
-  }
-  item = itemAndMeta.item, meta = itemAndMeta.meta;
-  item[metaSymbol] = meta;
-  fn = function(key) {
-    item.__defineGetter__('$' + key, function() {
-      return meta[key];
-    });
-    return item.__defineSetter__('$' + key, function(newValue) {
-      return meta[key] = newValue;
-    });
-  };
-  for (key in meta) {
-    fn(key);
-  }
-  return item;
-};
-
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports) {
-
-module.exports = function(item, metaSymbol) {
-  if (item === null) {
-    throw new Error('item must be object, not null');
-  }
-  if (typeof item !== 'object') {
-    throw new Error('item must be object, not ' + typeof item);
-  }
-  if (item[metaSymbol] == null) {
-    throw new Error('item is not eveStore item - you must only pass item object generated by eveStore');
-  }
-};
-
-
-/***/ }),
-/* 60 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var serverApi, updateCollection, updateQuestions, updateSections;
 
-serverApi = __webpack_require__(61);
+serverApi = __webpack_require__(88);
 
-updateCollection = __webpack_require__(66);
+updateCollection = __webpack_require__(93);
 
 updateSections = function() {
   return updateCollection(db.STORE_TAGS.SECTION, serverApi.getSection);
@@ -5406,16 +6112,16 @@ module.exports = function() {
 
 
 /***/ }),
-/* 61 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var BASE_API_URL, getHeaders, getOptions, getQuery, getResource, qs;
 
 BASE_API_URL = '/api/';
 
-__webpack_require__(62);
+__webpack_require__(89);
 
-qs = __webpack_require__(63);
+qs = __webpack_require__(90);
 
 getOptions = function(since) {
   return {
@@ -5508,7 +6214,7 @@ module.exports = {
 
 
 /***/ }),
-/* 62 */
+/* 89 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -5975,18 +6681,18 @@ module.exports = {
 
 
 /***/ }),
-/* 63 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(64);
-exports.encode = exports.stringify = __webpack_require__(65);
+exports.decode = exports.parse = __webpack_require__(91);
+exports.encode = exports.stringify = __webpack_require__(92);
 
 
 /***/ }),
-/* 64 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6077,7 +6783,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 65 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6169,7 +6875,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 66 */
+/* 93 */
 /***/ (function(module, exports) {
 
 var getLastCheckTime, saveItems, writeLastCheckTime;
@@ -6253,14 +6959,14 @@ module.exports = function(collectionTag, apiMethod) {
 
 
 /***/ }),
-/* 67 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TAGS, validateObjStructure;
 
-TAGS = __webpack_require__(9);
+TAGS = __webpack_require__(14);
 
-validateObjStructure = __webpack_require__(68);
+validateObjStructure = __webpack_require__(95);
 
 module.exports = {
   cache: [
@@ -6354,7 +7060,7 @@ module.exports = {
 
 
 /***/ }),
-/* 68 */
+/* 95 */
 /***/ (function(module, exports) {
 
 var renderOrArray, typeOf;
@@ -6405,14 +7111,14 @@ module.exports = function(obj, template) {
 
 
 /***/ }),
-/* 69 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var SCREENS, createElem, getHash, parseHash, updateNavList;
 
-parseHash = __webpack_require__(11).parse;
+parseHash = __webpack_require__(16).parse;
 
-createElem = __webpack_require__(2);
+createElem = __webpack_require__(3);
 
 SCREENS = {
   questionSelect: {
@@ -6456,7 +7162,7 @@ module.exports = function(navlistElem) {
 
 
 /***/ }),
-/* 70 */
+/* 97 */
 /***/ (function(module, exports) {
 
 module.exports = function(coverElem) {
@@ -6488,7 +7194,7 @@ module.exports = function(coverElem) {
 
 
 /***/ }),
-/* 71 */
+/* 98 */
 /***/ (function(module, exports) {
 
 var CLASSES;
@@ -6525,7 +7231,7 @@ module.exports = function(buttonElem, sidebarElem, coverElem) {
 
 
 /***/ }),
-/* 72 */
+/* 99 */
 /***/ (function(module, exports) {
 
 var EXPONENT, THRESHOLD, getAnswers, getCorrectRatio;

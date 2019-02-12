@@ -25,8 +25,9 @@ module.exports = async (remoteImgQuestions, targetDir, oldImgDir, startIndex = 0
 
 	if startIndex == 0 && endIndex == Infinity
 		# clears / creates target directory
-		log('CLEARING TARGET DIRECTORY')
+		log('BACKING UP CURRENT DIRECTORY CONTENT TO ' + oldImgDir)
 		fs.moveSync(targetDir, oldImgDir)
+		log('CLEARING TARGET DIRECTORY')
 		fs.emptyDirSync(targetDir)
 
 		log("#{slicedQ.length} QUESTIONS TO PROCESS")
@@ -47,6 +48,10 @@ module.exports = async (remoteImgQuestions, targetDir, oldImgDir, startIndex = 0
 	else
 		console.log('')
 		structure = updateStructureFile(targetDir)
+
+	console.log('')
+	log('CLEARING BACKUP DIRECTORY')
+	fs.removeSync(oldImgDir)
 
 	console.log('')
 	log('FINISHED DOWNLOADING IMAGES')

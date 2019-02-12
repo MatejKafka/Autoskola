@@ -1,4 +1,0 @@
-
-# js files in scripts directory must be committed for the installFull script to work
-!*.js
-!*.js.map

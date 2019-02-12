@@ -20,7 +20,7 @@ cliArguments =
 	downloadImages: (startIndexStr = 0, endIndexStr = null) -> [
 		getRemoteImgQuestions(paths.remoteImgQuestions)
 		paths.imgDir
-		path.oldImgDir
+		paths.oldImgDir
 		parseInt(startIndexStr)
 		if !endIndexStr? then null else parseInt(endIndexStr)
 	]
