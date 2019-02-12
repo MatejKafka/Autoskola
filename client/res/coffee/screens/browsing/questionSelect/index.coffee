@@ -37,6 +37,7 @@ module.exports = (container, goto, params) ->
 			</form>
 		</div>'
 
+	# TODO: change architecture, lots of separate store queries
 	questionIds = store.find(db.STORE_TAGS.QUESTION).map((q) -> q.id)
 
 	sectionListElem = container.getElementsByClassName('sectionList')[0]

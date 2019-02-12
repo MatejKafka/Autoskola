@@ -1,5 +1,5 @@
 MESSAGES = require('../../MESSAGES').practiceTest
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')
 
@@ -45,7 +45,8 @@ module.exports = (container, goto, params) ->
 	clicked = false
 
 	renderQuestion({
-		questionIds: questionIds
+		question: question
+		questionCount: questionIds.length
 		questionIndex: qIndex
 
 		container: questionContainer

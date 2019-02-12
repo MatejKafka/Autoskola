@@ -1,8 +1,9 @@
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../config/CONFIG')
 MESSAGES = require('../../MESSAGES').evaluateTest
 
-
 e = require('../../util/createElem')
+
+
 getResults = (sessionObj) ->
 	existingAnswers = sessionObj.answers.filter((answerArr) -> answerArr? && answerArr.length > 0)
 	return {
@@ -35,15 +36,19 @@ renderSuccessBar = (score, maxScore) ->
 
 renderQuestionList = (session, goto) ->
 	items = for questionId, i in session.questionIds
+		qAnswers = session.answers[i]
+		if !qAnswers? || qAnswers.length == 0
+			continue
+
 		question = store.findOne({
 			$tag: db.STORE_TAGS.QUESTION
 			id: questionId
 		})
-		itemClass = ''
-		qAnswers = session.answers[i]
-		if !qAnswers? || qAnswers.length == 0
+		if !question?
 			continue
-		else if qAnswers.length == 1
+
+		itemClass = ''
+		if qAnswers.length == 1
 			itemClass = '.correct'
 		else
 			itemClass = '.incorrect'

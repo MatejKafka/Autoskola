@@ -1,5 +1,5 @@
 MESSAGES = require('../../MESSAGES').practiceTest
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')
 
@@ -42,7 +42,8 @@ module.exports = (container, goto, params) ->
 	container.appendChild(questionContainer)
 
 	renderQuestion({
-		questionIds: currentTest.questionIds
+		question: question
+		questionCount: currentTest.questionIds.length
 		questionIndex: qIndex
 
 		container: questionContainer

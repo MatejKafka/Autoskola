@@ -1,5 +1,5 @@
 MESSAGES = require('../../MESSAGES').browsingQuestions
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')
 
@@ -57,7 +57,8 @@ module.exports = (container, goto, params) ->
 	clickedAnswerIndexes = []
 
 	renderQuestion({
-		questionIds: sessionItem.questionIds
+		question: question
+		questionCount: sessionItem.questionIds.length
 		questionIndex: qIndex
 
 		container: questionContainer

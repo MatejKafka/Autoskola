@@ -1,4 +1,4 @@
-findItems = require('../operations/findItems')
+findItems = require('../backendOperations/findItems')
 matchesQuery = require('../util/matchesQuery')
 separateItemQuery = require('../util/separateItemQuery')
 isEmptyObj = require('../util/isEmptyObj')
@@ -81,6 +81,10 @@ module.exports = updateStructure =
 		return updateStructure.add(structure, item)
 
 
+	# TODO: add support for multiple cached parameters
+	# TODO: add support for nested cached parameters
+
+	# TODO: dissolve into multiple functions
 	cacheQuery: (structure, query, store) ->
 		{find: findQuery, cache: cacheQuery} = separateQuery(query)
 		keys = Object.keys(cacheQuery)
@@ -92,7 +96,7 @@ module.exports = updateStructure =
 		if isMeta
 			propKey = propKey.slice(1)
 		propMap = {}
-		items = findItems(findQuery, store, structure, false)
+		items = findItems(findQuery, (->), store, structure, false)
 		for item in items
 			value = getValueFromItem(item, propKey, isMeta)
 			if !propMap[value]?

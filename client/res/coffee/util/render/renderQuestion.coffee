@@ -1,7 +1,8 @@
 MESSAGES = require('../../MESSAGES').questionView
 
-
+validate = require('../../validateArguments')
 QuestionView = require('./QuestionView')
+
 
 bindNavigationButtons = (container, questionCount, index, handlers) ->
 	backButton = container.getElementsByClassName('backButton')[0]
@@ -65,7 +66,8 @@ renderQuestionList = (questionCount, index, containerList, gotoQuestionFn) ->
 
 
 module.exports = (options) ->
-	{questionIds, questionIndex: index, container, shuffleAnswers, handlers, messages} = options
+	{questionCount, question, questionIndex: index, container, shuffleAnswers, handlers, messages} = options
+	validate([questionCount, question, index], ['int', 'object', 'int'])
 
 	handlers = Object.assign({
 		prepareView: null
@@ -83,10 +85,10 @@ module.exports = (options) ->
 		if index > 0
 			handlers.gotoQuestion(index - 1)
 		else
-			handlers.gotoQuestion(questionIds.length - 1)
+			handlers.gotoQuestion(questionCount - 1)
 
 	gotoNextQuestion = (fromAnswerClick = false) ->
-		if index < questionIds.length - 1
+		if index < questionCount - 1
 			handlers.gotoQuestion(index + 1)
 		else if fromAnswerClick
 			handlers.lastQuestionAnswer()
@@ -94,9 +96,9 @@ module.exports = (options) ->
 			handlers.gotoQuestion(0)
 
 
-	if index > questionIds.length - 1
-		console.error('Question index is too high - you only have ' + questionIds.length + ' questions selected!')
-		handlers.gotoQuestion(questionIds.length - 1)
+	if index > questionCount - 1
+		console.error('Question index is too high - you only have ' + questionCount + ' questions selected!')
+		handlers.gotoQuestion(questionCount - 1)
 		return
 
 	if index < 0
@@ -104,13 +106,8 @@ module.exports = (options) ->
 		handlers.gotoQuestion(0)
 		return
 
-	question = store.findOne({
-		$tag: db.STORE_TAGS.QUESTION
-		id: questionIds[index]
-	})
 
-
-	# TODO: render speed could be much improved by reusing questionList
+	# TODO: render speed could be greatly improved by reusing questionList
 	container.innerHTML = "
 		<div class='topbar'>
 			<a href='javascript:void(0);' class='backButton'>#{messages.backButton}</a>
@@ -120,7 +117,7 @@ module.exports = (options) ->
 				<span class='questionNumber'>
 					<span class='questionIndex'>#{index + 1}</span>
 					#{MESSAGES.from}
-					<span class='questionCollectionLength'>#{questionIds.length}</span>
+					<span class='questionCollectionLength'>#{questionCount}</span>
 				</span>
 				<a href='javascript:void(0);' class='nextQuestionButton'>" + MESSAGES.nextQuestion + "</a>
 			</span>
@@ -136,15 +133,15 @@ module.exports = (options) ->
 
 	questionListElem = container.getElementsByClassName('questionList')[0]
 	setTimeout ->
-		# TODO: fix to avoid loadjump issue
+		# TODO: fix to avoid content jump after load
 
 		# height fix to account for scrollbar height
 		# must be delayed to work with overflow-y = auto
 		questionListElem.style.height = (2 * questionListElem.offsetHeight - questionListElem.clientHeight) + 'px'
 	, 0
-	highlightQuestionInList = renderQuestionList(questionIds.length, index, questionListElem, handlers.gotoQuestion)
+	highlightQuestionInList = renderQuestionList(questionCount, index, questionListElem, handlers.gotoQuestion)
 
-	bindNavigationButtons(container, questionIds.length, index, {
+	bindNavigationButtons(container, questionCount, index, {
 		back: handlers.backButtonClick
 		previousQuestion: gotoPreviousQuestion
 		nextQuestion: gotoNextQuestion

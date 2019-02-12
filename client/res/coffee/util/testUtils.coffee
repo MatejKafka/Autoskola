@@ -1,7 +1,7 @@
 getTestResults = require('./getTestResults')
 
 
-window.util =
+module.exports =
 	evaluateCurrentTest: ->
 		currentTest = store.findOne(db.STORE_TAGS.CURRENT_TEST)
 		if !currentTest?
@@ -14,7 +14,12 @@ window.util =
 			totalSize = 0
 
 			sizes = {byKey: {}}
-			for key of localStorage
+			i = 0
+			loop
+				key = localStorage.key(i)
+				i++
+				if !key?
+					break
 				keyValueSize = (localStorage[key].length + key.length) * 2 # UTF-16 - 2 bytes per char
 				totalSize += keyValueSize
 				sizes.byKey[key] = keyValueSize

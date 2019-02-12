@@ -47,4 +47,6 @@ module.exports = (store, staticDirPath, testImgDirPath, port) ->
 
 
 	listener = webserver.listen port, ->
-		logger.log('start', 'Webserver started!', {port: listener.address().port})
+		port = listener.address().port
+		logger.log('start', 'Webserver started!', {port: port})
+		console.log('Webserver running on port ' + port)

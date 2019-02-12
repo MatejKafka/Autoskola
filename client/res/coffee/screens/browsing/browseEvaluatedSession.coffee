@@ -1,5 +1,5 @@
 MESSAGES = require('../../MESSAGES').browsingQuestions
-CONFIG = require('../../CONFIG')
+CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')
 
@@ -42,7 +42,8 @@ module.exports = (container, goto, params) ->
 	container.appendChild(questionContainer)
 
 	renderQuestion({
-		questionIds: session.questionIds
+		question: question
+		questionCount: session.questionIds.length
 		questionIndex: qIndex
 
 		container: questionContainer

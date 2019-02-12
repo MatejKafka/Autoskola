@@ -1,4 +1,5 @@
 fs = require('fs-extra')
+path = require('path')
 chalk = require('chalk')
 downloadQuestionImages = require('./downloadQuestionImages')
 updateStructureFile = require('../updateStructureFile')
@@ -11,7 +12,7 @@ info = (message) ->
 	console.log(chalk.magenta(message))
 
 
-module.exports = async (remoteImgQuestions, targetDir, startIndex = 0, endIndex = null) ->
+module.exports = async (remoteImgQuestions, targetDir, oldImgDir, startIndex = 0, endIndex = null) ->
 	log('DOWNLOADING REMOTE IMAGES TO ' + targetDir)
 
 	if endIndex? && endIndex < startIndex
@@ -25,6 +26,7 @@ module.exports = async (remoteImgQuestions, targetDir, startIndex = 0, endIndex 
 	if startIndex == 0 && endIndex == Infinity
 		# clears / creates target directory
 		log('CLEARING TARGET DIRECTORY')
+		fs.moveSync(targetDir, oldImgDir)
 		fs.emptyDirSync(targetDir)
 
 		log("#{slicedQ.length} QUESTIONS TO PROCESS")
