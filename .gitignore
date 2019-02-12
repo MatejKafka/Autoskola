@@ -19,11 +19,6 @@ out/
 !*.css.map/
 
 
-# KEEP BUNDLED FILES
-!/client/res/css/**
-!/client/res/js/**
-
-
 # KEEP EVERYTHING INSIDE SCRIPTS DIR
 !scripts/**/*
 
