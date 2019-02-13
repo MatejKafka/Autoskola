@@ -1,4 +1,4 @@
-MESSAGES = require('../../MESSAGES').browsingQuestions
+MESSAGES = require('../../config/MESSAGES').browsingQuestions
 CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')

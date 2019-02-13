@@ -1,7 +1,7 @@
 module.exports =
 	verboseErrorMessages: true
 	storeLogging:
-		log: true
+		log: false
 		showLogData: false
 		showStackTraces: false
 

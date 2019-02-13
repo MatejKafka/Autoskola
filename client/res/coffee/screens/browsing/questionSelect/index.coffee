@@ -1,4 +1,4 @@
-MESSAGES = require('../../../MESSAGES').questionSelect
+MESSAGES = require('../../../config/MESSAGES').questionSelect
 QuestionSelectList = require('./QuestionSelectList')
 QuestionNumberDisplay = require('./QuestionNumberDisplay')
 

@@ -1,5 +1,5 @@
 CONFIG = require('../../config/CONFIG')
-MESSAGES = require('../../MESSAGES').evaluateTest
+MESSAGES = require('../../config/MESSAGES').evaluateTest
 PASS_SCORE = CONFIG.testSuccessThreshold
 
 

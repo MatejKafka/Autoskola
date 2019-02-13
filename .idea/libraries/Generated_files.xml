@@ -2,13 +2,15 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/client/res/coffee/MESSAGES.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/bindErrorListeners.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/config/CONFIG.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/config/MESSAGES.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/prepareStore.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browseEvaluatedSession.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browsing.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/evaluateSession.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/questionSelect/QuestionSelectList.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/questionSelect/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest/browseEvaluatedTest.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest/evaluateTest.js" />
@@ -33,10 +35,13 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderQuestion.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/testUtils.js" />
+        <item url="file://$PROJECT_DIR$/scripts/compileCoffee/compileCb.js" />
+        <item url="file://$PROJECT_DIR$/scripts/compileCoffee/webpack.config.js" />
         <item url="file://$PROJECT_DIR$/server/config.js" />
         <item url="file://$PROJECT_DIR$/server/index.js" />
         <item url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />
@@ -46,13 +51,15 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/client/res/coffee/MESSAGES.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/bindErrorListeners.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/config/CONFIG.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/config/MESSAGES.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/prepareStore.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browseEvaluatedSession.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browsing.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/evaluateSession.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/questionSelect/QuestionSelectList.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/questionSelect/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest/browseEvaluatedTest.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/practiceTest/evaluateTest.js" />
@@ -77,10 +84,13 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderQuestion.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/testUtils.js" />
+      <root url="file://$PROJECT_DIR$/scripts/compileCoffee/compileCb.js" />
+      <root url="file://$PROJECT_DIR$/scripts/compileCoffee/webpack.config.js" />
       <root url="file://$PROJECT_DIR$/server/config.js" />
       <root url="file://$PROJECT_DIR$/server/index.js" />
       <root url="file://$PROJECT_DIR$/server/updateTestData/downloadImages/index.js" />

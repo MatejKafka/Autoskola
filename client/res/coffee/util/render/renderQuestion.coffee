@@ -1,4 +1,4 @@
-MESSAGES = require('../../MESSAGES').questionView
+MESSAGES = require('../../config/MESSAGES').questionView
 
 validate = require('../../validateArguments')
 QuestionView = require('./QuestionView')

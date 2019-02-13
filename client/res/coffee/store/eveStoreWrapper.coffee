@@ -3,7 +3,7 @@ KEYS =
 	placeholder: 'persistentStorageFullPlaceholder'
 
 CONFIG = require('../config/CONFIG')
-MESSAGES = require('../MESSAGES')
+MESSAGES = require('../config/MESSAGES')
 createEveStore = require('./eveStore')
 
 

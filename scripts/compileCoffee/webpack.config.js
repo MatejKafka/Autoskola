@@ -8,6 +8,7 @@
 
   module.exports = function() {
     return {
+      mode: 'production',
       entry: path.resolve(CLIENT_RES_PATH, './coffee/index.coffee'),
       output: {
         path: path.resolve(CLIENT_RES_PATH, './js'),
@@ -15,7 +16,7 @@
       },
       devtool: 'source-map',
       module: {
-        loaders: [
+        rules: [
           {
             test: /\.coffee$/,
             loader: 'coffee-loader',
@@ -26,9 +27,7 @@
         ]
       },
       resolveLoader: {
-        modules: [path.resolve(__dirname, '../node_modules')]
-      },
-      resolve: {
+        modules: [path.resolve(__dirname, '../node_modules')],
         extensions: ['*', '.coffee', '.js', '.json']
       }
     };

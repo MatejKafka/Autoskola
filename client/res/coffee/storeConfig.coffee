@@ -1,4 +1,4 @@
-TAGS = require('./STORE_TAGS')
+TAGS = require('./config/STORE_TAGS')
 validateObjStructure = require('./util/validateObjStructure')
 
 

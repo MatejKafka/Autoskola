@@ -2,8 +2,8 @@ require('./polyfills')
 
 
 CONFIG = require('./config/CONFIG')
-MESSAGES = require('./MESSAGES')
-STORE_TAGS = require('./STORE_TAGS')
+MESSAGES = require('./config/MESSAGES')
+STORE_TAGS = require('./config/STORE_TAGS')
 
 window.util = require('./util/testUtils')
 

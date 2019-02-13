@@ -1,5 +1,5 @@
 EventEmitter = require('events')
-MESSAGES = require('../../MESSAGES').questionView
+MESSAGES = require('../../config/MESSAGES').questionView
 createElem = require('../createElem')
 
 

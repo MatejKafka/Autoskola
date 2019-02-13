@@ -5,6 +5,8 @@ CLIENT_RES_PATH = path.resolve(__dirname, '../../client/res')
 
 module.exports = ->
 	return {
+		mode: 'production'
+	
 		entry: path.resolve(CLIENT_RES_PATH, './coffee/index.coffee')
 		output:
 			path: path.resolve(CLIENT_RES_PATH, './js')
@@ -13,7 +15,7 @@ module.exports = ->
 		devtool: 'source-map'
 
 		module:
-			loaders: [
+			rules: [
 				{
 					test: /\.coffee$/
 					loader: 'coffee-loader'
@@ -24,7 +26,5 @@ module.exports = ->
 
 		resolveLoader:
 			modules: [path.resolve(__dirname, '../node_modules')]
-
-		resolve:
 			extensions: ['*', '.coffee', '.js', '.json']
 	}

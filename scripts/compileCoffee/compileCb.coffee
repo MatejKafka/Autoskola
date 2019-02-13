@@ -17,7 +17,9 @@ module.exports = (err, stats) ->
 
 	if stats.hasWarnings()
 		console.warn(chalk.yellowBright('WARNINGS:'))
-		console.warn(chalk.yellowBright(json))
+		for warning in json.warnings
+			console.warn(chalk.yellowBright('\t' + warning.split('\n').join('\n\t')))
+			console.warn('')
 		return 0
 
 	console.log(stats.toString('normal'))

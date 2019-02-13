@@ -1,4 +1,4 @@
-MESSAGES = require('./MESSAGES')
+MESSAGES = require('./config/MESSAGES')
 CONFIG = require('./config/CONFIG')
 
 createWrappedEveStore = require('./store/eveStoreWrapper')

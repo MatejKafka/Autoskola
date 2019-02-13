@@ -5,7 +5,7 @@
       <webServer id="fba28a73-c579-4a5a-94d6-01304a534855" name="infinityFree" url="https://autoskola-cz.cf">
         <fileTransfer host="ftpupload.net" port="21" rootFolder="/htdocs">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" showHiddenFiles="true" />
           </advancedOptions>
           <option name="port" value="21" />
         </fileTransfer>

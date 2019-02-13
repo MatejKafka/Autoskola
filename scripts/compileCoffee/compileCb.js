@@ -5,7 +5,7 @@
   chalk = require('chalk');
 
   module.exports = function(err, stats) {
-    var json;
+    var i, json, len, ref, warning;
     if (err != null) {
       console.error(chalk.redBright('ERROR OCCURRED WHILE COMPILING CLIENT'));
       console.error(chalk.redBright(err.stack || err));
@@ -24,7 +24,12 @@
     }
     if (stats.hasWarnings()) {
       console.warn(chalk.yellowBright('WARNINGS:'));
-      console.warn(chalk.yellowBright(json));
+      ref = json.warnings;
+      for (i = 0, len = ref.length; i < len; i++) {
+        warning = ref[i];
+        console.warn(chalk.yellowBright('\t' + warning.split('\n').join('\n\t')));
+        console.warn('');
+      }
       return 0;
     }
     console.log(stats.toString('normal'));

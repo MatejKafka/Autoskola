@@ -1,4 +1,4 @@
-MESSAGES = require('../../MESSAGES').practiceTest
+MESSAGES = require('../../config/MESSAGES').practiceTest
 CONFIG = require('../../config/CONFIG')
 renderQuestion = require('../../util/render/renderQuestion')
 createElem = require('../../util/createElem')
