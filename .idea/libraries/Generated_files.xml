@@ -35,6 +35,7 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/updateCollection.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />
@@ -85,6 +86,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/updateCollection.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />

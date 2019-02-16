@@ -35,7 +35,8 @@ module.exports =
 	error:
 		errorPopup:
 			baseMessage: 'Omlouvám se, v aplikaci nastala neznámá chyba.
-						Pro nápravu zkuste stránku znovu načíst, případně kontaktovat administrátora.'
+						Pro nápravu zkuste stránku znovu načíst, případně kontaktovat administrátora
+						(kafka.matej@gmail.com).'
 
 			errorMessageBelow: 'Níže je uvedený důvod chyby:'
 
@@ -44,3 +45,7 @@ module.exports =
 
 		storageUnavailable: 'Váš prohlížeč nepodporuje ukládání informací na váš počítač, všechny odpovědi se
 							po odchodu ze stránky smažou.'
+
+		# shown when some SVG properties required for correct chart display are not supported
+		chartNotSupported: 'Váš prohlížeč nepodporuje některé funkce nutné pro správné vykreslení grafu.
+							Možná bude vypadat trochu rozbitě.'

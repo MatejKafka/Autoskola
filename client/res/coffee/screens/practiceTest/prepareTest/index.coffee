@@ -1,5 +1,13 @@
 generateTest = require('./generateTest')
 renderLineChart = require('../../../util/render/renderLineChart.js')
+MESSAGES = require('../../../config/MESSAGES')
+
+
+vectorEffectsSupported = ->
+	if 'CSS' in window and 'supports' in CSS
+		return CSS.supports('vector-effect', 'non-scaling-stroke')
+	#noinspection JSUnresolvedVariable
+	return document.documentElement.style.vectorEffect != undefined
 
 
 renderFinishedTestChart = (container, testResults) ->
@@ -45,6 +53,10 @@ module.exports = (container, goto) ->
 
 	items = store.find(db.STORE_TAGS.PRACTICE_TEST)
 	if items.length > 0
+		# TODO: update, not very clean...
+		if not vectorEffectsSupported()
+			label = container.getElementsByClassName('finishedTestLabel')[0]
+			label.innerHTML += '<br><span style="font-size: 70%">(' + MESSAGES.error.chartNotSupported + ')</span>'
 		renderFinishedTestChart(testChartContainer, items)
 	else
 		testChartLabel = container.getElementsByClassName('finishedTestLabel')[0]

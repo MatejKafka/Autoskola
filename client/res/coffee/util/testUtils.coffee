@@ -1,4 +1,5 @@
 getTestResults = require('./getTestResults')
+FileSaver = require('file-saver')
 
 
 module.exports =
@@ -59,3 +60,7 @@ module.exports =
 
 		clearBackup: ->
 			localStorage.removeItem('backup')
+
+		download: ->
+			file = new Blob([JSON.stringify(@getObj())], {type: 'text/plain; charset=utf-8'})
+			FileSaver.saveAs(file, 'autoskola.json')
