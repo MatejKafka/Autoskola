@@ -7,8 +7,12 @@ renderFinishedTestChart = (container, testResults) ->
 	testScores = testResults.map (test) -> test.score
 	passScores = testResults.map (test) -> test.passScore
 
+	minValueCount = 8
+	while passScores.length < minValueCount
+		passScores.push(passScores[passScores.length - 1])
+
 	container.innerHTML = ''
-	container.appendChild(renderLineChart(maxScore, 8, [
+	container.appendChild(renderLineChart(maxScore, minValueCount, [
 		{cssClass: 'chart-testScores', values: testScores},
 		{cssClass: 'chart-passScores', values: passScores}
 	]))

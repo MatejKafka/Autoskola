@@ -27,7 +27,7 @@
 		overflow: visible;
 	}
 
-	.chart-axis-markers path {
+	.chart-axis-markers * {
 		stroke: #e6e6e6;
 		stroke-width: 1px;
 		vector-effect: non-scaling-stroke;
@@ -35,10 +35,14 @@
 		fill: none;
 	}
 
-	.chart-lines path {
+	.chart-lines * {
 		stroke: black;
 		stroke-width: 1;
 		vector-effect: non-scaling-stroke;
 		fill: none;
+	}
+
+	.chart-point {
+		stroke-width: 7;
 	}
 }

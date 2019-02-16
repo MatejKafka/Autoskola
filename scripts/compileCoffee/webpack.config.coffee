@@ -6,9 +6,8 @@ CLIENT_RES_PATH = path.resolve(__dirname, '../../client/res')
 
 module.exports = ->
 	return {
-		mode: 'production'
-
-		#mode: 'development'
+		# mode: 'production'
+		mode: 'development'
 		#plugins: [new BundleAnalyzerPlugin()]
 
 

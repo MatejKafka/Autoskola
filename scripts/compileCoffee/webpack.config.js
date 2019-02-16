@@ -10,7 +10,7 @@
 
   module.exports = function() {
     return {
-      mode: 'production',
+      mode: 'development',
       entry: path.resolve(CLIENT_RES_PATH, './coffee/index.coffee'),
       output: {
         path: path.resolve(CLIENT_RES_PATH, './js'),

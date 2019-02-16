@@ -4,7 +4,8 @@ const CSS_CLASS_NAMES = {
 	labels: CSS_CLASS_PREFIX + 'labels',
 	mainSvg: CSS_CLASS_PREFIX + 'svg',
 	dataLinesContainer: CSS_CLASS_PREFIX + 'lines',
-	axisMarkersContainer: CSS_CLASS_PREFIX + 'axis-markers'
+	axisMarkersContainer: CSS_CLASS_PREFIX + 'axis-markers',
+	singlePointMarker: CSS_CLASS_PREFIX + 'point'
 }
 
 // affects rendering in browsers that don't support vector-effect property
@@ -44,6 +45,11 @@ const updateElemAttribute = attrName => attrValue => elem => {
 	return elem
 }
 
+const updateElemAttributes = attrDict => elem =>
+	Object.entries(attrDict)
+		.map(([name, value]) => updateElemAttribute(name)(value))
+		.reduce((elem, fn) => fn(elem), elem)
+
 
 const addCssClass = classStr => elem => {
 	elem.classList.add(classStr)
@@ -65,19 +71,31 @@ const createSvgElement = tag =>
 	appendChildren(document.createElementNS('http://www.w3.org/2000/svg', tag))
 
 
+const createSvgPointElem = ([x, y]) =>
+	updateElemAttributes({width: 0.01, height: 0.01, x: x, y: y})(createSvgElement('rect')([]))
+
+
+const getPointsFromValues = maxValue => minValueCount => values =>
+	values
+		.map(getChartPoint)
+		.map(normalizePoint([
+			Math.max(minValueCount, values.length) - 1,
+			maxValue
+		]))
+		.map(([x, y]) => [x, 1 - y])
+		.map(scalePoint([SVG_WIDTH, SVG_HEIGHT]))
+
+
 const createChartLineElem = maxValue => minValueCount => values =>
-	createSvgPathElem(
-		values
-			.map(getChartPoint)
-			.map(normalizePoint([
-				Math.max(minValueCount, values.length) - 1,
-				maxValue
-			]))
-			.map(([x, y]) => [x, 1 - y])
-			.map(scalePoint([SVG_WIDTH, SVG_HEIGHT]))
-			.map(getSvgPathStrSegment)
-			.join(' ')
-	)
+	values.length === 1
+		? addCssClass(CSS_CLASS_NAMES.singlePointMarker)(createSvgPointElem(
+			getPointsFromValues(maxValue)(minValueCount)(values)[0]
+		))
+		: createSvgPathElem(
+			getPointsFromValues(maxValue)(minValueCount)(values)
+				.map(getSvgPathStrSegment)
+				.join(' ')
+		)
 
 
 const createChartLineContainer = maxValue => minValueCount => datasets =>
