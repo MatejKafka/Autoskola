@@ -32,6 +32,13 @@ module.exports =
 		ofNPoints: 'bodů'
 
 
+	questionLoaderPopup: '
+		<img id="loaderSpinner" src="./res/img/loaderCircle.gif">
+		<br>
+		Načítám testové otázky...
+	'
+
+
 	error:
 		errorPopup:
 			baseMessage: 'Omlouvám se, v aplikaci nastala neznámá chyba.
@@ -45,6 +52,8 @@ module.exports =
 
 		storageUnavailable: 'Váš prohlížeč nepodporuje ukládání informací na váš počítač, všechny odpovědi se
 							po odchodu ze stránky smažou.'
+
+		questionsNotLoaded: 'Nepovedlo se načíst testové otázky.'
 
 		# shown when some SVG properties required for correct chart display are not supported
 		chartNotSupported: 'Váš prohlížeč nepodporuje některé funkce nutné pro správné vykreslení grafu.

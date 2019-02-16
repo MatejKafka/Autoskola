@@ -8,7 +8,7 @@ storeConfig = require('./storeConfig')
 
 
 module.exports = ->
-	window.store = createWrappedEveStore(CONFIG.storeNamespace)
+	store = createWrappedEveStore(CONFIG.storeNamespace)
 
 	for query in storeConfig.cache
 		store.setCacheFor(query)
@@ -26,4 +26,4 @@ module.exports = ->
 	if !store.persistentStorageAvailable()
 		alert(MESSAGES.error.storageUnavailable)
 
-	return updateTestData()
+	return store

@@ -12,9 +12,10 @@ validateArguments = require('./validateArguments')
 bindErrorListeners = require('./bindErrorListeners')
 setupScreenManager = require('./setupScreenManager')
 prepareStore = require('./prepareStore')
+updateTestData = require('./store/updateTestData')
 
 bindSidemenuManager = require('./screenManager/bindSidemenuManager')
-getLoaderManager = require('./screenManager/getLoaderManager')
+getPopupManager = require('./screenManager/getPopupManager')
 bindMobileMenuToggle = require('./screenManager/bindMobileMenuToggle')
 
 questionTypes = require('./questionTypes')
@@ -39,13 +40,26 @@ bindMobileMenuToggle(
 	document.getElementById('sidebar'),
 	document.getElementById('mobilePageCover')
 )
-loaderManager = getLoaderManager(document.getElementById('loaderCover'))
-loaderManager.show(CONFIG.loaderScreenTimeout)
+
+window.popupManager = getPopupManager(document.getElementById('popupBgCover'), document.getElementById('popupContainerInner'))
+loaderTimeoutId = setTimeout(
+	(-> popupManager.show(MESSAGES.questionLoaderPopup)),
+	CONFIG.loaderScreenTimeout
+)
+
 
 # STORE INIT
-prepareStore()
+window.store = prepareStore()
+
+updateTestData()
 .then ->
-	loaderManager.hide()
+	clearTimeout(loaderTimeoutId)
+	popupManager.hide()
+
 	setupScreenManager()
 	bindSidemenuManager(document.getElementById('navList'))
-.catch(window.handleError)
+.catch (err) ->
+	clearTimeout(loaderTimeoutId)
+	window.handleError(err)
+	popupManager.hide()
+	popupManager.show(MESSAGES.error.questionsNotLoaded)

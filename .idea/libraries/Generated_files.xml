@@ -7,6 +7,7 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/config/MESSAGES.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/prepareStore.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/screenManager/getPopupManager.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browseEvaluatedSession.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browsing.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/evaluateSession.js" />
@@ -35,6 +36,7 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/index.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/serverApi.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/updateCollection.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
@@ -60,6 +62,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/config/MESSAGES.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/prepareStore.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/screenManager/getPopupManager.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browseEvaluatedSession.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/browsing.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/screens/browsing/evaluateSession.js" />
@@ -88,6 +91,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/runItemValidators.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStore/util/eveItem/validateExternalItem.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/eveStoreWrapper.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/index.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/serverApi.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/store/updateTestData/updateCollection.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
