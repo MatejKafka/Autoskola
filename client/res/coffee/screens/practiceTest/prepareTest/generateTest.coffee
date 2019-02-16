@@ -43,6 +43,6 @@ module.exports = ->
 		finished: false
 		lastViewedIndex: null
 		questionIds: questionIds
-		answers: Array(25).fill(null)
+		answers: Array(questionIds.length).fill(null)
 		results: null
 	}
