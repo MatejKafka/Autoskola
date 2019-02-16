@@ -8,7 +8,9 @@ module.exports = ->
 		if CONFIG.verboseErrorMessages
 			message += '\n\n\n' + MESSAGES.error.errorPopup.errorMessageBelow + '\n\n'
 			if err instanceof Error
-				message += err.constructor.name + ': ' + err.message + '\n'
+				if navigator.userAgent.toLowerCase().indexOf('firefox') >= 0
+					# firefox does not include error message in err.stack
+					message += err.constructor.name + ': ' + err.message + '\n'
 				if err.stack?
 					message += err.stack
 			else

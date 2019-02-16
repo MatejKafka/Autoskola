@@ -53,6 +53,7 @@ getResource = (id = null, resourceName = '', sinceInMs) ->
 		if !response.ok
 			throw new Error('Invalid status code returned from API: ' + response.status)
 		return response.json()
+			.catch -> throw new Error('Could not parse API response')
 
 
 module.exports =

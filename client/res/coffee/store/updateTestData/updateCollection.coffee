@@ -9,6 +9,7 @@ getLastCheckTime = (collectionName) ->
 		result = result.time
 	return result
 
+
 writeLastCheckTime = (collectionName, checkTime, persistent) ->
 	if !store.persistentStorageAvailable()
 		return
