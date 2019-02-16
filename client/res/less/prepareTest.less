@@ -1,12 +1,32 @@
 @import "./variables";
 @import "./mixins";
+@import "./chart";
 
 .prepareTest {
 	.finishedTestChart {
 		.borderBlock();
-		padding: 1em;
+		padding: 0.9em 0.9em 0.9em 1.1em;
 		height: 200px;
 		margin-top: @defaultDistance / 2;
 		margin-bottom: @defaultDistance * 2;
+
+		.chart-container {
+			font-size: 70%;
+
+			.chart-labels {
+				padding-top: 0.1em;
+				color: #777;
+			}
+
+			.chart-passScores {
+				stroke-dasharray: 8, 3;
+				stroke: #aaa;
+			}
+
+			.chart-testScores {
+				stroke-width: 2;
+				stroke: @chartLineColor
+			}
+		}
 	}
 }

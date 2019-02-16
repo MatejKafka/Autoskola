@@ -38,6 +38,7 @@
         <item url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />
+        <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderLineChart.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderQuestion.js" />
         <item url="file://$PROJECT_DIR$/client/res/coffee/util/testUtils.js" />
         <item url="file://$PROJECT_DIR$/scripts/compileCoffee/compileCb.js" />
@@ -87,6 +88,7 @@
       <root url="file://$PROJECT_DIR$/client/res/coffee/storeConfig.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/getTestResults.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/QuestionView.js" />
+      <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderLineChart.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/render/renderQuestion.js" />
       <root url="file://$PROJECT_DIR$/client/res/coffee/util/testUtils.js" />
       <root url="file://$PROJECT_DIR$/scripts/compileCoffee/compileCb.js" />

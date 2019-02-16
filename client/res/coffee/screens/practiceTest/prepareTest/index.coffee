@@ -1,60 +1,17 @@
 generateTest = require('./generateTest')
-Highcharts = require('highcharts')
-
-
-getChartConfig = (maxScore, testScores, passScores) ->
-	return {
-		chart:
-			spacing: [5, 5, 5, 5]
-		title: null
-		subtitle: null
-		xAxis:
-			minPadding: 0.05
-			softMax: 8
-			visible: false
-		yAxis:
-			min: 0
-			max: maxScore
-			title: null
-			tickPositions: [
-				0
-				maxScore / 5
-				maxScore * 2 / 5
-				maxScore * 3 / 5
-				maxScore * 4 / 5
-				maxScore
-			]
-		legend:
-			enabled: false
-		tooltip:
-			enabled: false
-		credits:
-			enabled: false
-		plotOptions:
-			line:
-				animation:
-					duration: 800
-				enableMouseTracking: false
-				marker:
-					enabled: testScores.length < 2
-		series: [
-			{
-				data: testScores
-			}
-			{
-				data: passScores
-				lineWidth: 1
-				dashStyle: 'LongDash'
-			}
-		]
-	}
+renderLineChart = require('../../../util/render/renderLineChart.js')
 
 
 renderFinishedTestChart = (container, testResults) ->
 	maxScore = Math.max.apply(Math, testResults.map (test) -> test.maxScore)
 	testScores = testResults.map (test) -> test.score
 	passScores = testResults.map (test) -> test.passScore
-	Highcharts.chart(container, getChartConfig(maxScore, testScores, passScores))
+
+	container.innerHTML = ''
+	container.appendChild(renderLineChart(maxScore, 8, [
+		{cssClass: 'chart-testScores', values: testScores},
+		{cssClass: 'chart-passScores', values: passScores}
+	]))
 	return
 
 

@@ -4,7 +4,6 @@
   "author": "Anagmate",
   "private": true,
   "dependencies": {
-    "highcharts": "5.0.11",
     "promise-polyfill": "6.0.2",
     "whatwg-fetch": "2.0.3"
   }
