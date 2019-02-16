@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" serverName="infinityFree" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" traceLevel="DETAILS" notifyRemoteChanges="true">
+  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" serverName="infinityFree" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" traceLevel="DETAILS" notifyRemoteChanges="true" showEqualInSync="true">
     <serverData>
       <paths name="infinityFree">
         <serverdata>
