@@ -1,6 +1,7 @@
 path = require('path')
 express = require('express')
 cors = require('cors')
+compression = require('compression')
 handleApiCall = require('./handleApiCall')
 
 logger = global.logger.getChildLogger('webserver')
@@ -23,6 +24,9 @@ module.exports = (store, staticDirPath, testImgDirPath, port) ->
 	alreadyRunning = true
 
 	webserver = express()
+
+	# add compression
+	webserver.use(compression())
 
 	# API
 	webserver.all('/api*', cors())

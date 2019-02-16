@@ -1,17 +1,18 @@
 {
-	"name": "autoskola-testy-server",
-	"version": "0.9.0",
-	"description": "Small server that provides questions for final exams in czech driving schools",
-	"private": true,
-	"main": "index.js",
-	"scripts": {
-		"start": "coffee index.coffee",
-		"updateTestData": "cd updateTestData && npm start"
-	},
-	"author": "Anagmate",
-	"dependencies": {
-		"coffee-script": "1.12.6",
-		"cors": "2.8.1",
-		"express": "4.15.2"
-	}
+  "name": "autoskola-testy-server",
+  "version": "0.9.0",
+  "description": "Small server that provides questions for final exams in czech driving schools",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "coffee index.coffee",
+    "updateTestData": "cd updateTestData && npm start"
+  },
+  "author": "Anagmate",
+  "dependencies": {
+    "coffee-script": "1.12.6",
+    "compression": "1.7.3",
+    "cors": "2.8.1",
+    "express": "4.15.2"
+  }
 }
