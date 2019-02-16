@@ -6,7 +6,7 @@ CLIENT_RES_PATH = path.resolve(__dirname, '../../client/res')
 
 
 
-USE_PRODUCTION = true
+USE_PRODUCTION = false
 GENERATE_BUNDLE_ANALYSIS = false
 
 
@@ -41,15 +41,14 @@ baseConfig = {
 }
 
 
-if USE_PRODUCTION
-	baseConfig.mode = 'production'
-else
-	baseConfig.mode = 'development'
+module.exports = (useProductionMode = USE_PRODUCTION, analyzeBundle = GENERATE_BUNDLE_ANALYSIS) ->
+	config = Object.assign({}, baseConfig)
+	if useProductionMode
+		config.mode = 'production'
+	else
+		config.mode = 'development'
 
+	if analyzeBundle
+		config.plugins.push(new BundleAnalyzerPlugin())
 
-if GENERATE_BUNDLE_ANALYSIS
-	baseConfig.plugins.push(new BundleAnalyzerPlugin())
-
-
-module.exports = ->
-	return baseConfig
+	return config

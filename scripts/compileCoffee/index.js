@@ -8,7 +8,7 @@
 
   getConfig = require('./webpack.config');
 
-  webpack(getConfig(), function(err, stats) {
+  webpack(getConfig(true), function(err, stats) {
     var outputCode;
     outputCode = compileCb(err, stats);
     return process.exit(outputCode);

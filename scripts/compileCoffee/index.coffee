@@ -4,6 +4,6 @@ compileCb = require('./compileCb')
 
 getConfig = require('./webpack.config')
 
-webpack getConfig(), (err, stats) ->
+webpack getConfig(true), (err, stats) ->
 	outputCode = compileCb(err, stats)
 	process.exit(outputCode)

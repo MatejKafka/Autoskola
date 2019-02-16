@@ -8,7 +8,7 @@
 
   CLIENT_RES_PATH = path.resolve(__dirname, '../../client/res');
 
-  USE_PRODUCTION = true;
+  USE_PRODUCTION = false;
 
   GENERATE_BUNDLE_ANALYSIS = false;
 
@@ -40,18 +40,24 @@
     }
   };
 
-  if (USE_PRODUCTION) {
-    baseConfig.mode = 'production';
-  } else {
-    baseConfig.mode = 'development';
-  }
-
-  if (GENERATE_BUNDLE_ANALYSIS) {
-    baseConfig.plugins.push(new BundleAnalyzerPlugin());
-  }
-
-  module.exports = function() {
-    return baseConfig;
+  module.exports = function(useProductionMode, analyzeBundle) {
+    var config;
+    if (useProductionMode == null) {
+      useProductionMode = USE_PRODUCTION;
+    }
+    if (analyzeBundle == null) {
+      analyzeBundle = GENERATE_BUNDLE_ANALYSIS;
+    }
+    config = Object.assign({}, baseConfig);
+    if (useProductionMode) {
+      config.mode = 'production';
+    } else {
+      config.mode = 'development';
+    }
+    if (analyzeBundle) {
+      config.plugins.push(new BundleAnalyzerPlugin());
+    }
+    return config;
   };
 
 }).call(this);
