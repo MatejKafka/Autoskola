@@ -110,6 +110,7 @@
       <root url="file://$PROJECT_DIR$/server/updateTestData/processImg/processStaticImg.js" />
       <root url="file://$PROJECT_DIR$/server/webserver/startWebserver.js" />
     </CLASSES>
+    <JAVADOC />
     <SOURCES />
   </library>
 </component>
