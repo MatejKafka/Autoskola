@@ -17,7 +17,7 @@ limitToGetMw = (req, res, next) ->
 		next()
 
 
-module.exports = (store, staticDirPath, testImgDirPath, port) ->
+module.exports = (store, staticDirPath, testImgDirPath, host, port) ->
 	if alreadyRunning
 		logger.error('alreadyRunning', 'Webserver instance is already running!')
 		throw new Error('Webserver instance is already running!')
@@ -50,7 +50,8 @@ module.exports = (store, staticDirPath, testImgDirPath, port) ->
 	)
 
 
-	listener = webserver.listen port, ->
+	listener = webserver.listen port, host, ->
+		host = listener.address().address
 		port = listener.address().port
-		logger.log('start', 'Webserver started!', {port: port})
-		console.log('Webserver running on port ' + port)
+		logger.log('start', 'Webserver started!', {host, port})
+		console.log('Webserver running on ' + host + ':' + port)

@@ -4,6 +4,7 @@ dataDir = path.resolve(__dirname, '../data/')
 testDataDir = path.resolve(dataDir, './testData/')
 
 module.exports =
+	host: null # default
 	port: 8080
 
 	logFilePath: path.resolve(__dirname, '../data/logs.txt')

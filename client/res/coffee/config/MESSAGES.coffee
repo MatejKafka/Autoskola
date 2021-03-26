@@ -1,7 +1,4 @@
 module.exports =
-	tabTitle: 'Příprava k závěrečným testům autoškoly ' + (new Date()).getFullYear()
-	pageTitle: "<h1>Autoškola #{(new Date()).getFullYear()}</h1><h2>pro skupinu B</h2>"
-
 	questionSelect:
 		selectAll: 'Vybrat vše'
 		deselectAll: 'Odvybrat vše'

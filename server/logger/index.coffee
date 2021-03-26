@@ -38,7 +38,10 @@ joinPaths = (path1, path2) ->
 module.exports = class Logger
 	constructor: (pathOrParentLogger, currentLogBranch = '') ->
 		@_currentLogBranch = currentLogBranch
-		if typeof pathOrParentLogger == 'string'
+		# stdout logger
+		if pathOrParentLogger == null
+			@_writeStream = null
+		else if typeof pathOrParentLogger == 'string'
 			@_logPath = pathOrParentLogger
 			try
 				@_writeStream = fs.createWriteStream(@_logPath, {flags: 'a'})
@@ -55,8 +58,11 @@ module.exports = class Logger
 	_writeLog: (type, path, message, msgData) ->
 		if @_parentLogger?
 			@_parentLogger._writeLog(type, path, message, msgData)
-			return
-		@_writeStream.write('\n' + JSON.stringify({time: Date.now(), type, path, message, msgData}))
+		else if @_writeStream?
+			@_writeStream.write('\n' + JSON.stringify({time: Date.now(), type, path, message, msgData}))
+		else
+			# log to stderr
+			console.error(JSON.stringify({time: Date.now(), type, path, message, msgData}))
 		return
 
 

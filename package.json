@@ -14,5 +14,8 @@
 		"updateTestData": "cd server && npm run-script updateTestData",
 		"buildClient": "cd scripts && npm run-script buildClient",
 		"buildPhpServer": "cd scripts && npm run-script buildPhpServer"
+	},
+	"dependencies": {
+		"coffeescript": "^2.5.1"
 	}
 }

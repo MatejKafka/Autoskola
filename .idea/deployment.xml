@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" serverName="infinityFree" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" traceLevel="DETAILS" notifyRemoteChanges="true" showEqualInSync="true">
+  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" serverName="infinityFree" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" notifyRemoteChanges="true" showEqualInSync="true">
     <serverData>
       <paths name="infinityFree">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$/out/phpServer" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="linode">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/node_app" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

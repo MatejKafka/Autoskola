@@ -24,7 +24,6 @@ questionTypes = require('./questionTypes')
 
 # GLOBALS INIT
 bindErrorListeners()
-
 window.validateArguments = validateArguments
 window.db =
 	questionTypes: questionTypes
@@ -32,15 +31,11 @@ window.db =
 
 
 # GUI INIT
-document.title = MESSAGES.tabTitle
-document.getElementById('pageTitle').innerHTML = MESSAGES.pageTitle
-
 bindMobileMenuToggle(
 	document.getElementById('mobileMenuToggle'),
 	document.getElementById('sidebar'),
 	document.getElementById('mobilePageCover')
 )
-
 window.popupManager = getPopupManager(document.getElementById('popupBgCover'), document.getElementById('popupContainerInner'))
 loaderTimeoutId = setTimeout(
 	(-> popupManager.show(MESSAGES.questionLoaderPopup)),
