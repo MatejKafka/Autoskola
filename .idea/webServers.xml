@@ -2,13 +2,6 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="fba28a73-c579-4a5a-94d6-01304a534855" name="infinityFree" url="https://autoskola-cz.cf">
-        <fileTransfer rootFolder="/htdocs" host="ftpupload.net" port="21">
-          <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" showHiddenFiles="true" />
-          </advancedOptions>
-        </fileTransfer>
-      </webServer>
       <webServer id="d5623ef7-90a1-40c9-8dc2-0f120993aa8b" name="linode" url="https://autoskola.matejkafka.com">
         <fileTransfer rootFolder="/var/lib/autoskola/" accessType="SFTP" host="linode" port="22" sshConfigId="845717e9-07c5-41b2-abf3-2c1b6e910185" sshConfig="root@linode:22 agent" authAgent="true">
           <advancedOptions>

@@ -40,7 +40,7 @@ module.exports =
 		errorPopup:
 			baseMessage: 'Omlouvám se, v aplikaci nastala neznámá chyba.
 						Pro nápravu zkuste stránku znovu načíst, případně kontaktovat administrátora
-						(kafka.matej@gmail.com).'
+						(autoskola@matejkafka.com).'
 
 			errorMessageBelow: 'Níže je uvedený důvod chyby:'
 
